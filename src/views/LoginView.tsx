@@ -57,7 +57,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
              className="w-28 h-auto mx-auto mb-5 object-contain drop-shadow-2xl opacity-95" 
              alt="Logo" 
            />
-           <h1 className="text-4xl font-serif text-white drop-shadow-lg tracking-wide mb-2">The Gallery</h1>
+           <h1 className="text-4xl font-serif text-white drop-shadow-lg tracking-wide mb-2">The Gallery Restaurant</h1>
            <p className="text-white/80 text-sm mt-2 font-serif italic">"{t.subtitle}"</p>
         </div>
 
