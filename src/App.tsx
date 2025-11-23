@@ -56,15 +56,71 @@ export default function App() {
     });
   };
 
+  // --- GANTI FUNGSI HANDLEPLACEORDER DENGAN INI ---
+
   const handlePlaceOrder = (method: string, proof: File | null) => {
     setIsProcessing(true);
-    // Simulate API call
+
+    // 1. SIAPKAN DATA & FORMATTER KHUSUS WA
+    // Kita pakai formatter manual biar simbol  tidak muncul di WA
+    const fmt = (n: number) => 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const tax = subtotal * 0.21;
+    const total = subtotal + tax;
+    
+    // Ambil Waktu Sekarang (Biar dapur tau jam order)
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const dateString = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // 2. RAKIT PESAN WHATSAPP (VERSI PRO)
+    let message = `*🔔 NEW ORDER - ROOM ${roomNumber}* %0A`;
+    message += `📅 ${dateString} | ⏰ ${timeString}%0A`;
+    message += `📞 No. Tamu: ${phoneNumber}%0A`;
+    message += `=============================%0A`;
+    message += `*📋 ITEM PESANAN:*%0A`;
+    
+    cart.forEach(item => {
+      message += `%0A*${item.qty}x ${item.name}*%0A`;
+      // Kalau ada note, kasih formatting miring biar kelihatan
+      if (item.note) message += `   📝 _Note: ${item.note}_%0A`; 
+      message += `   @ ${fmt(item.price)}%0A`;
+    });
+
+    message += `=============================%0A`;
+    message += `Subtotal: ${fmt(subtotal)}%0A`;
+    message += `Service & Tax (21%): ${fmt(tax)}%0A`;
+    message += `*💰 TOTAL BILL: ${fmt(total)}*%0A`;
+    message += `=============================%0A`;
+    
+    // Info Pembayaran
+    let paymentText = "";
+    if (method === 'room') paymentText = "CHARGE TO ROOM 🏨";
+    if (method === 'qris') paymentText = "QRIS / E-WALLET 📱";
+    if (method === 'bank') paymentText = "BANK TRANSFER 💳";
+
+    message += `Metode Bayar: *${paymentText}*%0A`;
+    
+    if (method !== 'room') {
+      message += `%0A⚠️ *PENTING:*%0A`;
+      message += `Tamu dimohon melampirkan BUKTI TRANSFER (Foto/Screenshot) di chat ini agar pesanan dapat diproses.%0A`;
+    }
+    
+    message += `%0A_Mohon segera dikonfirmasi. Terima Kasih!_ 🙏`;
+
+    // 3. KIRIM
+    const staffPhoneNumber = "6281234567890"; // JANGAN LUPA GANTI NOMOR INI
+
     setTimeout(() => {
       setIsProcessing(false);
+      window.open(`https://wa.me/${staffPhoneNumber}?text=${message}`, '_blank');
+      
+      // Reset App
       setView('tracking');
       setCart([]);
       localStorage.removeItem('ciputra_cart');
-    }, 2000);
+    }, 1500);
   };
 
   const handleFinishOrder = () => {

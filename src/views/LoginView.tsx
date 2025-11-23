@@ -71,10 +71,18 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
             <div className="group">
               <label className="text-[10px] font-bold text-white/80 tracking-[0.2em] uppercase mb-2 block ml-1">{t.room}</label>
               <input 
-                type="number" 
+                type="text" // Ubah jadi text biar kita bisa kontrol regex
+                inputMode="numeric" // Biar di HP keluar keyboard angka
                 placeholder="1024" 
                 value={roomNumber} 
-                onChange={(e) => setRoomNumber(e.target.value)} 
+                onChange={(e) => {
+                  // LOGIKA VALIDASI BARU:
+                  const val = e.target.value;
+                  // Cuma boleh angka & maks 4 digit
+                  if (/^\d{0,4}$/.test(val)) {
+                    setRoomNumber(val);
+                  }
+                }} 
                 className="block w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:bg-black/40 focus:border-white/30 transition-all text-base text-center font-medium tracking-widest" 
               />
             </div>
