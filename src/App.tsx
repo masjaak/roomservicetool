@@ -56,42 +56,54 @@ export default function App() {
     });
   };
 
-  // --- GANTI FUNGSI HANDLEPLACEORDER DENGAN INI ---
+  // --- UPDATE BAGIAN INI DI APP.TSX ---
 
   const handlePlaceOrder = (method: string, proof: File | null) => {
     setIsProcessing(true);
 
-    // 1. SIAPKAN DATA & FORMATTER KHUSUS WA
-    // Kita pakai formatter manual biar simbol  tidak muncul di WA
+    // 1. FORMATTER RUPIAH (Manual biar rapi di WA)
+    // Contoh: 45000 -> "Rp 45.000"
     const fmt = (n: number) => 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    // 2. HITUNG MATEMATIKA (Sesuai Summary Checkout)
+    // Subtotal: Harga murni makanan
+    const rawSubtotal = cart.reduce((sum, item) => {
+      return sum + (item.price * item.qty); 
+    }, 0);
     
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const tax = subtotal * 0.21;
-    const total = subtotal + tax;
+    // Tax & Service: 21% dari Subtotal
+    const taxService = rawSubtotal * 0.21;
     
-    // Ambil Waktu Sekarang (Biar dapur tau jam order)
+    // Total Akhir: Subtotal + Tax
+    const finalTotal = rawSubtotal + taxService;
+    
+    // Waktu Order
     const now = new Date();
     const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     const dateString = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    // 2. RAKIT PESAN WHATSAPP (VERSI PRO)
+    // 3. RAKIT PESAN WHATSAPP
     let message = `*🔔 NEW ORDER - ROOM ${roomNumber}* %0A`;
     message += `📅 ${dateString} | ⏰ ${timeString}%0A`;
     message += `📞 No. Tamu: ${phoneNumber}%0A`;
     message += `=============================%0A`;
-    message += `*📋 ITEM PESANAN:*%0A`;
     
+    // List Item
     cart.forEach(item => {
-      message += `%0A*${item.qty}x ${item.name}*%0A`;
-      // Kalau ada note, kasih formatting miring biar kelihatan
-      if (item.note) message += `   📝 _Note: ${item.note}_%0A`; 
-      message += `   @ ${fmt(item.price)}%0A`;
+      // Hitung total per baris (Harga x Qty)
+      const lineTotal = item.price * item.qty;
+      
+      message += `*${item.qty}x ${item.name}*%0A`;
+      if (item.note) message += `   📝 _Note: ${item.note}_%0A`;
+      message += `   @ ${fmt(item.price)} = ${fmt(lineTotal)}%0A`;
+      message += `%0A`;
     });
 
+    // BAGIAN SUMMARY (Sesuai Request Kamu)
     message += `=============================%0A`;
-    message += `Subtotal: ${fmt(subtotal)}%0A`;
-    message += `Service & Tax (21%): ${fmt(tax)}%0A`;
-    message += `*💰 TOTAL BILL: ${fmt(total)}*%0A`;
+    message += `Subtotal: ${fmt(rawSubtotal)}%0A`;
+    message += `Service & Tax (21%): ${fmt(taxService)}%0A`;
+    message += `*💰 TOTAL: ${fmt(finalTotal)}*%0A`;
     message += `=============================%0A`;
     
     // Info Pembayaran
@@ -103,14 +115,13 @@ export default function App() {
     message += `Metode Bayar: *${paymentText}*%0A`;
     
     if (method !== 'room') {
-      message += `%0A⚠️ *PENTING:*%0A`;
-      message += `Tamu dimohon melampirkan BUKTI TRANSFER (Foto/Screenshot) di chat ini agar pesanan dapat diproses.%0A`;
+      message += `%0A_(Mohon lampirkan BUKTI TRANSFER di sini)_%0A`;
     }
     
-    message += `%0A_Mohon segera dikonfirmasi. Terima Kasih!_ 🙏`;
+    message += `%0A_Mohon segera diproses. Terima Kasih!_ 🙏`;
 
-    // 3. KIRIM
-    const staffPhoneNumber = "+6281285864059"; // JANGAN LUPA GANTI NOMOR INI
+    // 4. KIRIM
+    const staffPhoneNumber = "6281285864059"; // ⚠️ GANTI DENGAN NOMOR WA RESTO ASLI
 
     setTimeout(() => {
       setIsProcessing(false);
@@ -121,12 +132,6 @@ export default function App() {
       setCart([]);
       localStorage.removeItem('ciputra_cart');
     }, 1500);
-  };
-
-  const handleFinishOrder = () => {
-    setRoomNumber("");
-    setPhoneNumber("");
-    setView('login');
   };
 
   // --- RENDER ---
