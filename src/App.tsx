@@ -111,19 +111,31 @@ export default function App() {
     // 4. KIRIM (DENGAN ENCODE)
     const staffPhoneNumber = "6281285864059"; // GANTI NOMOR INI
 
+    // --- PERBAIKAN LOGIC DISINI ---
     setTimeout(() => {
       setIsProcessing(false);
+
+      // 1. Buka WhatsApp Duluan (di tab baru biar app gak ketutup)
+      const waLink = `https://wa.me/${staffPhoneNumber}?text=${encodeURIComponent(message)}`;
+      window.open(waLink, '_blank'); 
       
-      // --- INI KUNCINYA ---
-      // Kita pakai encodeURIComponent(message)
-      // Ini akan mengubah '&' menjadi '%26' dan Enter menjadi '%0A' secara otomatis
-      // Jadi pesannya TIDAK AKAN TERPOTONG lagi.
-      window.open(`https://wa.me/${staffPhoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
-      
+      // 2. Pindah ke Tracking View AMAN
+      // Kita set view dulu biar user lihat halaman tracking
       setView('tracking');
-      setCart([]);
-      localStorage.removeItem('ciputra_cart');
+
+      // 3. Bersihkan Keranjang (Opsional: kasih delay dikit biar smooth)
+      setTimeout(() => {
+         setCart([]);
+         localStorage.removeItem('ciputra_cart');
+      }, 500);
+      
     }, 1500);
+  };
+
+  const handleFinishOrder = () => {
+    setRoomNumber("");
+    setPhoneNumber("");
+    setView('login');
   };
 
   // --- RENDER ---
