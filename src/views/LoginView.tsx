@@ -58,7 +58,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
              alt="Logo" 
            />
            <h1 className="text-4xl font-serif text-white drop-shadow-lg tracking-wide mb-2">The Gallery Restaurant</h1>
-           <p className="text-white/80 text-sm mt-2 font-serif italic">"{t.subtitle}"</p>
+           <p className="text-white/80 text-sm mt-2 font-serif italic">"{lang === 'EN' ? 'Exquisite dining, delivered to your room' : 'Hidangan istimewa, diantar ke kamar Anda'}"</p>
         </div>
 
         <motion.div 

@@ -9,7 +9,7 @@ interface ItemDetailModalProps {
   item: MenuItem | null;
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (qty: number, note: string) => void;
+  onAdd: (item: MenuItem, qty: number, note: string) => void;
   lang: 'EN' | 'ID';
 }
 
@@ -106,7 +106,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                 </button>
               </div>
               <button 
-                onClick={() => { onAdd(qty, note); onClose(); }} 
+                onClick={() => { onAdd(item, qty, note); onClose(); }} 
                 className="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-full font-bold text-sm shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 <span>{t.addToCart}</span>

@@ -3,7 +3,8 @@ import { X, ChevronRight, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CartItem } from '../types';
 import { TRANSLATIONS } from '../data/constants';
-import { formatCurrency } from '../utils/format';
+// Kita tidak pakai formatCurrency luar biar aman dari NaN
+// import { formatCurrency } from '../utils/format';
 
 interface CartDrawerProps {
   cart: CartItem[];
@@ -16,7 +17,31 @@ interface CartDrawerProps {
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, onRemove, onCheckout, lang }) => {
   const t = TRANSLATIONS[lang];
-  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+  // --- 1. JURUS PEMBERSIH ANGKA (Wajib ada biar gak NaN) ---
+  const parseNumber = (value: any): number => {
+    if (typeof value === 'number') return value;
+    // Hapus semua karakter kecuali angka
+    const cleanStr = String(value).replace(/[^0-9]/g, '');
+    return parseInt(cleanStr, 10) || 0;
+  };
+
+  // --- 2. FORMAT RUPIAH MANUAL ---
+  const formatRupiah = (num: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(num || 0);
+  };
+
+  // --- 3. HITUNG SUBTOTAL DENGAN DATA BERSIH ---
+  const subtotal = cart.reduce((sum, item) => {
+    const price = parseNumber(item.price);
+    const qty = parseNumber(item.qty);
+    return sum + (price * qty);
+  }, 0);
 
   return (
     <AnimatePresence>
@@ -56,7 +81,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, o
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {cart.map((item, idx) => (
+                  {cart.map((item, idx) => {
+                    // Bersihkan data per item sebelum ditampilkan
+                    const cleanPrice = parseNumber(item.price);
+                    const cleanQty = parseNumber(item.qty);
+                    const totalPrice = cleanPrice * cleanQty;
+
+                    return (
                     <motion.div 
                       layout
                       initial={{ opacity: 0, x: -20 }}
@@ -69,27 +100,27 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, o
                         <img src={item.image} className="w-full h-full object-cover" alt={item.name} />
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
-                         <div>
+                          <div>
                              <div className="flex justify-between items-start">
                                <h4 className="font-bold text-slate-900 text-sm line-clamp-1">{item.name}</h4>
-                               <span className="text-xs font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-600">x{item.qty}</span>
+                               <span className="text-xs font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-600">x{cleanQty}</span>
                              </div>
                              {item.note && <p className="text-[10px] text-slate-500 italic mt-1 line-clamp-1">"{item.note}"</p>}
-                         </div>
-                         <div className="flex justify-between items-end">
-                            <p className="text-sm font-bold text-orange-600">
-                              {item.price === 0 ? t.free : formatCurrency(item.price * item.qty)}
-                            </p>
-                            <button 
-                              onClick={() => onRemove(idx)} 
-                              className="text-red-400 hover:text-red-600 p-1 -mr-1 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                         </div>
+                          </div>
+                          <div className="flex justify-between items-end">
+                             <p className="text-base font-bold text-orange-600">
+                               {cleanPrice === 0 ? t.free : formatRupiah(totalPrice)}
+                             </p>
+                             <button 
+                               onClick={() => onRemove(idx)} 
+                               className="text-red-400 hover:text-red-600 p-1 -mr-1 transition-colors"
+                             >
+                               <Trash2 className="w-4 h-4" />
+                             </button>
+                          </div>
                       </div>
                     </motion.div>
-                  ))}
+                  )})}
                 </div>
               )}
             </div>
@@ -97,7 +128,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, o
             <div className="p-6 sm:p-8 border-t border-slate-100 bg-slate-50/50">
                <div className="flex justify-between items-center mb-6">
                  <span className="text-slate-500 font-medium text-sm">{t.subtotal}</span>
-                 <span className="text-slate-900 font-bold text-lg">{formatCurrency(subtotal)}</span>
+                 {/* Tampilkan Subtotal yang aman */}
+                 <span className="text-slate-900 font-bold text-lg">{formatRupiah(subtotal)}</span>
                </div>
                <button 
                  onClick={onCheckout} 

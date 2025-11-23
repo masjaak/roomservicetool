@@ -3,7 +3,6 @@ import { ChevronLeft, Building2, QrCode, CreditCard, CheckCircle2, Upload, Loade
 import { motion, AnimatePresence } from 'motion/react';
 import { CartItem, Language } from '../types';
 import { BANKS, TRANSLATIONS } from '../data/constants';
-import { formatCurrency } from '../utils/format';
 
 interface CheckoutViewProps {
   cart: CartItem[];
@@ -27,7 +26,32 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   const [transferProof, setTransferProof] = useState<File | null>(null);
   const t = TRANSLATIONS[lang];
 
-  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  // --- 1. HELPER: PEMBERSIH HARGA (Jurus Anti-NaN) ---
+  const parseNumber = (value: any): number => {
+    if (typeof value === 'number') return value;
+    // Hapus "Rp", titik, spasi, lalu jadikan angka
+    const cleanStr = String(value).replace(/[^0-9]/g, '');
+    return parseInt(cleanStr, 10) || 0;
+  };
+
+  // --- 2. HELPER: FORMAT RUPIAH ---
+  const formatRupiah = (num: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(num || 0);
+  };
+
+  // --- 3. KALKULATOR AMAN ---
+  // Kita bersihkan dulu harga & qty sebelum dikali
+  const subtotal = cart.reduce((sum, item) => {
+    const p = parseNumber(item.price);
+    const q = parseNumber(item.qty);
+    return sum + (p * q);
+  }, 0);
+
   const taxService = subtotal * 0.21;
   const grandTotal = subtotal + taxService;
 
@@ -201,9 +225,10 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
             <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
               <h3 className="font-bold text-slate-900 mb-4">Summary</h3>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between text-slate-500"><span>{t.subtotal}</span><span>{formatCurrency(subtotal)}</span></div>
-                <div className="flex justify-between text-slate-500"><span>{t.serviceTax}</span><span>{formatCurrency(taxService)}</span></div>
-                <div className="flex justify-between text-xl font-bold text-slate-900 mt-4 pt-4 border-t border-slate-100"><span>{t.total}</span><span>{formatCurrency(grandTotal)}</span></div>
+                {/* GANTI BAGIAN INI DENGAN FORMATRUPIAH BUATAN KITA SENDIRI */}
+                <div className="flex justify-between text-slate-500"><span>{t.subtotal}</span><span>{formatRupiah(subtotal)}</span></div>
+                <div className="flex justify-between text-slate-500"><span>{t.serviceTax}</span><span>{formatRupiah(taxService)}</span></div>
+                <div className="flex justify-between text-xl font-bold text-slate-900 mt-4 pt-4 border-t border-slate-100"><span>{t.total}</span><span>{formatRupiah(grandTotal)}</span></div>
               </div>
             </div>
           </div>

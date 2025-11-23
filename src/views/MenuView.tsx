@@ -3,7 +3,8 @@ import { ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { MenuItem, CartItem, Language } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
-import { formatCurrency } from '../utils/format';
+// Kita bypass formatCurrency luar
+// import { formatCurrency } from '../utils/format';
 import { ProductCard } from '../components/ProductCard';
 import { ItemDetailModal } from '../components/ItemDetailModal';
 import { CartDrawer } from '../components/CartDrawer';
@@ -30,6 +31,23 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const [isCartOpen, setIsCartOpen] = useState(false);
   const t = TRANSLATIONS[lang];
 
+  // --- 1. JURUS PEMBERSIH ANGKA ---
+  const parseNumber = (value: any): number => {
+    if (typeof value === 'number') return value;
+    const cleanStr = String(value).replace(/[^0-9]/g, '');
+    return parseInt(cleanStr, 10) || 0;
+  };
+
+  // --- 2. FORMAT RUPIAH ---
+  const formatRupiah = (num: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(num || 0);
+  };
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return t.morning;
@@ -37,7 +55,17 @@ export const MenuView: React.FC<MenuViewProps> = ({
     return t.evening;
   };
 
-  const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  // --- 3. HITUNG GRAND TOTAL & TOTAL QTY YANG AMAN ---
+  const grandTotal = cart.reduce((sum, item) => {
+    const p = parseNumber(item.price);
+    const q = parseNumber(item.qty);
+    return sum + (p * q);
+  }, 0);
+
+  const totalQty = cart.reduce((acc, item) => {
+    return acc + parseNumber(item.qty);
+  }, 0);
+
   const filteredItems = MENU_ITEMS.filter(item => item.category === selectedCategory);
 
   return (
@@ -103,12 +131,14 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   className="w-full bg-slate-900 text-white p-2 pr-6 rounded-full shadow-2xl shadow-slate-900/30 flex justify-between items-center hover:bg-slate-800 transition-colors active:scale-[0.98]"
                 >
                    <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-white text-slate-900 rounded-full flex items-center justify-center font-bold text-lg shadow-inner">
-                       {cart.reduce((acc, item) => acc + item.qty, 0)}
+                     <div className="w-12 h-12 bg-white text-slate-900 rounded-full flex items-center justify-center font-bold text-xl shadow-inner">
+                       {/* Total Qty yang aman */}
+                       {totalQty}
                      </div>
                      <div className="text-left">
                        <p className="text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-0.5">{t.total}</p>
-                       <p className="font-bold text-base">{formatCurrency(grandTotal)}</p>
+                       {/* Grand Total yang aman */}
+                       <p className="font-bold text-base">{formatRupiah(grandTotal)}</p>
                      </div>
                    </div>
                    <div className="flex items-center gap-2 font-bold text-xs tracking-widest uppercase">
