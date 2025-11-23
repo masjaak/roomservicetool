@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, LogOut, Search, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { MenuItem, CartItem, Language } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
@@ -30,6 +30,17 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const t = TRANSLATIONS[lang];
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleLogout = () => {
+    if (window.confirm("Ganti nomor kamar? Keranjang akan dikosongkan.")) {
+      localStorage.removeItem('ciputra_cart');
+      window.location.reload();
+    }
+  };
+
+  
 
   // --- 1. JURUS PEMBERSIH ANGKA ---
   const parseNumber = (value: any): number => {
@@ -66,7 +77,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
     return acc + parseNumber(item.qty);
   }, 0);
 
-  const filteredItems = MENU_ITEMS.filter(item => item.category === selectedCategory);
+  // --- GANTI LOGIC FILTER LAMA DENGAN INI ---
+  const filteredItems = searchQuery.length > 0 
+    ? MENU_ITEMS.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    : MENU_ITEMS.filter(item => item.category === selectedCategory);
 
   return (
     <motion.div 
@@ -77,34 +91,69 @@ export const MenuView: React.FC<MenuViewProps> = ({
       <div className="w-full max-w-3xl mx-auto bg-slate-50 min-h-screen relative shadow-2xl shadow-slate-200/50">
         
         {/* Header */}
+       {/* --- COPY DARI SINI --- */}
         <div className="bg-white sticky top-0 z-30 px-6 pt-8 pb-4 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
           <div className="flex items-center justify-between mb-6">
              <div>
                <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase mb-1">{getGreeting()}</p>
                <h2 className="text-2xl font-serif font-bold text-slate-900">Room {roomNumber}</h2>
              </div>
-             <div className="w-10 h-10 bg-orange-50 rounded-full overflow-hidden border border-orange-100">
-               <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${roomNumber}`} alt="user" />
+             
+             {/* 1. INI TOMBOL LOGOUT + FOTO PROFIL */}
+             <div className="flex items-center gap-3">
+                <button 
+                  onClick={handleLogout}
+                  className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+                <div className="w-10 h-10 bg-orange-50 rounded-full overflow-hidden border border-orange-100">
+                   <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${roomNumber}`} alt="user" />
+                </div>
              </div>
           </div>
 
-          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-6 px-6 scroll-smooth">
-            {CATEGORIES.map(cat => (
+          {/* 2. INI SEARCH BAR BARU */}
+          <div className="relative mb-4">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Cari menu..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-100 text-slate-900 pl-11 pr-10 py-3 rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
+            />
+            {searchQuery && (
               <button 
-                key={cat} 
-                onClick={() => setSelectedCategory(cat)} 
-                className={`
-                  px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border flex-shrink-0
-                  ${selectedCategory === cat 
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105' 
-                    : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400 hover:text-slate-700'}
-                `}
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
               >
-                {cat}
+                <XCircle className="w-4 h-4" />
               </button>
-            ))}
+            )}
           </div>
+
+          {/* 3. KATEGORI (Hilang otomatis kalau lagi search) */}
+          {searchQuery.length === 0 && (
+            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-6 px-6 scroll-smooth">
+              {CATEGORIES.map(cat => (
+                <button 
+                  key={cat} 
+                  onClick={() => setSelectedCategory(cat)} 
+                  className={`
+                    px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border flex-shrink-0
+                    ${selectedCategory === cat 
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105' 
+                      : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400 hover:text-slate-700'}
+                  `}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+        {/* --- SAMPAI SINI --- */}
 
         {/* Product List */}
         <div className="p-6 space-y-5 animate-in fade-in duration-500">

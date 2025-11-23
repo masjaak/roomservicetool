@@ -109,7 +109,7 @@ export default function App() {
     message += `\n_Mohon segera diproses. Terima Kasih!_ 🙏`;
 
     // 4. KIRIM (DENGAN ENCODE)
-    const staffPhoneNumber = "6281285864059"; // GANTI NOMOR INI
+    const staffPhoneNumber = "6281234567890"; // GANTI NOMOR INI
 
     setTimeout(() => {
       setIsProcessing(false);
