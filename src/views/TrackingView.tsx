@@ -46,7 +46,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
           
           {/* Hero Section */}
           <div className="h-[40vh] bg-slate-900 relative overflow-hidden flex items-center justify-center w-full">
-              <div className="absolute inset-0 opacity-20 bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg')] bg-cover bg-center"></div>
+              <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1763887850374-f20aac7e7c05?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center"></div>
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"></div>
               
               <motion.div 
