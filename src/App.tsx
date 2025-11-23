@@ -110,7 +110,7 @@ export default function App() {
     message += `%0A_Mohon segera dikonfirmasi. Terima Kasih!_ 🙏`;
 
     // 3. KIRIM
-    const staffPhoneNumber = "6281234567890"; // JANGAN LUPA GANTI NOMOR INI
+    const staffPhoneNumber = "+6281285864059"; // JANGAN LUPA GANTI NOMOR INI
 
     setTimeout(() => {
       setIsProcessing(false);
