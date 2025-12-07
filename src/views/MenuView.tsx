@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronRight, LogOut, Search, XCircle } from 'lucide-react';
+import { ChevronRight, LogOut, Search, XCircle, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 import { MenuItem, CartItem, Language } from '../types';
-import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
+import { CATEGORIES, MENU_ITEMS, TRANSLATIONS, PROMO_BANNERS } from '../data/constants';
 // Kita bypass formatCurrency luar
 // import { formatCurrency } from '../utils/format';
 import { ProductCard } from '../components/ProductCard';
@@ -32,6 +34,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const t = TRANSLATIONS[lang];
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Initialize Embla Carousel with Autoplay
+  const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
 
   const handleLogout = () => {
     if (window.confirm("Ganti nomor kamar? Keranjang akan dikosongkan.")) {
@@ -107,9 +112,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
-                <div className="w-10 h-10 bg-orange-50 rounded-full overflow-hidden border border-orange-100">
-                   <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${roomNumber}`} alt="user" />
-                </div>
              </div>
           </div>
 
@@ -141,12 +143,18 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   key={cat} 
                   onClick={() => setSelectedCategory(cat)} 
                   className={`
-                    px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border flex-shrink-0
-                    ${selectedCategory === cat 
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105' 
-                      : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400 hover:text-slate-700'}
+                    px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border flex-shrink-0 flex items-center gap-1.5
+                    ${cat === 'PROMO' 
+                      ? selectedCategory === cat
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white border-transparent shadow-lg scale-105'
+                        : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-transparent shadow-md hover:shadow-lg hover:scale-105'
+                      : selectedCategory === cat 
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105' 
+                        : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400 hover:text-slate-700'
+                    }
                   `}
                 >
+                  {cat === 'PROMO' && <Sparkles className="w-3.5 h-3.5" />}
                   {cat}
                 </button>
               ))}
@@ -157,6 +165,39 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
         {/* Product List */}
         <div className="p-6 space-y-5 animate-in fade-in duration-500">
+          {/* Promo Carousel Banner */}
+          {selectedCategory === 'PROMO' && (
+            <div className="embla overflow-hidden rounded-3xl shadow-2xl mb-6" ref={emblaRef}>
+              <div className="embla__container flex">
+                {PROMO_BANNERS.map((banner) => (
+                  <div 
+                    key={banner.id} 
+                    className="embla__slide flex-[0_0_100%] min-w-0 relative"
+                    style={{ aspectRatio: '21/9' }}
+                  >
+                    <img 
+                      src={banner.image} 
+                      alt={banner.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
+                      <div className="p-8 pb-6">
+                        <motion.h2 
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="text-white font-bold tracking-tight"
+                        >
+                          {banner.title}
+                        </motion.h2>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {filteredItems.map((item) => (
             <ProductCard 
               key={item.id} 

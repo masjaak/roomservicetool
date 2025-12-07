@@ -1,11 +1,17 @@
 import { MenuItem, Bank } from '../types';
 
-export const CATEGORIES = ["Appetizer", "Main Course", "Dessert", "Beverage"];
+export const CATEGORIES = ["PROMO", "Appetizer", "Main Course", "Dessert", "Beverage"];
 
 export const BANKS: Bank[] = [
   { id: 'bca', name: 'BCA', code: '88010' },
   { id: 'mandiri', name: 'Mandiri', code: '89022' },
   { id: 'bni', name: 'BNI', code: '8241' }
+];
+
+export const PROMO_BANNERS = [
+  { id: 1, image: "https://i.ibb.co.com/YsP7hQ2/test2.jpg", title: "HANTARAN PACKAGE" },
+  { id: 2, image: "https://i.ibb.co.com/Kcrp2Bjk/test3.jpg", title: "PROMO NOVEMBER - DECEMBER" },
+  { id: 3, image: "https://i.ibb.co.com/RpcQtXGZ/test1.jpg", title: "CHRISTMAS DINNER" },
 ];
 
 export const TRANSLATIONS = {
@@ -84,6 +90,28 @@ export const TRANSLATIONS = {
 };
 
 export const MENU_ITEMS: MenuItem[] = [
+  // PROMO
+  {
+    id: 41,
+    name: "Wagyu Beef Rendang",
+    description: "Premium Australian Wagyu beef slow-cooked in rich coconut curry sauce, served with steamed rice and sambal.",
+    price: 285000,
+    category: "PROMO",
+    image: "https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=800&q=80",
+    tag: "Monthly Special",
+    allergens: "Dairy, Nuts"
+  },
+  {
+    id: 42,
+    name: "Lobster Thermidor",
+    description: "Fresh lobster tail baked with creamy cheese sauce, served with garlic butter rice and grilled asparagus.",
+    price: 425000,
+    category: "PROMO",
+    image: "https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?auto=format&fit=crop&w=800&q=80",
+    tag: "Chef's Special",
+    allergens: "Seafood, Dairy, Alcohol"
+  },
+
   // APPETIZER
   {
     id: 1,
