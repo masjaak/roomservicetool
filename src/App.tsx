@@ -16,6 +16,7 @@ export default function App() {
   // User Info
   const [roomNumber, setRoomNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [lastName, setLastName] = useState("");
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   
   // Cart
@@ -33,9 +34,10 @@ export default function App() {
   }, [cart]);
 
   // --- HANDLERS ---
-  const handleLogin = (room: string, phone: string) => {
+  const handleLogin = (room: string, phone: string, last: string) => {
     setRoomNumber(room);
     setPhoneNumber(phone);
+    setLastName(last);
     setView('menu');
   };
 
@@ -118,6 +120,7 @@ export default function App() {
     const orderData = {
       roomNumber,
       phoneNumber,
+      lastName,
       items: cart,
       subtotal: rawSubtotal,
       tax: taxService,
@@ -160,6 +163,7 @@ export default function App() {
   const handleFinishOrder = () => {
     setRoomNumber("");
     setPhoneNumber("");
+    setLastName("");
     setView('login');
   };
 
