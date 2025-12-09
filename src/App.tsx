@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'framer-motion';
 import { ViewState, Language, CartItem, MenuItem } from './types';
 import { LoginView } from './views/LoginView';
 import { MenuView } from './views/MenuView';
 import { CheckoutView } from './views/CheckoutView';
 import { TrackingView } from './views/TrackingView';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from './lib/firebase';
 
 export default function App() {
   // --- STATE ---
@@ -14,6 +16,7 @@ export default function App() {
   // User Info
   const [roomNumber, setRoomNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   
   // Cart
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -56,7 +59,7 @@ export default function App() {
     });
   };
 
-  const handlePlaceOrder = (method: string, proof: File | null) => {
+  const handlePlaceOrder = async (method: string, proof: File | null) => {
     setIsProcessing(true);
 
     // 1. FORMATTER
@@ -111,25 +114,47 @@ export default function App() {
     // 4. KIRIM (DENGAN ENCODE)
     const staffPhoneNumber = "6281285864059"; // GANTI NOMOR INI
 
-    // --- PERBAIKAN LOGIC DISINI ---
-    setTimeout(() => {
-      setIsProcessing(false);
+    // --- SAVE TO FIRESTORE ---
+    const orderData = {
+      roomNumber,
+      phoneNumber,
+      items: cart,
+      subtotal: rawSubtotal,
+      tax: taxService,
+      total: finalTotal,
+      paymentMethod: method,
+      status: 'incoming',
+      createdAt: serverTimestamp(),
+      isRead: false
+    };
 
-      // 1. Buka WhatsApp Duluan (di tab baru biar app gak ketutup)
-      const waLink = `https://wa.me/${staffPhoneNumber}?text=${encodeURIComponent(message)}`;
-      window.open(waLink, '_blank'); 
-      
-      // 2. Pindah ke Tracking View AMAN
-      // Kita set view dulu biar user lihat halaman tracking
-      setView('tracking');
-
-      // 3. Bersihkan Keranjang (Opsional: kasih delay dikit biar smooth)
+    try {
+      const docRef = await addDoc(collection(db, 'orders'), orderData);
+      setActiveOrderId(docRef.id);
+    } catch (error) {
+      console.error("Error writing document: ", error);
+      // Optional: alert("Database error, switching to WhatsApp only.");
+    } finally {
+      // --- FINAL LOGIC (Redirects even if DB fails) ---
       setTimeout(() => {
-         setCart([]);
-         localStorage.removeItem('ciputra_cart');
-      }, 500);
-      
-    }, 1500);
+        setIsProcessing(false);
+
+        // 1. Buka WhatsApp Duluan (di tab baru biar app gak ketutup)
+        const waLink = `https://wa.me/${staffPhoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(waLink, '_blank'); 
+        
+        // 2. Pindah ke Tracking View AMAN
+        // Kita set view dulu biar user lihat halaman tracking
+        setView('tracking');
+
+        // 3. Bersihkan Keranjang (Opsional: kasih delay dikit biar smooth)
+        setTimeout(() => {
+           setCart([]);
+           localStorage.removeItem('ciputra_cart');
+        }, 500);
+        
+      }, 1500);
+    }
   };
 
   const handleFinishOrder = () => {
@@ -181,6 +206,7 @@ export default function App() {
             roomNumber={roomNumber}
             onFinish={handleFinishOrder}
             lang={lang}
+            orderId={activeOrderId}
           />
         )}
       </AnimatePresence>

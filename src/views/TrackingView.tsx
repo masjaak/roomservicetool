@@ -1,33 +1,70 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Clock, Bell, Star } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { TRANSLATIONS } from '../data/constants';
 import { Language } from '../types';
 import { RatingModal } from '../components/RatingModal';
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 interface TrackingViewProps {
   roomNumber: string;
   onFinish: () => void;
   lang: Language;
+  orderId: string | null;
 }
 
-export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish, lang }) => {
+export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish, lang, orderId }) => {
   const [orderStatus, setOrderStatus] = useState(0);
   const [showRating, setShowRating] = useState(false);
   const t = TRANSLATIONS[lang];
 
+  // --- GANTI SELURUH USEEFFECT DENGAN INI ---
   useEffect(() => {
-    setOrderStatus(0);
-    const timers = [
-      setTimeout(() => setOrderStatus(1), 3000),
-      setTimeout(() => setOrderStatus(2), 7000),
-      setTimeout(() => {
-        setOrderStatus(3);
-        setTimeout(() => setShowRating(true), 1500);
-      }, 12000)
-    ];
-    return () => timers.forEach(timer => clearTimeout(timer));
-  }, []);
+    if (!orderId) return;
+
+    // Dengarkan perubahan data dari Firebase secara Real-time
+    const unsubscribe = onSnapshot(doc(db, "orders", orderId), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const status = data.status; // Ini isinya: 'incoming', 'kitchen', atau 'completed'
+
+        // --- INI BAGIAN KRUSIAL: MAPPING STATUS ---
+        // Kita terjemahkan kata-kata dari database menjadi Angka (Step 0, 1, 2, 3)
+        
+        let newStep = 0; // Default: Order Confirmed
+
+        if (status === 'incoming') {
+           newStep = 0; // Step 1: Order Confirmed
+        } else if (status === 'kitchen') { // <--- Pastikan ini 'kitchen', bukan 'preparing'
+           newStep = 1; // Step 2: Kitchen Preparing
+        } else if (status === 'completed' || status === 'delivered') {
+           newStep = 3; // Step 4: Delivered
+           setTimeout(() => setShowRating(true), 2000);
+        }
+        
+        // Update tampilan
+        setOrderStatus(newStep);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [orderId]);
+
+  const handleSubmitFeedback = async (stars: number, comment: string) => {
+    if (orderId) {
+      try {
+        await updateDoc(doc(db, "orders", orderId), {
+          rating: stars,
+          feedback: comment,
+          isFeedbackSubmitted: true
+        });
+      } catch (e) {
+        console.error("Error submitting feedback", e);
+      }
+    }
+    onFinish();
+  };
 
   const steps = [
       { icon: <CheckCircle2 className="w-5 h-5" />, label: "Order Confirmed", sub: "We have received your request." },
@@ -100,7 +137,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
 
           <RatingModal 
             isOpen={showRating} 
-            onRate={onFinish}
+            onRate={handleSubmitFeedback}
             lang={lang}
           />
       </div>

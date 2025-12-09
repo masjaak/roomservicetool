@@ -6,12 +6,13 @@ import { Language } from '../types';
 
 interface RatingModalProps {
   isOpen: boolean;
-  onRate: (rating: number) => void;
+  onRate: (rating: number, comment: string) => void;
   lang: Language;
 }
 
 export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, lang }) => {
   const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
   const t = TRANSLATIONS[lang];
 
   return (
@@ -40,7 +41,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, lang }
             <h3 className="font-serif font-bold text-2xl text-slate-900 mb-2">{t.rateTitle}</h3>
             <p className="text-slate-500 text-sm mb-8 leading-relaxed">{t.rateDesc}</p>
             
-            <div className="flex justify-center gap-2 mb-10">
+            <div className="flex justify-center gap-2 mb-6">
                 {[1,2,3,4,5].map(s => (
                     <button 
                       key={s} 
@@ -51,9 +52,17 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, lang }
                     </button>
                 ))}
             </div>
+
+            <textarea
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 mb-6 resize-none"
+              rows={3}
+              placeholder={lang === 'ID' ? "Tulis masukan Anda (opsional)..." : "Any feedback? (Optional)..."}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
             
             <button 
-              onClick={() => onRate(rating)} 
+              onClick={() => onRate(rating, comment)} 
               disabled={rating === 0}
               className="w-full bg-slate-900 disabled:bg-slate-200 disabled:text-slate-400 text-white py-4 rounded-xl font-bold text-sm shadow-xl active:scale-[0.98] transition-all"
             >
