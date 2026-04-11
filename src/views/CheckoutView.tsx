@@ -114,7 +114,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                   className="overflow-hidden"
                 >
                   <div className="mt-6 pl-2">
-                    <p className="text-xs font-semibold uppercase mb-3 tracking-wider" style={{ color: '#b8a898' }}>Select Bank</p>
+                    <p className="text-xs font-semibold uppercase mb-3 tracking-wider" style={{ color: '#b8a898' }}>{t.selectBank || 'Select Bank'}</p>
                     <div className="flex gap-2 mb-6 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
                       {BANKS.map((bank) => (
                         <button
@@ -139,7 +139,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         style={{ backgroundColor: 'rgba(45,45,45,0.03)', border: '1px solid rgba(45,45,45,0.08)' }}
                       >
                         <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: accentColor }} />
-                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#b8a898' }}>Virtual Account Number</p>
+                        <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#b8a898' }}>{t.vaNumber || 'Virtual Account Number'}</p>
                         <p className="text-xl font-mono font-bold tracking-widest select-all cursor-pointer" style={{ color: '#2d2d2d' }}>
                           {BANKS.find((b) => b.id === selectedBank)?.code}
                           <span style={{ color: accentColor }}>{phoneNumber}</span>
@@ -209,7 +209,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
 
           {/* Summary */}
           <div className="p-6 rounded-2xl" style={{ backgroundColor: '#fff', border: '1px solid rgba(45,45,45,0.06)' }}>
-            <h3 className="font-bold mb-4" style={{ color: '#2d2d2d' }}>Summary</h3>
+            <h3 className="font-bold mb-4" style={{ color: '#2d2d2d' }}>{t.summary || 'Summary'}</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between" style={{ color: '#b8a898' }}>
                 <span>{t.subtotal}</span>

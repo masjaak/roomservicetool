@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, LogOut, Search, XCircle } from 'lucide-react';
+import { ChevronRight, LogOut, Search, XCircle, SearchX } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MenuItem, CartItem, Language } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
@@ -130,9 +130,22 @@ export const MenuView: React.FC<MenuViewProps> = ({
         {/* Product List */}
         <div className="p-6 space-y-4">
           {filteredItems.length === 0 ? (
-            <div className="py-12 text-center text-sm font-medium" style={{ color: '#b8a898' }}>
-              {searchQuery ? t.searchEmpty : 'No items found.'}
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-16 text-center flex flex-col items-center justify-center rounded-2xl" 
+              style={{ border: '1px dashed rgba(45,45,45,0.15)', backgroundColor: 'transparent' }}
+            >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(45,45,45,0.04)' }}>
+                <SearchX className="w-6 h-6" style={{ color: '#b8a898' }} />
+              </div>
+              <h3 className="text-base font-bold mb-1" style={{ color: '#2d2d2d' }}>
+                {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
+              </h3>
+              <p className="text-xs max-w-[200px]" style={{ color: '#b8a898' }}>
+                {searchQuery ? t.searchEmpty : t.emptyMenuDesc}
+              </p>
+            </motion.div>
           ) : (
             filteredItems.map((item) => (
               <ProductCard

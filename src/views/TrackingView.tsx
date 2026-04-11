@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { FileText, CheckCircle2, ChefHat, Search, Bell, Star, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TRANSLATIONS } from '../data/constants';
-import { Language } from '../types';
+import { Language, FeedbackPayload } from '../types';
 import { RatingModal } from '../components/RatingModal';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { mapOrderStatusToStep } from '../utils/statusMapping';
+import { buildLegacyFeedback } from '../utils/feedbackMapping';
 
 interface TrackingViewProps {
   roomNumber: string;
@@ -44,15 +45,20 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   const handleSubmitFeedback = async (payload: FeedbackPayload) => {
     if (orderId) {
       try {
+        const legacyData = buildLegacyFeedback(payload);
         await updateDoc(doc(db, 'orders', orderId), {
-          ...payload,
-          isFeedbackSubmitted: true,
+          ...legacyData,
           feedbackSubmittedAt: new Date().toISOString(),
         });
       } catch (e) {
         console.error('Feedback error:', e);
       }
     }
+    onFinish();
+  };
+
+  const handleSkipFeedback = () => {
+    // Just close/skip without writing to DB
     onFinish();
   };
 
@@ -188,6 +194,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
         <RatingModal
           isOpen={showRating}
           onRate={handleSubmitFeedback}
+          onSkip={handleSkipFeedback}
           lang={lang}
         />
       </div>

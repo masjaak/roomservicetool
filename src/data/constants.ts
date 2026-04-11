@@ -46,6 +46,12 @@ export const TRANSLATIONS = {
     emptyCart: 'Your order is empty',
     search: 'Search menu...',
     searchEmpty: 'No items found matching your search.',
+    selectBank: 'Select Bank',
+    vaNumber: 'Virtual Account Number',
+    summary: 'Summary',
+    emptyMenuTitle: 'Menu Empty',
+    emptyMenuDesc: 'There are no items matching this category at the moment.',
+    emptySearchTitle: 'No Results Found',
   },
   ID: {
     subtitle: 'Layanan kamar, dikurasi untuk Anda',
@@ -84,6 +90,12 @@ export const TRANSLATIONS = {
     emptyCart: 'Pesanan kosong',
     search: 'Cari menu...',
     searchEmpty: 'Tidak ada menu yang sesuai dengan pencarian Anda.',
+    selectBank: 'Pilih Bank',
+    vaNumber: 'Nomor Virtual Account',
+    summary: 'Ringkasan',
+    emptyMenuTitle: 'Menu Kosong',
+    emptyMenuDesc: 'Saat ini tidak ada menu pada kategori tersebut.',
+    emptySearchTitle: 'Pencarian Tidak Ditemukan',
   },
 };
 

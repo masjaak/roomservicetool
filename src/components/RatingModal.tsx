@@ -7,10 +7,11 @@ import { Language, FeedbackPayload } from '../types';
 interface RatingModalProps {
   isOpen: boolean;
   onRate: (payload: FeedbackPayload) => void;
+  onSkip?: () => void;
   lang: Language;
 }
 
-export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, lang }) => {
+export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip, lang }) => {
   const [overallRating, setOverallRating] = useState(0);
   const [foodQuality, setFoodQuality] = useState(0);
   const [presentation, setPresentation] = useState(0);
@@ -88,7 +89,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, lang }
 
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
               <button
-                onClick={() => onRate({ overallRating: 0, comment: '' })}
+                onClick={() => onSkip && onSkip()}
                 className="absolute top-4 right-4 p-2 rounded-full z-10"
                 style={{ backgroundColor: 'rgba(45,45,45,0.05)' }}
               >
@@ -230,13 +231,22 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, lang }
                     }}
                   />
 
-                  <button
-                    onClick={handleSubmit}
-                    className="w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase transition-all shadow-md active:scale-[0.98]"
-                    style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}
-                  >
-                    {t.submit}
-                  </button>
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={handleSubmit}
+                      className="w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase transition-all shadow-md active:scale-[0.98]"
+                      style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}
+                    >
+                      {t.submit}
+                    </button>
+                    <button
+                      onClick={() => onSkip && onSkip()}
+                      className="w-full py-3 rounded-xl font-bold text-xs tracking-widest uppercase transition-all active:scale-[0.98]"
+                      style={{ color: '#888' }}
+                    >
+                      {lang === 'ID' ? 'Lewati' : 'Skip'}
+                    </button>
+                  </div>
                 </motion.div>
               )}
             </div>
