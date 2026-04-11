@@ -9,6 +9,7 @@ import { LoginView } from './views/LoginView';
 import { MenuView } from './views/MenuView';
 import { CheckoutView } from './views/CheckoutView';
 import { TrackingView } from './views/TrackingView';
+import { ErrorBoundary, TrackingFallback } from './components/ErrorBoundary';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './lib/firebase';
 
@@ -168,14 +169,16 @@ export default function App() {
         )}
 
         {state.screen === Screen.Confirmed && (
-          <TrackingView
-            key="tracking"
-            roomNumber={state.guest.roomNumber}
-            onFinish={handleFinishOrder}
-            lang={lang}
-            orderId={state.orderId}
-            blockedWaUrl={state.blockedWaUrl}
-          />
+          <ErrorBoundary fallback={(error, reset) => <TrackingFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); }} lang={lang} />}>
+            <TrackingView
+              key="tracking"
+              roomNumber={state.guest.roomNumber}
+              onFinish={handleFinishOrder}
+              lang={lang}
+              orderId={state.orderId}
+              blockedWaUrl={state.blockedWaUrl}
+            />
+          </ErrorBoundary>
         )}
       </AnimatePresence>
     </div>

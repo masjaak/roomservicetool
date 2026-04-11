@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FileText, CheckCircle2, ChefHat, Search, Bell, Star } from 'lucide-react';
+import { FileText, CheckCircle2, ChefHat, Search, Bell, Star, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TRANSLATIONS } from '../data/constants';
 import { Language } from '../types';
