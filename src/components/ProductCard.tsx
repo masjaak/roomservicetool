@@ -12,49 +12,62 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLabel }) => {
   return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center gap-4 rounded-2xl overflow-hidden p-4 transition-all text-left group active:scale-[0.99]"
-      style={{
-        backgroundColor: '#fff',
-        border: '1px solid rgba(45,45,45,0.06)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
-    >
-      <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+    <div className="w-full flex gap-5 py-5 border-b last:border-b-0 group transition-all" style={{ borderColor: 'rgba(45,45,45,0.08)' }}>
+      <div className="flex-1 min-w-0 pr-2">
+        <div className="flex items-center gap-2 mb-1.5">
+          {item.tag && (
+            <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-widest" style={{ color: '#a08850', border: '1px solid rgba(160,136,80,0.3)' }}>
+              {item.tag}
+            </span>
+          )}
+          {item.serviceTag && (
+            <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-widest" style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}>
+              {item.serviceTag}
+            </span>
+          )}
+        </div>
+        
+        <h3 className="text-lg leading-tight mb-1.5" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+          {item.name}
+        </h3>
+        
+        <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{ color: '#888' }}>
+          {item.description}
+        </p>
+        
+        <div className="flex items-center gap-3 mb-3">
+          <p className="text-sm font-semibold tracking-wide" style={{ color: '#2d2d2d' }}>
+            {item.price > 0 ? formatCurrency(item.price) : freeLabel}
+          </p>
+          {(item.prepTime || item.spiceLevel) && (
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest" style={{ color: '#b8a898' }}>
+              <span>•</span>
+              {item.prepTime && <span>{item.prepTime}</span>}
+              {item.prepTime && item.spiceLevel && <span>|</span>}
+              {item.spiceLevel && <span className={item.spiceLevel === 'Hot' ? 'text-red-500/80' : ''}>{item.spiceLevel}</span>}
+            </div>
+          )}
+        </div>
+        
+        <button
+          onClick={onClick}
+          className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95"
+          style={{ color: '#a08850' }}
+        >
+          <div className="w-6 h-6 rounded-full border flex items-center justify-center transition-colors group-hover:bg-[#a08850] group-hover:text-white" style={{ borderColor: 'rgba(160,136,80,0.4)' }}>
+            <Plus className="w-3 h-3" />
+          </div>
+          Add to order
+        </button>
+      </div>
+
+      <div className="relative w-28 h-32 flex-shrink-0 cursor-pointer overflow-hidden bg-gray-100" onClick={onClick}>
         <ImageWithFallback
           src={item.image}
           alt={item.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        {item.tag && (
-          <span
-            className="absolute top-1.5 left-1.5 text-[8px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider"
-            style={{ backgroundColor: 'rgba(45,45,45,0.85)', color: '#faf8f5' }}
-          >
-            {item.tag}
-          </span>
-        )}
       </div>
-
-      <div className="flex-1 min-w-0 self-start">
-        <h3 className="font-semibold text-sm leading-tight mb-1" style={{ color: '#2d2d2d' }}>
-          {item.name}
-        </h3>
-        <p className="text-[11px] leading-snug line-clamp-2 mb-2" style={{ color: '#b8a898' }}>
-          {item.description}
-        </p>
-        <p className="text-sm font-bold" style={{ color: '#a08850' }}>
-          {item.price > 0 ? formatCurrency(item.price) : freeLabel}
-        </p>
-      </div>
-
-      <div
-        className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center transition-all group-hover:scale-110"
-        style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}
-      >
-        <Plus className="w-4 h-4" />
-      </div>
-    </button>
+    </div>
   );
 };

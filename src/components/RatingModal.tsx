@@ -143,18 +143,18 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   </div>
 
                   {overallRating <= 3 && (
-                    <div className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(180,60,60,0.05)', border: '1px solid rgba(180,60,60,0.1)' }}>
-                      <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4" style={{ color: '#b43c3c' }}>
-                        {lang === 'ID' ? 'PEMULIHAN LAYANAN' : 'Service Recovery'}
-                      </h4>
+                    <div className="p-5 border bg-[#faf8f5]" style={{ borderColor: 'rgba(45,45,45,0.06)' }}>
+                      <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#c45050' }}>
+                        {lang === 'ID' ? 'Kami Mohon Maaf' : 'We apologize'}
+                      </p>
                       
                       <div className="mb-4">
-                        <label className="text-xs font-semibold block mb-2" style={{ color: '#555' }}>
+                        <label className="text-[9px] font-bold uppercase tracking-widest block mb-2" style={{ color: '#888' }}>
                           {lang === 'ID' ? 'Kategori Kendala' : 'Issue Category'}
                         </label>
                         <select 
-                          className="w-full p-2.5 rounded-lg text-sm bg-white border outline-none"
-                          style={{ borderColor: 'rgba(0,0,0,0.1)' }}
+                          className="w-full p-3 text-sm bg-white border outline-none appearance-none"
+                          style={{ borderColor: 'rgba(45,45,45,0.1)', color: '#2d2d2d' }}
                           value={issueCategory || ''}
                           onChange={(e) => setIssueCategory(e.target.value as any)}
                         >
@@ -170,7 +170,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                       </div>
 
                       <div className="mb-4">
-                        <label className="text-xs font-semibold block mb-2" style={{ color: '#555' }}>
+                        <label className="text-[9px] font-bold uppercase tracking-widest block mb-2" style={{ color: '#888' }}>
                           {lang === 'ID' ? 'Detail Kendala' : 'Issue Detail'}
                         </label>
                         <input 
@@ -178,43 +178,44 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                           placeholder="..." 
                           value={issueNote}
                           onChange={(e) => setIssueNote(e.target.value)}
-                          className="w-full p-2.5 rounded-lg text-sm bg-white border outline-none"
+                          className="w-full p-3 text-sm bg-white border outline-none"
+                          style={{ borderColor: 'rgba(45,45,45,0.1)', color: '#2d2d2d' }}
                         />
                       </div>
 
-                      <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                      <label className="flex items-center gap-3 mt-4 cursor-pointer">
                         <input 
                           type="checkbox" 
                           checked={requestManagerFollowUp === 'yes'}
                           onChange={(e) => setRequestManagerFollowUp(e.target.checked ? 'yes' : 'no')}
-                          className="w-4 h-4 rounded text-black focus:ring-black"
+                          className="w-4 h-4 text-[#2d2d2d] focus:ring-[#2d2d2d]"
                         />
-                        <span className="text-sm font-medium" style={{ color: '#555' }}>
+                        <span className="text-xs font-semibold" style={{ color: '#2d2d2d' }}>
                           {lang === 'ID' ? 'Minta Manajer Menghubungi Saya' : 'Request Manager Follow-up'}
                         </span>
                       </label>
                     </div>
                   )}
 
-                  <div className="flex gap-2 p-4 rounded-xl" style={{ backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                    <div className="flex-1">
-                      <span className="text-xs font-semibold block mb-2" style={{ color: '#555' }}>
-                        {lang === 'ID' ? 'Akan pesan lagi?' : 'Would you order again?'}
-                      </span>
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => setWouldOrderAgain('yes')}
-                          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${wouldOrderAgain === 'yes' ? 'bg-[#2d2d2d] text-white' : 'bg-white text-[#555] border'}`}
-                        >
-                          {lang === 'ID' ? 'YA' : 'YES'}
-                        </button>
-                        <button 
-                          onClick={() => setWouldOrderAgain('no')}
-                          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${wouldOrderAgain === 'no' ? 'bg-[#2d2d2d] text-white' : 'bg-white text-[#555] border'}`}
-                        >
-                          {lang === 'ID' ? 'TIDAK' : 'NO'}
-                        </button>
-                      </div>
+                  <div className="pt-4 border-t" style={{ borderColor: 'rgba(45,45,45,0.06)' }}>
+                    <span className="text-[10px] font-bold uppercase tracking-widest block mb-3 text-center" style={{ color: '#888' }}>
+                      {lang === 'ID' ? 'Akan pesan lagi?' : 'Would you order again?'}
+                    </span>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => setWouldOrderAgain('yes')}
+                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-all border"
+                        style={wouldOrderAgain === 'yes' ? { backgroundColor: '#2d2d2d', color: '#fff', borderColor: '#2d2d2d' } : { backgroundColor: 'transparent', color: '#888', borderColor: 'rgba(45,45,45,0.1)' }}
+                      >
+                        {lang === 'ID' ? 'YA' : 'YES'}
+                      </button>
+                      <button 
+                        onClick={() => setWouldOrderAgain('no')}
+                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-all border"
+                        style={wouldOrderAgain === 'no' ? { backgroundColor: '#2d2d2d', color: '#fff', borderColor: '#2d2d2d' } : { backgroundColor: 'transparent', color: '#888', borderColor: 'rgba(45,45,45,0.1)' }}
+                      >
+                        {lang === 'ID' ? 'TIDAK' : 'NO'}
+                      </button>
                     </div>
                   </div>
 
@@ -223,25 +224,25 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                     onChange={(e) => setComment(e.target.value)}
                     placeholder={lang === 'ID' ? 'Komentar tambahan (opsional)...' : 'Additional comments (optional)...'}
                     rows={2}
-                    className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none transition-all"
+                    className="w-full p-4 text-sm resize-none focus:outline-none transition-all placeholder:text-gray-300 border"
                     style={{
-                      backgroundColor: 'rgba(45,45,45,0.04)',
-                      border: '1px solid rgba(45,45,45,0.08)',
+                      backgroundColor: 'transparent',
+                      borderColor: 'rgba(45,45,45,0.1)',
                       color: '#2d2d2d',
                     }}
                   />
 
-                  <div className="flex flex-col gap-3">
+                  <div className="pt-2">
                     <button
                       onClick={handleSubmit}
-                      className="w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase transition-all shadow-md active:scale-[0.98]"
-                      style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}
+                      className="w-full py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-all active:scale-[0.98]"
+                      style={{ backgroundColor: '#2d2d2d', color: '#faf8f5', border: '1px solid transparent' }}
                     >
                       {t.submit}
                     </button>
                     <button
                       onClick={() => onSkip && onSkip()}
-                      className="w-full py-3 rounded-xl font-bold text-xs tracking-widest uppercase transition-all active:scale-[0.98]"
+                      className="w-full py-3 mt-2 text-[10px] font-bold tracking-widest uppercase transition-all"
                       style={{ color: '#888' }}
                     >
                       {lang === 'ID' ? 'Lewati' : 'Skip'}

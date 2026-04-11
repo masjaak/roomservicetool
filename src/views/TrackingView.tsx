@@ -105,36 +105,25 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
       style={{ backgroundColor: '#faf8f5', fontFamily: "'Inter', sans-serif" }}
     >
       <div className="w-full max-w-3xl mx-auto min-h-screen relative flex flex-col">
-        {/* Hero — solid dark, no gradient, no pulse */}
-        <div className="h-[35vh] relative overflow-hidden flex items-center justify-center w-full" style={{ backgroundColor: '#2d2d2d' }}>
-          <div
-            className="absolute inset-0 opacity-15 bg-cover bg-center"
-            style={{ backgroundImage: "url('/assets/hero.jpg')" }}
-          />
-
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="relative z-10 text-center px-6"
-          >
-            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5" style={{ backgroundColor: accentColor }}>
-              <Clock className="w-8 h-8" style={{ color: '#faf8f5' }} />
-            </div>
-            <h2 className="text-2xl font-bold tracking-wide mb-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#faf8f5' }}>
-              {t.trackTitle}
-            </h2>
-            <p className="text-xs tracking-widest uppercase px-4 py-1.5 rounded-full inline-block" style={{ color: 'rgba(250,248,245,0.6)', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-              Est. 20–30 min
-            </p>
-          </motion.div>
+        {/* Hero */}
+        <div className="pt-20 pb-16 px-6 text-center bg-white border-b" style={{ borderColor: 'rgba(45,45,45,0.06)' }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: '#faf8f5', border: '1px solid rgba(45,45,45,0.1)' }}>
+            <Clock className="w-6 h-6" style={{ color: '#2d2d2d' }} />
+          </div>
+          <h2 className="text-3xl mb-3" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+            {t.trackTitle}
+          </h2>
+          <p className="text-[10px] font-bold tracking-widest uppercase inline-block border py-2 px-4 rounded-full" style={{ color: '#888', borderColor: 'rgba(45,45,45,0.1)' }}>
+            Est. 20–30 min
+          </p>
         </div>
 
         {/* Timeline */}
-        <div className="flex-1 p-8 sm:p-12 -mt-8 rounded-t-3xl relative z-20" style={{ backgroundColor: '#faf8f5' }}>
+        <div className="flex-1 p-8 sm:p-12 relative z-20" style={{ backgroundColor: '#faf8f5' }}>
           {/* WhatsApp Blocked Fallback */}
           {blockedWaUrl && (
-            <div className="max-w-md mx-auto mb-8 p-4 rounded-xl text-center shadow-sm" style={{ backgroundColor: '#fff', border: '1px solid rgba(215,160,80,0.5)' }}>
-              <p className="text-sm font-medium mb-3" style={{ color: '#8b6933' }}>
+            <div className="max-w-md mx-auto mb-10 p-5 text-center border" style={{ backgroundColor: '#fff', borderColor: 'rgba(215,160,80,0.3)' }}>
+              <p className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: '#a08850' }}>
                 {lang === 'ID' 
                   ? 'Pesan otomatis ke WhatsApp dicegah oleh browser. Silakan klik di bawah ini:' 
                   : 'Automatic WhatsApp messaging was blocked by your browser. Please click below:'}
@@ -143,51 +132,61 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
                 href={blockedWaUrl} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="block w-full py-3 rounded-lg font-bold text-sm tracking-wide bg-[#2d2d2d] text-[#faf8f5] active:scale-[0.98] transition-transform"
+                className="block w-full py-4 rounded-full font-bold text-xs tracking-widest uppercase bg-[#2d2d2d] text-[#faf8f5] active:scale-[0.98] transition-transform"
               >
                 {lang === 'ID' ? 'Buka WhatsApp Manual' : 'Open WhatsApp Manually'}
               </a>
             </div>
           )}
 
-          <div className="space-y-10 mt-4 max-w-md mx-auto">
-            {steps.map((step, idx) => (
-              <div
-                key={idx}
-                className="flex gap-6 relative transition-all duration-700"
-                style={{ opacity: idx <= orderStatus ? 1 : 0.25 }}
-              >
-                {idx !== steps.length - 1 && (
-                  <div className="absolute left-[19px] top-10 bottom-[-40px] w-0.5 overflow-hidden" style={{ backgroundColor: 'rgba(45,45,45,0.08)' }}>
-                    <motion.div
-                      initial={{ height: '0%' }}
-                      animate={{ height: idx < orderStatus ? '100%' : '0%' }}
-                      className="w-full"
-                      style={{ backgroundColor: accentColor }}
-                      transition={{ duration: 1, ease: 'linear' }}
-                    />
-                  </div>
-                )}
-
+          <div className="space-y-12 mt-4 max-w-sm mx-auto pl-4">
+            {steps.map((step, idx) => {
+              const isPast = idx < orderStatus;
+              const isCurrent = idx === orderStatus;
+              const isFuture = idx > orderStatus;
+              
+              return (
                 <div
-                  className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center z-10 transition-all duration-500"
-                  style={{
-                    border: `2px solid ${idx <= orderStatus ? accentColor : 'rgba(45,45,45,0.1)'}`,
-                    color: idx <= orderStatus ? accentColor : '#b8a898',
-                    backgroundColor: '#faf8f5',
-                  }}
+                  key={idx}
+                  className="flex gap-8 relative transition-all duration-700"
+                  style={{ opacity: isFuture ? 0.4 : 1 }}
                 >
-                  {step.icon}
-                </div>
+                  {/* Vertical Line Connector */}
+                  {idx !== steps.length - 1 && (
+                    <div className="absolute left-[11px] top-[30px] bottom-[-40px] w-[1px] overflow-hidden" style={{ backgroundColor: 'rgba(45,45,45,0.1)' }}>
+                      <motion.div
+                        initial={{ height: '0%' }}
+                        animate={{ height: isPast ? '100%' : '0%' }}
+                        className="w-full"
+                        style={{ backgroundColor: '#2d2d2d' }}
+                        transition={{ duration: 1, ease: 'linear' }}
+                      />
+                    </div>
+                  )}
 
-                <div className={`pt-1 transition-all duration-500 ${idx === orderStatus ? 'translate-x-1' : ''}`}>
-                  <h4 className="font-bold text-base" style={{ color: idx <= orderStatus ? '#2d2d2d' : '#b8a898' }}>
-                    {step.label}
-                  </h4>
-                  <p className="text-sm leading-tight mt-1" style={{ color: '#b8a898' }}>{step.sub}</p>
+                  {/* Status Indicator */}
+                  <div
+                    className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center z-10 transition-all duration-500 mt-0.5"
+                    style={{
+                      border: `1px solid ${isPast || isCurrent ? '#2d2d2d' : 'rgba(45,45,45,0.2)'}`,
+                      backgroundColor: isPast ? '#2d2d2d' : '#faf8f5',
+                    }}
+                  >
+                    {isPast && <CheckCircle2 className="w-3 h-3 text-white" />}
+                    {isCurrent && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#2d2d2d' }} />}
+                  </div>
+
+                  <div className={`transition-all duration-500 pb-2 ${isCurrent ? 'translate-x-1' : ''}`}>
+                    <h4 className="font-bold text-sm tracking-wide uppercase" style={{ color: isCurrent || isPast ? '#2d2d2d' : '#888' }}>
+                      {step.label}
+                    </h4>
+                    <p className="text-xs mt-1.5 leading-relaxed font-medium" style={{ color: isCurrent ? '#555' : '#888' }}>
+                      {step.sub}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

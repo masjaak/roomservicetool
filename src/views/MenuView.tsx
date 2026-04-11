@@ -107,34 +107,47 @@ export const MenuView: React.FC<MenuViewProps> = ({
           </div>
 
           {/* Categories */}
-          {searchQuery.length === 0 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 scroll-smooth" style={{ scrollbarWidth: 'none' }}>
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className="px-5 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0"
-                  style={
-                    selectedCategory === cat
-                      ? { backgroundColor: '#2d2d2d', color: '#faf8f5', border: '1px solid #2d2d2d' }
-                      : { backgroundColor: 'transparent', color: '#3a3a3a', border: '1px solid rgba(45,45,45,0.15)' }
-                  }
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="flex overflow-x-auto hide-scrollbar gap-6 px-6 pb-2 mb-6 border-b" style={{ borderColor: 'rgba(45,45,45,0.06)' }}>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setSearchQuery('');
+                }}
+                className={`whitespace-nowrap pb-3 text-sm font-semibold tracking-wide transition-all relative ${
+                  selectedCategory === cat && !searchQuery
+                    ? 'text-[#2d2d2d]'
+                    : 'text-[#b8a898]'
+                }`}
+              >
+                {cat}
+                {selectedCategory === cat && !searchQuery && (
+                  <motion.div
+                    layoutId="activeCategory"
+                    className="absolute bottom-0 left-0 right-0 h-[2px]"
+                    style={{ backgroundColor: '#2d2d2d' }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="px-6 mb-4">
+            <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: '#2d2d2d' }}>
+              {searchQuery ? t.search : selectedCategory}
+            </h3>
+          </div>
         </div>
 
         {/* Product List */}
-        <div className="p-6 space-y-4">
+        <div className="px-6 flex flex-col">
           {filteredItems.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="py-16 text-center flex flex-col items-center justify-center rounded-2xl" 
-              style={{ border: '1px dashed rgba(45,45,45,0.15)', backgroundColor: 'transparent' }}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-16 flex flex-col items-center justify-center text-center px-4 rounded-xl border border-dashed"
+              style={{ borderColor: 'rgba(184,168,152,0.3)', backgroundColor: 'transparent' }}
             >
               <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(45,45,45,0.04)' }}>
                 <SearchX className="w-6 h-6" style={{ color: '#b8a898' }} />
@@ -158,35 +171,31 @@ export const MenuView: React.FC<MenuViewProps> = ({
           )}
         </div>
 
-        {/* Floating Cart Button */}
-        {cart.length > 0 && (
-          <div className="fixed bottom-8 left-0 right-0 z-40 flex justify-center px-6 pointer-events-none">
+        {/* Floating Cart CTA */}
+        <AnimatePresence>
+          {totalQty > 0 && (
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="w-full max-w-md pointer-events-auto"
+              exit={{ y: 100, opacity: 0 }}
+              className="fixed bottom-8 left-0 right-0 px-6 z-40 flex justify-center pointer-events-none"
             >
               <button
                 onClick={onOpenCart}
-                className="w-full p-2 pr-6 rounded-full flex justify-between items-center transition-colors active:scale-[0.98]"
-                style={{ backgroundColor: '#2d2d2d', color: '#faf8f5', boxShadow: '0 8px 32px rgba(45,45,45,0.25)' }}
+                className="w-full max-w-sm flex items-center justify-between px-6 py-4 rounded-full shadow-2xl pointer-events-auto transition-transform active:scale-95"
+                style={{ backgroundColor: '#2d2d2d', color: '#faf8f5', border: '1px solid rgba(255,255,255,0.1)' }}
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl" style={{ backgroundColor: '#faf8f5', color: '#2d2d2d' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-[#2d2d2d] bg-[#faf8f5]">
                     {totalQty}
                   </div>
-                  <div className="text-left">
-                    <p className="text-[9px] uppercase tracking-widest font-semibold mb-0.5" style={{ color: '#b8a898' }}>{t.total}</p>
-                    <p className="font-bold text-base">{formatCurrency(grandTotal)}</p>
-                  </div>
+                  <span className="text-sm font-semibold tracking-wide uppercase">{t.cart}</span>
                 </div>
-                <div className="flex items-center gap-2 font-semibold text-xs tracking-widest uppercase">
-                  {t.cart} <ChevronRight className="w-4 h-4" />
-                </div>
+                <span className="text-sm font-bold" style={{ color: '#a08850' }}>{formatCurrency(grandTotal)}</span>
               </button>
             </motion.div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
 
         {/* Modals */}
         <ItemDetailModal
