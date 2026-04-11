@@ -1,75 +1,105 @@
 import React, { useState } from 'react';
-import { Star } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { Star, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TRANSLATIONS } from '../data/constants';
 import { Language } from '../types';
 
 interface RatingModalProps {
   isOpen: boolean;
-  onRate: (rating: number, comment: string) => void;
+  onRate: (stars: number, comment: string) => void;
   lang: Language;
 }
 
 export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, lang }) => {
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [stars, setStars] = useState(0);
+  const [comment, setComment] = useState('');
   const t = TRANSLATIONS[lang];
+
+  const accentColor = '#a08850';
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 pointer-events-none">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto"
-          />
-          
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-white w-full max-w-xs rounded-[2.5rem] p-8 text-center shadow-2xl relative overflow-hidden z-50 pointer-events-auto"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-8"
+          style={{ backgroundColor: 'rgba(45,45,45,0.5)' }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            className="w-full max-w-sm rounded-2xl overflow-hidden relative"
+            style={{ backgroundColor: '#faf8f5' }}
           >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-400 to-orange-600"></div>
-            
-            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <Star className="w-10 h-10 text-orange-500 fill-orange-500" />
-            </div>
-            
-            <h3 className="font-serif font-bold text-2xl text-slate-900 mb-2">{t.rateTitle}</h3>
-            <p className="text-slate-500 text-sm mb-8 leading-relaxed">{t.rateDesc}</p>
-            
-            <div className="flex justify-center gap-2 mb-6">
-                {[1,2,3,4,5].map(s => (
-                    <button 
-                      key={s} 
-                      onClick={() => setRating(s)} 
-                      className="focus:outline-none transition-all hover:scale-110 active:scale-90 p-1"
-                    >
-                        <Star className={`w-8 h-8 transition-all duration-300 ${s <= rating ? 'text-orange-400 fill-orange-400 drop-shadow-md scale-110' : 'text-slate-200 hover:text-slate-300'}`} />
-                    </button>
-                ))}
-            </div>
+            {/* Top line — solid charcoal, no gradient */}
+            <div className="h-1" style={{ backgroundColor: '#2d2d2d' }} />
 
-            <textarea
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 mb-6 resize-none"
-              rows={3}
-              placeholder={lang === 'ID' ? "Tulis masukan Anda (opsional)..." : "Any feedback? (Optional)..."}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            
-            <button 
-              onClick={() => onRate(rating, comment)} 
-              disabled={rating === 0}
-              className="w-full bg-slate-900 disabled:bg-slate-200 disabled:text-slate-400 text-white py-4 rounded-xl font-bold text-sm shadow-xl active:scale-[0.98] transition-all"
-            >
-              {t.submit}
-            </button>
+            <div className="p-6">
+              <button
+                onClick={() => onRate(0, '')}
+                className="absolute top-4 right-4 p-2 rounded-full"
+                style={{ backgroundColor: 'rgba(45,45,45,0.05)' }}
+              >
+                <X className="w-4 h-4" style={{ color: '#b8a898' }} />
+              </button>
+
+              <div className="text-center">
+                <h3 className="text-lg font-bold mb-1" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+                  {t.rateTitle}
+                </h3>
+                <p className="text-xs mb-5" style={{ color: '#b8a898' }}>{t.rateDesc}</p>
+
+                <div className="flex justify-center gap-3 mb-6">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setStars(n)}
+                      className="p-2 rounded-full transition-all"
+                      style={
+                        n <= stars
+                          ? { backgroundColor: 'rgba(160,136,80,0.1)' }
+                          : { backgroundColor: 'transparent' }
+                      }
+                    >
+                      <Star
+                        className={`w-7 h-7 transition-all ${n <= stars ? 'scale-110' : ''}`}
+                        style={{
+                          color: n <= stars ? accentColor : '#d4ccbf',
+                          fill: n <= stars ? accentColor : 'transparent',
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder={lang === 'ID' ? 'Komentar Anda (opsional)...' : 'Your comments (optional)...'}
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none transition-all"
+                  style={{
+                    backgroundColor: 'rgba(45,45,45,0.04)',
+                    border: '1px solid rgba(45,45,45,0.08)',
+                    color: '#2d2d2d',
+                  }}
+                />
+
+                <button
+                  onClick={() => onRate(stars, comment)}
+                  disabled={stars === 0}
+                  className="w-full mt-4 py-3.5 rounded-xl font-semibold text-sm uppercase tracking-widest transition-all disabled:opacity-30"
+                  style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}
+                >
+                  {t.submit}
+                </button>
+              </div>
+            </div>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

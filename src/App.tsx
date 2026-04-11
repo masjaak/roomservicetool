@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer, useEffect, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { ViewState, Language, CartItem, MenuItem } from './types';
+import { reducer } from './machine/reducer';
+import { createInitialState, Screen, AppEvent } from './machine/types';
+import { persistCart, loadCart, buildWhatsAppUrl, clearCart } from './machine/effects';
+import type { CartEntry, PaymentMethod } from './machine/types';
+import type { Language, MenuItem } from './types';
 import { LoginView } from './views/LoginView';
 import { MenuView } from './views/MenuView';
 import { CheckoutView } from './views/CheckoutView';
@@ -9,208 +13,168 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './lib/firebase';
 
 export default function App() {
-  // --- STATE ---
-  const [view, setView] = useState<ViewState>('login'); 
   const [lang, setLang] = useState<Language>('EN');
-  
-  // User Info
-  const [roomNumber, setRoomNumber] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
-  
-  // Cart
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem('ciputra_cart');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [state, dispatch] = useReducer(reducer, createInitialState(loadCart()));
 
-  // Checkout State
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  // --- EFFECTS ---
+  // Persist cart to localStorage on changes
   useEffect(() => {
-    localStorage.setItem('ciputra_cart', JSON.stringify(cart));
-  }, [cart]);
+    persistCart(state.cart);
+  }, [state.cart]);
 
-  // --- HANDLERS ---
-  const handleLogin = (room: string, phone: string, last: string) => {
-    setRoomNumber(room);
-    setPhoneNumber(phone);
-    setLastName(last);
-    setView('menu');
-  };
-
-  const addToCart = (item: MenuItem, qty: number, note: string) => {
-    setCart(prev => {
-      const existingIdx = prev.findIndex(i => i.id === item.id && i.note === note);
-      if (existingIdx >= 0) {
-        const newCart = [...prev];
-        newCart[existingIdx].qty += qty;
-        return newCart;
-      }
-      return [...prev, { ...item, qty, note }];
+  // --- Event dispatchers ---
+  const handleLogin = useCallback((room: string, phone: string, lastName: string) => {
+    dispatch({
+      type: AppEvent.SubmitGuestInfo,
+      payload: { roomNumber: room, lastName, phoneNumber: phone },
     });
-  };
+  }, []);
 
-  const removeFromCart = (index: number) => {
-    setCart(prev => {
-      const newCart = [...prev];
-      newCart.splice(index, 1);
-      return newCart;
-    });
-  };
+  const addToCart = useCallback((item: MenuItem, qty: number, note: string) => {
+    const entry: Omit<CartEntry, 'qty' | 'note'> = {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      description: item.description,
+      category: item.category,
+      tag: item.tag,
+      allergens: item.allergens,
+    };
+    dispatch({ type: AppEvent.AddItem, payload: { item: entry, qty, note } });
+  }, []);
 
-  const handlePlaceOrder = async (method: string, proof: File | null) => {
-    setIsProcessing(true);
+  const removeFromCart = useCallback((index: number) => {
+    dispatch({ type: AppEvent.RemoveItem, payload: index });
+  }, []);
 
-    // 1. FORMATTER
-    const fmt = (n: number) => 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-    // 2. HITUNGAN (Subtotal -> Tax -> Total)
-    const rawSubtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const taxService = rawSubtotal * 0.21;
-    const finalTotal = rawSubtotal + taxService;
-    
-    // Waktu
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-    const dateString = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-
-    // 3. RAKIT PESAN
-    // Tips: Jangan pakai simbol '&' mentah di string ini kalau tidak di-encode
-    let message = `*🔔 NEW ORDER - ROOM ${roomNumber}* \n`;
-    message += `📅 ${dateString} | ⏰ ${timeString}\n`;
-    message += `📞 No. Tamu: ${phoneNumber}\n`;
-    message += `=============================\n`;
-    
-    cart.forEach(item => {
-      const lineTotal = item.price * item.qty;
-      message += `*${item.qty}x ${item.name}*\n`;
-      if (item.note) message += `   📝 _Note: ${item.note}_\n`;
-      message += `   @ ${fmt(item.price)} = ${fmt(lineTotal)}\n`;
-      message += `\n`;
+  const handlePlaceOrder = async (method: PaymentMethod, selectedBank: string | null, proof: File | null) => {
+    // Update payment info in state
+    dispatch({
+      type: AppEvent.SelectPaymentMethod,
+      payload: { method, selectedBank, hasProof: method === 'room' || !!proof },
     });
 
-    message += `=============================\n`;
-    message += `Subtotal: ${fmt(rawSubtotal)}\n`;
-    // Ganti '&' jadi 'and' atau '+' biar aman di mata manusia,
-    // TAPI karena kita pakai encodeURIComponent di bawah, '&' juga bakal aman sekarang.
-    message += `Service & Tax (21%): ${fmt(taxService)}\n`; 
-    message += `*💰 TOTAL BILL: ${fmt(finalTotal)}*\n`;
-    message += `=============================\n`;
-    
-    let paymentText = "";
-    if (method === 'room') paymentText = "CHARGE TO ROOM 🏨";
-    if (method === 'qris') paymentText = "QRIS / E-WALLET 📱";
-    if (method === 'bank') paymentText = "BANK TRANSFER 💳";
+    dispatch({ type: AppEvent.SubmitOrder });
 
-    message += `Metode Bayar: *${paymentText}*\n`;
-    
-    if (method !== 'room') {
-      message += `\n_(Mohon lampirkan BUKTI TRANSFER di sini)_\n`;
-    }
-    
-    message += `\n_Mohon segera diproses. Terima Kasih!_ 🙏`;
+    // Save to Firestore
+    const subtotal = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const tax = subtotal * 0.21;
+    const total = subtotal + tax;
 
-    // 4. KIRIM (DENGAN ENCODE)
-    const staffPhoneNumber = "6281285864059"; // GANTI NOMOR INI
-
-    // --- SAVE TO FIRESTORE ---
     const orderData = {
-      roomNumber,
-      phoneNumber,
-      lastName,
-      items: cart,
-      subtotal: rawSubtotal,
-      tax: taxService,
-      total: finalTotal,
+      roomNumber: state.guest.roomNumber,
+      phoneNumber: state.guest.phoneNumber,
+      lastName: state.guest.lastName,
+      items: state.cart,
+      subtotal,
+      tax,
+      total,
       paymentMethod: method,
       status: 'incoming',
       createdAt: serverTimestamp(),
-      isRead: false
+      isRead: false,
     };
 
     try {
-      const docRef = await addDoc(collection(db, 'orders'), orderData);
-      setActiveOrderId(docRef.id);
-    } catch (error) {
-      console.error("Error writing document: ", error);
-      // Optional: alert("Database error, switching to WhatsApp only.");
-    } finally {
-      // --- FINAL LOGIC (Redirects even if DB fails) ---
-      setTimeout(() => {
-        setIsProcessing(false);
+      const docRef = await Promise.race([
+        addDoc(collection(db, 'orders'), orderData),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('timeout')), 10000)
+        )
+      ]);
+      
+      const waUrl = buildWhatsAppUrl(state.cart, state.guest, method);
+      let blockedWaUrl: string | null = null;
+      
+      try {
+        const newWin = window.open(waUrl, '_blank');
+        if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+          blockedWaUrl = waUrl;
+        }
+      } catch (e) {
+        blockedWaUrl = waUrl;
+      }
 
-        // 1. Buka WhatsApp Duluan (di tab baru biar app gak ketutup)
-        const waLink = `https://wa.me/${staffPhoneNumber}?text=${encodeURIComponent(message)}`;
-        window.open(waLink, '_blank'); 
-        
-        // 2. Pindah ke Tracking View AMAN
-        // Kita set view dulu biar user lihat halaman tracking
-        setView('tracking');
+      // Dispatch success
+      dispatch({ 
+        type: AppEvent.OrderSubmitSucceeded, 
+        payload: { id: docRef.id, blockedWaUrl } 
+      });
 
-        // 3. Bersihkan Keranjang (Opsional: kasih delay dikit biar smooth)
-        setTimeout(() => {
-           setCart([]);
-           localStorage.removeItem('ciputra_cart');
-        }, 500);
-        
-      }, 1500);
+      // Clear persisted cart immediately on success
+      clearCart();
+    } catch (error: Error | any) {
+      console.error('Order save error:', error);
+      const isTimeout = error?.message === 'timeout';
+      dispatch({ 
+        type: AppEvent.OrderSubmitFailed, 
+        payload: isTimeout
+          ? (lang === 'ID' ? 'Koneksi terlalu lama. Silakan coba lagi.' : 'Connection timeout. Please try again.')
+          : (lang === 'ID' ? 'Gagal menyimpan pesanan. Silakan coba lagi.' : 'Failed to save order. Please try again.') 
+      });
     }
   };
 
-  const handleFinishOrder = () => {
-    setRoomNumber("");
-    setPhoneNumber("");
-    setLastName("");
-    setView('login');
-  };
+  const handleFinishOrder = useCallback(() => {
+    dispatch({ type: AppEvent.FinishOrder });
+    clearCart();
+  }, []);
 
-  // --- RENDER ---
+  // --- Render based on state machine screen ---
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div className="min-h-screen" style={{ backgroundColor: '#faf8f5', fontFamily: "'Inter', sans-serif" }}>
       <AnimatePresence mode="wait">
-        {view === 'login' && (
-          <LoginView 
+        {state.screen === Screen.Welcome && (
+          <LoginView
             key="login"
-            lang={lang} 
-            setLang={setLang} 
-            onLogin={handleLogin} 
+            lang={lang}
+            setLang={setLang}
+            onLogin={handleLogin}
           />
         )}
 
-        {view === 'menu' && (
-          <MenuView 
+        {state.screen === Screen.Menu && (
+          <MenuView
             key="menu"
-            roomNumber={roomNumber}
-            cart={cart}
+            roomNumber={state.guest.roomNumber}
+            cart={state.cart}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
-            onCheckout={() => setView('checkout')}
+            onCheckout={() => dispatch({ type: AppEvent.StartCheckout })}
+            onOpenCart={() => dispatch({ type: AppEvent.OpenCart })}
+            onCloseCart={() => dispatch({ type: AppEvent.CloseCart })}
+            onLogout={() => {
+              if (window.confirm(lang === 'ID' ? 'Ganti kamar? Pesanan akan dikosongkan.' : 'Switch rooms? Your order will be cleared.')) {
+                dispatch({ type: AppEvent.ResetFlow });
+                clearCart();
+              }
+            }}
+            isCartOpen={state.isCartOpen}
             lang={lang}
           />
         )}
 
-        {view === 'checkout' && (
-          <CheckoutView 
+        {state.screen === Screen.Checkout && (
+          <CheckoutView
             key="checkout"
-            cart={cart}
-            onBack={() => setView('menu')}
+            cart={state.cart}
+            onBack={() => dispatch({ type: AppEvent.BackFromCheckout })}
             onPlaceOrder={handlePlaceOrder}
-            loading={isProcessing}
-            phoneNumber={phoneNumber}
+            loading={state.isProcessing}
+            error={state.checkoutError}
+            phoneNumber={state.guest.phoneNumber}
             lang={lang}
           />
         )}
 
-        {view === 'tracking' && (
-          <TrackingView 
+        {state.screen === Screen.Confirmed && (
+          <TrackingView
             key="tracking"
-            roomNumber={roomNumber}
+            roomNumber={state.guest.roomNumber}
             onFinish={handleFinishOrder}
             lang={lang}
-            orderId={activeOrderId}
+            orderId={state.orderId}
+            blockedWaUrl={state.blockedWaUrl}
           />
         )}
       </AnimatePresence>

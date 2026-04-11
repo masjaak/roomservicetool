@@ -1337,9 +1337,7 @@
     background-image: linear-gradient(var(--tw-gradient-stops));
   }
 
-  .bg-\[url\(\'https\:\/\/images\.unsplash\.com\/photo-1763887850374-f20aac7e7c05\?q\=80\&w\=2071\&auto\=format\&fit\=crop\&ixlib\=rb-4\.1\.0\&ixid\=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA\%3D\%3D\'\)\] {
-    background-image: url("https://images.unsplash.com/photo-1763887850374-f20aac7e7c05?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-  }
+
 
   .from-black\/50 {
     --tw-gradient-from: #00000080;

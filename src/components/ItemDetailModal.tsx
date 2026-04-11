@@ -1,121 +1,163 @@
 import React, { useState } from 'react';
-import { X, Minus, Plus, Info } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { MenuItem } from '../types';
+import { X, Minus, Plus, ChevronDown, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MenuItem, Language } from '../types';
 import { TRANSLATIONS } from '../data/constants';
 import { formatCurrency } from '../utils/format';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface ItemDetailModalProps {
   item: MenuItem | null;
   isOpen: boolean;
   onClose: () => void;
   onAdd: (item: MenuItem, qty: number, note: string) => void;
-  lang: 'EN' | 'ID';
+  lang: Language;
 }
 
 export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, onClose, onAdd, lang }) => {
-  const [qty, setQty] = useState(1);
-  const [note, setNote] = useState("");
   const t = TRANSLATIONS[lang];
+  const [qty, setQty] = useState(1);
+  const [note, setNote] = useState('');
+  const [showAllergens, setShowAllergens] = useState(false);
 
-  // Reset state when modal opens
-  React.useEffect(() => {
-    if (isOpen) {
+  const handleAdd = () => {
+    if (item) {
+      onAdd(item, qty, note);
       setQty(1);
-      setNote("");
+      setNote('');
+      onClose();
     }
-  }, [isOpen]);
+  };
+
+  const handleClose = () => {
+    setQty(1);
+    setNote('');
+    onClose();
+  };
 
   if (!item) return null;
+
+  const totalPrice = item.price * qty;
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
-          <motion.div 
+        <>
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
-            onClick={onClose}
+            className="fixed inset-0 z-40"
+            style={{ backgroundColor: 'rgba(45,45,45,0.5)' }}
+            onClick={handleClose}
           />
-          
-          <motion.div 
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-[2.5rem] p-6 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl pointer-events-auto relative z-10"
-          >
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-200 rounded-full sm:hidden" />
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6 pointer-events-none">
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="w-full max-w-md pointer-events-auto flex flex-col overflow-hidden sm:rounded-3xl rounded-t-3xl"
+              style={{ backgroundColor: '#faf8f5', maxHeight: '85vh' }}
+            >
+              {/* Image */}
+              <div className="relative h-48 overflow-hidden flex-shrink-0">
+              <ImageWithFallback
+                src={item.image}
+                alt={item.name}
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={handleClose}
+                className="absolute top-4 right-4 p-2 rounded-full transition-all"
+                style={{ backgroundColor: 'rgba(45,45,45,0.6)', color: '#faf8f5' }}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-            <div className="flex justify-between items-start mb-6 mt-4 sm:mt-0">
-              <div className="max-w-[80%]">
-                <h2 className="text-2xl font-serif font-bold text-slate-900 mb-1">{item.name}</h2>
-                <p className="text-orange-600 font-bold text-xl">
-                  {item.price === 0 ? t.free : formatCurrency(item.price)}
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6 pb-4 space-y-4">
+              <div>
+                <h3 className="text-xl font-bold mb-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+                  {item.name}
+                </h3>
+                <p className="text-sm leading-relaxed" style={{ color: '#b8a898' }}>
+                  {item.description}
                 </p>
               </div>
-              <button onClick={onClose} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
-                <X className="w-5 h-5 text-slate-500" />
-              </button>
-            </div>
-            
-            <div className="relative aspect-video rounded-xl overflow-hidden mb-6 bg-slate-100">
-               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+
+              {item.allergens && (
+                <button
+                  onClick={() => setShowAllergens(!showAllergens)}
+                  className="flex items-center gap-2 w-full text-left py-2 rounded-lg px-3"
+                  style={{ backgroundColor: 'rgba(160,136,80,0.06)', color: '#a08850' }}
+                >
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-xs font-semibold flex-1">{t.containsAllergens}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${showAllergens ? 'rotate-180' : ''}`} />
+                </button>
+              )}
+              {showAllergens && item.allergens && (
+                <p className="text-xs pl-4" style={{ color: '#b8a898' }}>{item.allergens}</p>
+              )}
+
+              <div>
+                <label className="text-[10px] font-semibold tracking-widest uppercase mb-2 block" style={{ color: '#b8a898' }}>
+                  {lang === 'ID' ? 'Catatan' : 'Notes'}
+                </label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder={t.notesPlaceholder}
+                  rows={2}
+                  className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none transition-all"
+                  style={{
+                    backgroundColor: 'rgba(45,45,45,0.04)',
+                    border: '1px solid rgba(45,45,45,0.08)',
+                    color: '#2d2d2d',
+                  }}
+                />
+              </div>
             </div>
 
-            <p className="text-slate-600 text-sm mb-6 leading-relaxed">{item.description}</p>
-            
-            {item.allergens && (
-              <div className="bg-amber-50 p-4 rounded-xl mb-6 flex gap-3 items-start border border-amber-100/50">
-                <Info className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">{t.containsAllergens}</p>
-                  <p className="text-sm text-amber-700">{item.allergens}</p>
+            {/* Footer */}
+            <div className="p-6" style={{ borderTop: '1px solid rgba(45,45,45,0.06)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                    style={{ border: '1px solid rgba(45,45,45,0.12)', color: '#2d2d2d' }}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="font-bold text-xl w-8 text-center" style={{ color: '#2d2d2d' }}>{qty}</span>
+                  <button
+                    onClick={() => setQty(qty + 1)}
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                    style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] uppercase tracking-widest font-semibold mb-0.5" style={{ color: '#b8a898' }}>{t.total}</p>
+                  <p className="text-lg font-bold" style={{ color: '#a08850' }}>{formatCurrency(totalPrice)}</p>
                 </div>
               </div>
-            )}
 
-            <div className="mb-8">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Notes to Kitchen</label>
-              <textarea 
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all resize-none" 
-                rows={2} 
-                placeholder={t.notesPlaceholder}
-                value={note} 
-                onChange={(e) => setNote(e.target.value)}
-              ></textarea>
-            </div>
-
-            <div className="flex gap-4 items-center pt-4 border-t border-slate-100">
-              <div className="flex items-center bg-slate-100 rounded-full p-1 border border-slate-200">
-                <button 
-                  onClick={() => setQty(Math.max(1, qty - 1))} 
-                  className="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center hover:bg-slate-50 text-slate-900 active:scale-95 transition-all disabled:opacity-50"
-                  disabled={qty <= 1}
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="w-12 text-center font-bold text-slate-900 text-lg tabular-nums">{qty}</span>
-                <button 
-                  onClick={() => setQty(qty + 1)} 
-                  className="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center hover:bg-slate-50 text-slate-900 active:scale-95 transition-all"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              <button 
-                onClick={() => { onAdd(item, qty, note); onClose(); }} 
-                className="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-full font-bold text-sm shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              <button
+                onClick={handleAdd}
+                className="w-full py-4 rounded-xl font-semibold text-sm uppercase tracking-widest transition-all active:scale-[0.98]"
+                style={{ backgroundColor: '#2d2d2d', color: '#faf8f5', boxShadow: '0 4px 16px rgba(45,45,45,0.15)' }}
               >
-                <span>{t.addToCart}</span>
-                <span className="w-1 h-1 bg-white/30 rounded-full"></span>
-                <span>{item.price === 0 ? t.free : formatCurrency(item.price * qty)}</span>
+                {t.addToCart}
               </button>
             </div>
-          </motion.div>
-        </div>
+            </motion.div>
+          </div>
+        </>
       )}
     </AnimatePresence>
   );

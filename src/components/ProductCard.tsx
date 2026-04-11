@@ -2,6 +2,7 @@ import React from 'react';
 import { Plus } from 'lucide-react';
 import { MenuItem } from '../types';
 import { formatCurrency } from '../utils/format';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface ProductCardProps {
   item: MenuItem;
@@ -11,39 +12,49 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLabel }) => {
   return (
-    <div 
-      className="bg-white rounded-[1.5rem] overflow-hidden shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100 flex h-32 relative group cursor-pointer hover:shadow-md hover:border-slate-200 transition-all active:scale-[0.99]" 
+    <button
       onClick={onClick}
+      className="w-full flex items-center gap-4 rounded-2xl overflow-hidden p-4 transition-all text-left group active:scale-[0.99]"
+      style={{
+        backgroundColor: '#fff',
+        border: '1px solid rgba(45,45,45,0.06)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+      }}
     >
-      <div className="w-32 h-full flex-shrink-0 bg-slate-100">
-         <img 
-           src={item.image} 
-           alt={item.name} 
-           loading="lazy"
-           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-         />
+      <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+        <ImageWithFallback
+          src={item.image}
+          alt={item.name}
+          className="w-full h-full object-cover"
+        />
+        {item.tag && (
+          <span
+            className="absolute top-1.5 left-1.5 text-[8px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider"
+            style={{ backgroundColor: 'rgba(45,45,45,0.85)', color: '#faf8f5' }}
+          >
+            {item.tag}
+          </span>
+        )}
       </div>
-      <div className="p-4 flex flex-col justify-between flex-1 min-w-0">
-         <div>
-            <div className="flex justify-between items-start gap-2">
-                 <h3 className="font-serif font-bold text-slate-900 leading-tight mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">{item.name}</h3>
-                 {item.tag && (
-                   <span className="text-[9px] font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded uppercase flex-shrink-0 tracking-wide">
-                     {item.tag}
-                   </span>
-                 )}
-            </div>
-            <p className="text-[11px] text-slate-400 leading-tight line-clamp-2 mt-1">{item.description}</p>
-         </div>
-         <div className="flex items-end justify-between mt-2">
-            <p className="font-bold text-sm text-slate-900">
-              {item.price === 0 ? freeLabel : formatCurrency(item.price)}
-            </p>
-            <div className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center text-slate-900 group-hover:bg-orange-600 group-hover:text-white transition-colors shadow-sm">
-               <Plus className="w-4 h-4" />
-            </div>
-         </div>
+
+      <div className="flex-1 min-w-0 self-start">
+        <h3 className="font-semibold text-sm leading-tight mb-1" style={{ color: '#2d2d2d' }}>
+          {item.name}
+        </h3>
+        <p className="text-[11px] leading-snug line-clamp-2 mb-2" style={{ color: '#b8a898' }}>
+          {item.description}
+        </p>
+        <p className="text-sm font-bold" style={{ color: '#a08850' }}>
+          {item.price > 0 ? formatCurrency(item.price) : freeLabel}
+        </p>
       </div>
-    </div>
+
+      <div
+        className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center transition-all group-hover:scale-110"
+        style={{ backgroundColor: '#2d2d2d', color: '#faf8f5' }}
+      >
+        <Plus className="w-4 h-4" />
+      </div>
+    </button>
   );
 };

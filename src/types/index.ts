@@ -20,5 +20,5 @@ export interface Bank {
   code: string;
 }
 
-export type ViewState = 'login' | 'menu' | 'checkout' | 'tracking';
+export type ViewState = 'welcome' | 'menu' | 'cart-open' | 'checkout' | 'confirmed';
 export type Language = 'EN' | 'ID';

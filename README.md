@@ -1,11 +1,18 @@
+# Atelier Meridian · Room Service
 
-  # HCSROOMSERVICEAPP
+A premium hotel room-service ordering web application.
 
-  This is a code bundle for HCSROOMSERVICEAPP. The original project is available at https://www.figma.com/design/T6cDxAM45D9lIVHP8AOTxH/HCSROOMSERVICEAPP.
+Built with React, TypeScript, Vite, and Tailwind CSS.
 
-  ## Running the code
+## Development
 
-  Run `npm i` to install the dependencies.
+```bash
+npm install
+npm run dev
+```
 
-  Run `npm run dev` to start the development server.
-  
+## Testing
+
+```bash
+npm test
+```

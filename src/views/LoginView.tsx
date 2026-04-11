@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../data/constants';
 
@@ -10,40 +10,33 @@ interface LoginViewProps {
 }
 
 export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) => {
-  const [roomNumber, setRoomNumber] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [error, setError] = useState("");
+  const [roomNumber, setRoomNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [error, setError] = useState('');
   const [isValid, setIsValid] = useState(false);
   const t = TRANSLATIONS[lang];
 
-  // Validation Logic
   useEffect(() => {
-    // 1. Room Number: Must be filled (simple check, max 4 digits handled by input)
     const isRoomValid = roomNumber.length > 0;
-
-    // 2. Last Name: Must be filled
     const isNameValid = lastName.trim().length > 0;
 
-    // 3. Phone Number: 
-    // - Numeric only
-    // - Min 10, Max 14 digits
-    // - Starts with '08' or '628'
-    const phoneDigits = phoneNumber.replace(/\D/g, '');
-    const isPhoneLengthValid = phoneDigits.length >= 10 && phoneDigits.length <= 14;
-    const isPhonePrefixValid = phoneDigits.startsWith('08') || phoneDigits.startsWith('628');
+    const digits = phoneNumber.replace(/\D/g, '');
+    const isPhoneLengthValid = digits.length >= 10 && digits.length <= 14;
+    const isPhonePrefixValid = digits.startsWith('08') || digits.startsWith('628');
     const isPhoneValid = isPhoneLengthValid && isPhonePrefixValid;
 
     setIsValid(isRoomValid && isNameValid && isPhoneValid);
 
-    // Specific error messages for UX
     if (phoneNumber && !isPhoneValid) {
-        if (!isPhonePrefixValid) setError(lang === 'ID' ? "Nomor harus diawali 08 atau 628" : "Number must start with 08 or 628");
-        else if (!isPhoneLengthValid) setError(lang === 'ID' ? "Nomor HP tidak valid (Min. 10 digit)" : "Invalid Phone Number (Min. 10 digits)");
+      if (!isPhonePrefixValid) {
+        setError(lang === 'ID' ? 'Nomor harus diawali 08 atau 628' : 'Number must start with 08 or 628');
+      } else if (!isPhoneLengthValid) {
+        setError(lang === 'ID' ? 'Nomor HP tidak valid (Min. 10 digit)' : 'Invalid phone number (min. 10 digits)');
+      }
     } else {
-        setError("");
+      setError('');
     }
-
   }, [roomNumber, phoneNumber, lastName, lang]);
 
   const handleSubmit = () => {
@@ -53,124 +46,144 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full flex flex-col justify-center items-center p-6 font-sans overflow-hidden bg-black">
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1763604584073-7f05efb157f9?q=80&w=1674&auto=format&fit=crop" 
-          className="w-full h-full object-cover opacity-70" 
-          alt="Background" 
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center py-10 px-6 overflow-y-auto relative" style={{ backgroundColor: '#2d2d2d' }}>
+      {/* Background image with dark wash — no gradient */}
+      <div className="absolute inset-0 z-0 h-full w-full">
+        <img
+          src="/assets/hero.jpg"
+          className="w-full h-full object-cover opacity-30"
+          alt=""
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/80"></div>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 w-full max-w-md mx-auto flex flex-col h-full justify-center"
+        className="relative z-10 w-full max-w-md mx-auto flex flex-col my-auto"
       >
-        <div className="absolute top-8 right-0">
-          <div className="bg-black/30 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full flex gap-3 text-[10px] font-medium text-white shadow-lg cursor-pointer hover:bg-black/40 transition-all">
-            <button onClick={() => setLang('ID')} className={`${lang === 'ID' ? 'text-white font-bold' : 'text-white/50'}`}>ID</button>
-            <span className="text-white/20">|</span>
-            <button onClick={() => setLang('EN')} className={`${lang === 'EN' ? 'text-white font-bold' : 'text-white/50'}`}>EN</button>
+        {/* Language toggle */}
+        <div className="absolute -top-10 right-0 sm:top-0">
+          <div className="px-3 py-1 rounded-full flex gap-3 text-[10px] font-medium cursor-pointer" style={{ backgroundColor: 'rgba(45,45,45,0.6)', border: '1px solid rgba(250,248,245,0.15)', color: '#faf8f5' }}>
+            <button onClick={() => setLang('ID')} className={lang === 'ID' ? 'font-bold opacity-100' : 'opacity-50'}>ID</button>
+            <span style={{ opacity: 0.2 }}>|</span>
+            <button onClick={() => setLang('EN')} className={lang === 'EN' ? 'font-bold opacity-100' : 'opacity-50'}>EN</button>
           </div>
         </div>
 
-        <div className="text-center mb-6">
-           <motion.img 
-             initial={{ scale: 0.8, opacity: 0 }}
-             animate={{ scale: 1, opacity: 1 }}
-             transition={{ delay: 0.2 }}
-             src="https://i.ibb.co.com/JFzbjBqz/Logo-ciputra-copy.png" 
-             className="w-24 h-auto mx-auto mb-4 object-contain drop-shadow-2xl opacity-95" 
-             alt="Logo" 
-           />
-           <h1 className="text-3xl font-serif text-white drop-shadow-lg tracking-wide mb-2">The Gallery Restaurant</h1>
-           <p className="text-white/80 text-xs mt-1 font-serif italic">"{lang === 'EN' ? 'Exquisite dining, delivered to your room' : 'Hidangan istimewa, diantar ke kamar Anda'}"</p>
+        {/* Brand */}
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="w-16 h-16 mx-auto mb-5 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: '#faf8f5' }}
+          >
+            <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: '24px', color: '#2d2d2d', fontWeight: 'bold' }}>AM</span>
+          </motion.div>
+          <h1 className="text-2xl mb-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#faf8f5', letterSpacing: '0.02em' }}>
+            Atelier Meridian
+          </h1>
+          <p className="text-xs mt-1" style={{ color: 'rgba(250,248,245,0.6)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+            {t.subtitle}
+          </p>
         </div>
 
-        <motion.div 
+        {/* Form card — solid background, no glassmorphism */}
+        <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="bg-white/10 backdrop-blur-xl border border-white/20 px-6 py-6 rounded-[1.5rem] shadow-2xl ring-1 ring-white/30 w-full"
+          className="px-6 py-6 rounded-2xl w-full"
+          style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}
         >
-          <div className="space-y-4"> 
-            
+          <div className="space-y-4">
             {/* Room Number */}
-            <div className="group">
-              <label className="text-[10px] font-bold text-white/80 tracking-[0.2em] uppercase mb-2 block ml-1">{t.room}</label>
-              <input 
-                type="text" 
-                inputMode="numeric" 
-                placeholder="1024" 
-                value={roomNumber} 
+            <div>
+              <label className="text-[10px] font-semibold tracking-widest uppercase mb-2 block ml-1" style={{ color: 'rgba(250,248,245,0.6)' }}>
+                {t.room}
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="1024"
+                value={roomNumber}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  if (/^\d{0,4}$/.test(val)) setRoomNumber(val);
-                }} 
-                className="block w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:bg-black/40 focus:border-white/30 transition-all text-base text-center font-medium tracking-widest" 
+                  if (/^\d{0,4}$/.test(e.target.value)) setRoomNumber(e.target.value);
+                }}
+                className="block w-full px-4 py-3 rounded-xl text-base text-center font-medium tracking-widest focus:outline-none transition-all"
+                style={{ backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid rgba(250,248,245,0.1)', color: '#faf8f5', '--placeholder-color': 'rgba(250,248,245,0.3)' } as React.CSSProperties}
               />
             </div>
 
-            {/* Last Name (New Field) */}
-            <div className="group">
-              <label className="text-[10px] font-bold text-white/80 tracking-[0.2em] uppercase mb-2 block ml-1">
-                {lang === 'ID' ? "Nama Belakang (Sesuai Reservasi)" : "Last Name (As per Reservation)"}
+            {/* Last Name */}
+            <div>
+              <label className="text-[10px] font-semibold tracking-widest uppercase mb-2 block ml-1" style={{ color: 'rgba(250,248,245,0.6)' }}>
+                {lang === 'ID' ? 'Nama Belakang (Sesuai Reservasi)' : 'Last Name (As per Reservation)'}
               </label>
-              <input 
-                type="text" 
-                placeholder={lang === 'ID' ? "Contoh: Santoso" : "Ex: Smith"} 
-                value={lastName} 
-                onChange={(e) => setLastName(e.target.value)} 
-                className="block w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:bg-black/40 focus:border-white/30 transition-all text-base text-center font-medium tracking-widest capitalize" 
+              <input
+                type="text"
+                placeholder={lang === 'ID' ? 'Contoh: Santoso' : 'Ex: Smith'}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="block w-full px-4 py-3 rounded-xl text-base text-center font-medium tracking-widest capitalize focus:outline-none transition-all"
+                style={{ backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid rgba(250,248,245,0.1)', color: '#faf8f5' }}
               />
             </div>
 
             {/* Phone Number */}
-            <div className="group">
-              <label className="text-[10px] font-bold text-white/80 tracking-[0.2em] uppercase mb-2 block ml-1">{t.phone}</label>
-              <input 
-                type="tel" 
-                placeholder="081..." 
-                value={phoneNumber} 
+            <div>
+              <label className="text-[10px] font-semibold tracking-widest uppercase mb-2 block ml-1" style={{ color: 'rgba(250,248,245,0.6)' }}>
+                {t.phone}
+              </label>
+              <input
+                type="tel"
+                placeholder="081..."
+                value={phoneNumber}
                 onChange={(e) => {
-                    const val = e.target.value;
-                    if (/^\d{0,14}$/.test(val)) setPhoneNumber(val);
-                }} 
-                className={`block w-full px-4 py-3 bg-black/20 border rounded-xl text-white placeholder-white/40 focus:outline-none focus:bg-black/40 transition-all text-base text-center font-medium tracking-widest ${error ? 'border-red-400/50 bg-red-900/10' : 'border-white/10 focus:border-white/30'}`}
+                  if (/^\d{0,14}$/.test(e.target.value)) setPhoneNumber(e.target.value);
+                }}
+                className="block w-full px-4 py-3 rounded-xl text-base text-center font-medium tracking-widest focus:outline-none transition-all"
+                style={{
+                  backgroundColor: error ? 'rgba(180,60,60,0.15)' : 'rgba(0,0,0,0.3)',
+                  border: `1px solid ${error ? 'rgba(180,60,60,0.4)' : 'rgba(250,248,245,0.1)'}`,
+                  color: '#faf8f5',
+                }}
               />
             </div>
-            
+
             {error && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="text-red-300 text-xs text-center font-bold bg-red-900/40 py-2 rounded-lg border border-red-500/20"
+                className="text-xs text-center font-semibold py-2 rounded-lg"
+                style={{ color: '#e8a0a0', backgroundColor: 'rgba(180,60,60,0.2)', border: '1px solid rgba(180,60,60,0.2)' }}
               >
                 {error}
               </motion.p>
             )}
-            
+
             <div className="pt-2">
-              <button 
-                onClick={handleSubmit} 
+              <button
+                onClick={handleSubmit}
                 disabled={!isValid}
-                className="w-full disabled:opacity-50 disabled:cursor-not-allowed bg-white text-slate-900 hover:bg-slate-100 py-4 rounded-xl font-bold text-sm shadow-xl active:scale-[0.98] transition-all uppercase tracking-widest"
+                className="w-full py-4 rounded-xl font-semibold text-sm tracking-widest uppercase transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ backgroundColor: '#faf8f5', color: '#2d2d2d' }}
               >
                 {t.start}
               </button>
-              
-              {/* Security Warning */}
-              <p className="text-center text-[10px] text-white/60 mt-3 leading-relaxed px-4">
-                {lang === 'ID' 
-                  ? "Demi keamanan, pesanan akan diverifikasi dengan data tamu di Resepsionis." 
-                  : "For security, orders will be verified against Guest Data at Reception."}
+
+              <p className="text-center text-[10px] mt-3 leading-relaxed px-4" style={{ color: 'rgba(250,248,245,0.45)' }}>
+                {lang === 'ID'
+                  ? 'Demi keamanan, pesanan akan diverifikasi dengan data tamu di resepsionis.'
+                  : 'For security, orders will be verified against guest records at reception.'}
               </p>
             </div>
-            
-            <p className="text-center text-[10px] text-white/50 mt-1 cursor-pointer hover:text-white hover:underline transition-all">{t.help}</p>
+
+            <p className="text-center text-[10px] mt-1 cursor-pointer hover:underline transition-all" style={{ color: 'rgba(250,248,245,0.4)' }}>
+              {t.help}
+            </p>
           </div>
         </motion.div>
       </motion.div>
