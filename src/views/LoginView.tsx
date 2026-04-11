@@ -46,9 +46,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
   };
 
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center py-10 px-6 overflow-y-auto relative" style={{ backgroundColor: '#2d2d2d' }}>
-      {/* Background image with dark wash — no gradient */}
-      <div className="absolute inset-0 z-0 h-full w-full">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center py-10 px-6 overflow-y-auto relative z-10">
+      {/* Background image with dark wash */}
+      <div className="fixed inset-0 z-0 bg-[#2d2d2d]" style={{ backgroundColor: '#2d2d2d' }}>
         <img
           src="/assets/hero.jpg"
           className="w-full h-full object-cover opacity-30"
