@@ -85,6 +85,20 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                 <p className="text-sm leading-relaxed" style={{ color: '#b8a898' }}>
                   {item.description}
                 </p>
+                <div className="flex flex-wrap gap-2 pt-2 text-[10px] uppercase font-bold tracking-widest">
+                  {item.serviceTag && (
+                    <span className="px-2 py-1 rounded-sm" style={{ backgroundColor: 'rgba(160,136,80,0.1)', color: '#a08850' }}>{item.serviceTag}</span>
+                  )}
+                  {item.spiceLevel && item.spiceLevel !== 'None' && (
+                    <span className="px-2 py-1 rounded-sm" style={{ backgroundColor: 'rgba(180,60,60,0.1)', color: '#b43c3c' }}>{item.spiceLevel}</span>
+                  )}
+                  {item.prepTime && (
+                    <span className="px-2 py-1 rounded-sm" style={{ backgroundColor: 'rgba(45,45,45,0.05)', color: '#555' }}>{item.prepTime}</span>
+                  )}
+                  {item.dietaryTags?.map(tag => (
+                    <span key={tag} className="px-2 py-1 rounded-sm" style={{ backgroundColor: 'rgba(45,45,45,0.05)', color: '#555' }}>{tag}</span>
+                  ))}
+                </div>
               </div>
 
               {item.allergens && (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Clock, Bell, Star } from 'lucide-react';
+import { FileText, CheckCircle2, ChefHat, Search, Bell, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TRANSLATIONS } from '../data/constants';
 import { Language } from '../types';
@@ -41,13 +41,13 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
     return () => unsubscribe();
   }, [orderId]);
 
-  const handleSubmitFeedback = async (stars: number, comment: string) => {
+  const handleSubmitFeedback = async (payload: FeedbackPayload) => {
     if (orderId) {
       try {
         await updateDoc(doc(db, 'orders', orderId), {
-          rating: stars,
-          feedback: comment,
+          ...payload,
           isFeedbackSubmitted: true,
+          feedbackSubmittedAt: new Date().toISOString(),
         });
       } catch (e) {
         console.error('Feedback error:', e);
@@ -57,10 +57,36 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   };
 
   const steps = [
-    { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Order Confirmed', sub: 'We have received your request.' },
-    { icon: <Clock className="w-5 h-5" />, label: 'Kitchen Preparing', sub: 'Your meal is being prepared.' },
-    { icon: <Bell className="w-5 h-5" />, label: 'On the Way', sub: `Staff is heading to Room ${roomNumber}` },
-    { icon: <Star className="w-5 h-5" />, label: 'Delivered', sub: 'Service completed. Bon appétit.' },
+    { 
+      icon: <FileText className="w-5 h-5" />, 
+      label: lang === 'ID' ? 'Pesanan Diterima' : 'Order received', 
+      sub: lang === 'ID' ? 'Pesanan Anda sudah diterima dan dikirim ke dapur.' : 'Your order has been logged and sent to the kitchen.' 
+    },
+    { 
+      icon: <CheckCircle2 className="w-5 h-5" />, 
+      label: lang === 'ID' ? 'Dikonfirmasi Dapur' : 'Confirmed by kitchen', 
+      sub: lang === 'ID' ? 'Dapur telah mengonfirmasi pesanan dan memasukkannya ke antrean.' : 'The kitchen has confirmed your order and queued preparation.' 
+    },
+    { 
+      icon: <ChefHat className="w-5 h-5" />, 
+      label: lang === 'ID' ? 'Sedang Dipersiapkan' : 'Being prepared', 
+      sub: lang === 'ID' ? 'Hidangan Anda sedang dipersiapkan.' : 'Your dishes are being freshly prepared.' 
+    },
+    { 
+      icon: <Search className="w-5 h-5" />, 
+      label: lang === 'ID' ? 'Pemeriksaan Kualitas' : 'Quality check', 
+      sub: lang === 'ID' ? 'Pesanan Anda sedang diperiksa sebelum diantar.' : 'Your order is being checked before dispatch.' 
+    },
+    { 
+      icon: <Bell className="w-5 h-5" />, 
+      label: lang === 'ID' ? 'Sedang Diantar' : 'On the way', 
+      sub: lang === 'ID' ? `Staf kami sedang menuju Kamar ${roomNumber}.` : `Our staff is on the way to Room ${roomNumber}.` 
+    },
+    { 
+      icon: <Star className="w-5 h-5" />, 
+      label: lang === 'ID' ? 'Pesanan Tiba' : 'Delivered', 
+      sub: lang === 'ID' ? 'Pesanan Anda telah tiba. Selamat menikmati.' : 'Your order has arrived. Enjoy your meal.' 
+    },
   ];
 
   const accentColor = '#a08850';

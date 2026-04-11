@@ -4,15 +4,20 @@ export function mapOrderStatusToStep(status: string | undefined | null): number 
   switch (status.toLowerCase()) {
     case 'incoming':
       return 0;
-    case 'kitchen':
+    case 'confirmed':
       return 1;
+    case 'kitchen':
+    case 'preparing':
+      return 2;
+    case 'quality_check':
+      return 3;
     case 'delivery':
     case 'on_the_way':
     case 'on the way':
-      return 2;
+      return 4;
     case 'delivered':
     case 'completed':
-      return 3;
+      return 5;
     default:
       return 0;
   }
