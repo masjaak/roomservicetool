@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, LogOut, Search, XCircle, SearchX } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MenuItem, CartItem, Language } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
 import { formatCurrency } from '../utils/format';

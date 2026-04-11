@@ -9,7 +9,7 @@ import { LoginView } from './views/LoginView';
 import { MenuView } from './views/MenuView';
 import { CheckoutView } from './views/CheckoutView';
 import { TrackingView } from './views/TrackingView';
-import { ErrorBoundary, TrackingFallback } from './components/ErrorBoundary';
+import { ErrorBoundary, TrackingFallback, GuestFallback } from './components/ErrorBoundary';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './lib/firebase';
 
@@ -135,37 +135,41 @@ export default function App() {
         )}
 
         {state.screen === Screen.Menu && (
-          <MenuView
-            key="menu"
-            roomNumber={state.guest.roomNumber}
-            cart={state.cart}
-            addToCart={addToCart}
-            removeFromCart={removeFromCart}
-            onCheckout={() => dispatch({ type: AppEvent.StartCheckout })}
-            onOpenCart={() => dispatch({ type: AppEvent.OpenCart })}
-            onCloseCart={() => dispatch({ type: AppEvent.CloseCart })}
-            onLogout={() => {
-              if (window.confirm(lang === 'ID' ? 'Ganti kamar? Pesanan akan dikosongkan.' : 'Switch rooms? Your order will be cleared.')) {
-                dispatch({ type: AppEvent.ResetFlow });
-                clearCart();
-              }
-            }}
-            isCartOpen={state.isCartOpen}
-            lang={lang}
-          />
+          <ErrorBoundary fallback={(error, reset) => <GuestFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); clearCart(); }} lang={lang} />}>
+            <MenuView
+              key="menu"
+              roomNumber={state.guest.roomNumber}
+              cart={state.cart}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              onCheckout={() => dispatch({ type: AppEvent.StartCheckout })}
+              onOpenCart={() => dispatch({ type: AppEvent.OpenCart })}
+              onCloseCart={() => dispatch({ type: AppEvent.CloseCart })}
+              onLogout={() => {
+                if (window.confirm(lang === 'ID' ? 'Ganti kamar? Pesanan akan dikosongkan.' : 'Switch rooms? Your order will be cleared.')) {
+                  dispatch({ type: AppEvent.ResetFlow });
+                  clearCart();
+                }
+              }}
+              isCartOpen={state.isCartOpen}
+              lang={lang}
+            />
+          </ErrorBoundary>
         )}
 
         {state.screen === Screen.Checkout && (
-          <CheckoutView
-            key="checkout"
-            cart={state.cart}
-            onBack={() => dispatch({ type: AppEvent.BackFromCheckout })}
-            onPlaceOrder={handlePlaceOrder}
-            loading={state.isProcessing}
-            error={state.checkoutError}
-            phoneNumber={state.guest.phoneNumber}
-            lang={lang}
-          />
+          <ErrorBoundary fallback={(error, reset) => <GuestFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); }} lang={lang} />}>
+            <CheckoutView
+              key="checkout"
+              cart={state.cart}
+              onBack={() => dispatch({ type: AppEvent.BackFromCheckout })}
+              onPlaceOrder={handlePlaceOrder}
+              loading={state.isProcessing}
+              error={state.checkoutError}
+              phoneNumber={state.guest.phoneNumber}
+              lang={lang}
+            />
+          </ErrorBoundary>
         )}
 
         {state.screen === Screen.Confirmed && (
