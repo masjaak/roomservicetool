@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { CheckoutView } from '../CheckoutView';
 
 const cart = [
@@ -34,5 +34,25 @@ describe('CheckoutView', () => {
     expect(screen.getByText('Checkout')).toBeTruthy();
     expect(screen.getByText('Order Summary')).toBeTruthy();
     expect(screen.getByText('Billing Method')).toBeTruthy();
+  });
+
+  it('shows the selected bank account code instead of an undefined transfer target', () => {
+    render(
+      <CheckoutView
+        cart={cart}
+        onBack={() => {}}
+        onPlaceOrder={() => {}}
+        loading={false}
+        error={null}
+        phoneNumber="81234567890"
+        lang="EN"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /bank transfer/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'BCA' }));
+
+    expect(screen.getByText('88010')).toBeTruthy();
+    expect(screen.queryByText('undefined')).toBeNull();
   });
 });

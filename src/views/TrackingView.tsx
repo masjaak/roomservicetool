@@ -99,45 +99,43 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
               
               return (
                 <div key={index} className="flex gap-4 sm:gap-6 group">
-                  {/* Timeline Node Column */}
-                  <div className="flex flex-col items-center">
-                    <div className={`w-12 h-12 flex items-center justify-center shrink-0 border-[2px] rounded-full transition-all duration-500 z-10 ${
-                      isActive 
-                        ? 'border-[#a08850] text-white bg-[#a08850] shadow-[0_4px_20px_rgba(160,136,80,0.3)]'
-                        : isPast
-                          ? 'border-[#1c1917] bg-[#1c1917] text-white'
-                          : 'border-[#e7e5e4] bg-[#fdfbf9] text-[#a8a29e]'
-                    }`}>
-                      {isActive ? (
-                        <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
-                          {step.icon}
-                        </motion.div>
-                      ) : (
-                        step.icon
-                      )}
+                  {/* Tracking Item */}
+                  <div className={`relative flex flex-row items-center gap-6 p-6 bg-[#ffffff] border-t-8 border-[#f5f5f4] first:border-t-0 transition-opacity duration-500 ${isPast || isActive ? 'opacity-100' : 'opacity-40'}`}>
+                    
+                    {/* Icon Column */}
+                    <div className="shrink-0 flex items-center justify-center">
+                      <div className={`w-14 h-14 flex items-center justify-center rounded-xl transition-all duration-500 ${
+                        isActive 
+                          ? 'border-2 border-[#1c1917] bg-[#1c1917] text-white shadow-xl scale-110'
+                          : isPast
+                            ? 'border-2 border-[#1c1917] bg-[#ffffff] text-[#1c1917]'
+                            : 'border border-[#e7e5e4] bg-[#fdfbf9] text-[#a8a29e]'
+                      }`}>
+                        {isActive ? (
+                          <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
+                            {step.icon}
+                          </motion.div>
+                        ) : (
+                          step.icon
+                        )}
+                      </div>
                     </div>
-                    {/* Connecting Line */}
-                    {!isLast && (
-                      <div className={`w-1 flex-1 my-2 transition-colors duration-500 rounded-full ${isActive || isPast ? 'bg-[#1c1917]/10' : 'bg-[#e7e5e4]/50'}`} />
-                    )}
+                    
+                    {/* Content Column */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-[1.25rem] font-bold" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+                          {step.label}
+                        </h3>
+                        {isActive && (
+                          <span className="text-[9px] uppercase tracking-[0.1em] font-bold text-white bg-[#b91c1c] px-2 py-0.5 rounded-sm">Current</span>
+                        )}
+                      </div>
+                      <p className={`text-[0.95rem] leading-relaxed ${isActive ? 'text-[#1c1917]' : 'text-[#78716c]'}`}>
+                        {step.sub}
+                      </p>
+                    </div>
                   </div>
-                  
-                  {/* Content Column (Framed Card) */}
-                  <div className={`flex-1 mb-8 p-5 sm:p-6 rounded-2xl border transition-all duration-300 ${
-                    isActive 
-                      ? 'bg-white border-[#a08850] shadow-[0_8px_30px_rgba(160,136,80,0.06)]' 
-                      : isPast 
-                        ? 'bg-white border-[#e7e5e4]' 
-                        : 'bg-[#fdfbf9] border-[#e7e5e4]/50 opacity-60'
-                  }`}>
-                    <h3 className="text-[1.25rem] font-bold mb-2" style={{ color: isActive ? '#a08850' : '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
-                      {step.label}
-                    </h3>
-                    <p className={`text-[0.95rem] leading-relaxed ${isActive ? 'text-[#1c1917] font-medium' : 'text-[#78716c]'}`}>
-                      {step.sub}
-                    </p>
-                  </div>
-                </div>
               );
             })}
           </div>

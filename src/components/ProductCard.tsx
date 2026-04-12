@@ -15,9 +15,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, 
   return (
     <div 
       onClick={onClick}
-      className="w-full bg-[#ffffff] border-b border-[#e7e5e4] last:border-b-0 py-6 mb-2 cursor-pointer group"
+      className="w-full bg-[#ffffff] border-t-8 border-[#f5f5f4] first:border-t-0 p-5 cursor-pointer group flex flex-row gap-5 items-start"
     >
-      <div className="flex flex-row gap-5 items-start p-4 bg-[#ffffff]">
         {/* Left: Content */}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
@@ -65,29 +64,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, 
         </div>
 
         {/* Right: Image & Action */}
-        <div className="flex flex-col items-center shrink-0 w-24 sm:w-28 pl-1">
-          <div className="relative w-full aspect-square bg-[#f5f5f4] rounded-lg overflow-hidden shrink-0 mb-3 border border-[#e7e5e4]/50">
+        <div className="flex flex-col items-center shrink-0 w-28 sm:w-32">
+          <div className="relative w-full aspect-[4/5] bg-[#f5f5f4] rounded-xl overflow-hidden shrink-0 mb-4 shadow-sm border border-[#e7e5e4]">
             <ImageWithFallback
               src={item.image}
               alt={item.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 max-w-full"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           
-          {/* Isolated Action Button (Decoupled from Card Click) */}
-          <div className="w-full flex justify-end group/add">
+          {/* Isolated Action Button - MASSIVE FOR MOBILE */}
+          <div className="w-full">
             <button
               onClick={(e) => { e.stopPropagation(); onAdd(e); }}
               style={{ touchAction: 'manipulation' }}
               aria-label={`Add ${item.name} to cart`}
-              className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 bg-white border border-[#e7e5e4] shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-[#1c1917] hover:border-[#1c1917] hover:bg-[#1c1917] hover:text-[#ffffff] rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-[#fdfbf9] border border-[#1c1917] text-[#1c1917] hover:bg-[#1c1917] hover:text-white rounded-lg transition-colors font-bold text-[12px] uppercase tracking-widest focus-visible:outline-none focus-visible:ring-2 active:scale-95"
             >
-              <Plus className="w-3 h-3 transition-transform group-hover/add:scale-110" aria-hidden="true" />
+              <Plus className="w-4 h-4" aria-hidden="true" />
               <span>Add</span>
             </button>
           </div>
         </div>
-      </div>
     </div>
   );
 };

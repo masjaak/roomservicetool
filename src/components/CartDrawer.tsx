@@ -61,34 +61,34 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   </div>
                 ) : (
                   cart.map((item) => (
-                    <div key={`${item.id}-${item.note}`} className="flex flex-row gap-4 p-4 bg-white border border-[#e7e5e4] rounded-xl shadow-sm">
-                      <div className="w-20 h-20 flex-shrink-0 bg-[#f5f5f4] rounded-lg overflow-hidden border border-[#e7e5e4]">
+                    <div key={`${item.id}-${item.note}`} className="flex flex-row gap-5 p-5 bg-[#ffffff] border-t-8 border-[#f5f5f4] first:border-t-0">
+                      <div className="w-24 h-24 flex-shrink-0 bg-[#f5f5f4] rounded-xl overflow-hidden shadow-sm border border-[#e7e5e4]">
                         <ImageWithFallback src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
-                          <div className="flex justify-between items-start gap-3">
-                            <h4 className="text-[1.05rem] font-bold leading-snug flex-1 pr-1" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
-                            <button aria-label="Remove item" onClick={() => onRemove(item.id, item.note, false)} className="p-2 -mr-2 -mt-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-sm">
+                          <div className="flex justify-between items-start gap-4">
+                            <h4 className="text-[1.2rem] font-bold leading-tight" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
+                            <button aria-label="Remove item" onClick={() => onRemove(item.id, item.note, false)} className="p-2 -mr-2 -mt-2 text-[#a8a29e] hover:text-[#b91c1c] transition-colors bg-[#fdfbf9] rounded-full border border-[#f5f5f4]">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                           {item.note && (
-                            <div className="mt-1.5 bg-[#fdfbf9] p-2 rounded-md text-[0.8rem] font-medium text-[#78716c] flex gap-2 border border-[#f5f5f4]">
-                              <MessageSquare className="w-3 h-3 shrink-0 text-[#a08850] mt-0.5" />
+                            <div className="mt-3 bg-[#fdfbf9] p-3 rounded-lg border border-[#e7e5e4] text-[0.85rem] font-medium text-[#1c1917] flex gap-2">
+                              <MessageSquare className="w-4 h-4 shrink-0 text-[#a08850]" />
                               <p className="line-clamp-2">{item.note}</p>
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center justify-between mt-3">
-                          <span className="text-[0.95rem] font-bold text-[#44403c]">{formatCurrency(item.price)}</span>
-                          <div className="flex items-center bg-[#fdfbf9] border border-[#e7e5e4] rounded-full p-0.5 shadow-sm">
-                            <button aria-label="Decrease quantity" onClick={() => onRemove(item.id, item.note, true)} className="w-[30px] h-[30px] flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 bg-white shadow-sm border border-[#e7e5e4]">
-                              <Minus className="w-3 h-3" />
+                        <div className="flex items-center justify-between mt-4">
+                          <span className="text-[1.1rem] font-bold tracking-tight text-[#1c1917]">{formatCurrency(item.price)}</span>
+                          <div className="flex items-center border border-[#1c1917] rounded-lg overflow-hidden bg-white">
+                            <button aria-label="Decrease quantity" onClick={() => onRemove(item.id, item.note, true)} className="w-[36px] h-[36px] flex items-center justify-center text-[#1c1917] hover:bg-[#1c1917] hover:text-white transition-colors">
+                              <Minus className="w-4 h-4" />
                             </button>
-                            <span className="text-[0.85rem] font-bold w-6 text-center text-[#1c1917] select-none">{item.qty}</span>
-                            <button aria-label="Increase quantity disabled" className="w-[30px] h-[30px] flex items-center justify-center text-[#1c1917] rounded-full opacity-30 cursor-not-allowed bg-white border border-[#e7e5e4]">
-                              <Plus className="w-3 h-3" aria-hidden="true" />
+                            <span className="text-[1rem] font-bold w-10 text-center text-[#1c1917] select-none border-x border-[#e7e5e4]">{item.qty}</span>
+                            <button aria-label="Increase quantity disabled" className="w-[36px] h-[36px] flex items-center justify-center text-[#1c1917] hover:bg-[#1c1917] hover:text-white transition-colors opacity-30 cursor-not-allowed">
+                              <Plus className="w-4 h-4" aria-hidden="true" />
                             </button>
                           </div>
                         </div>

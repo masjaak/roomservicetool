@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TrackingView } from '../TrackingView';
 import { ErrorBoundary, TrackingFallback } from '../../components/ErrorBoundary';
+import { onSnapshot } from 'firebase/firestore';
 
 // Mock dependencies safely
 vi.mock('../../lib/firebase', () => ({
@@ -14,6 +15,10 @@ vi.mock('firebase/firestore', () => ({
 }));
 
 describe('TrackingView', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders successfully without crashing when valid orderId is passed', () => {
     // If an icon import was missing (e.g. Clock), this would crash React.
     render(
@@ -47,5 +52,31 @@ describe('TrackingView', () => {
     );
 
     expect(screen.getByText('Open Manual Chat')).toBeTruthy();
+  });
+
+  it('surfaces the live progress state when the backend status reaches delivery', () => {
+    vi.mocked(onSnapshot).mockImplementation((_ref, callback: (snapshot: any) => void) => {
+      callback({
+        exists: () => true,
+        data: () => ({ status: 'on_the_way' }),
+      });
+
+      return vi.fn();
+    });
+
+    render(
+      <ErrorBoundary fallback={(error, reset) => <TrackingFallback onReset={reset} lang="EN" />}>
+        <TrackingView 
+          lang="EN" 
+          orderId="test-order-123" 
+          roomNumber="101" 
+          onFinish={() => {}} 
+        />
+      </ErrorBoundary>
+    );
+
+    expect(screen.getByText('Current Status')).toBeTruthy();
+    expect(screen.getByText('On The Way')).toBeTruthy();
+    expect(screen.getByText('Staff is en route to Room 101.')).toBeTruthy();
   });
 });
