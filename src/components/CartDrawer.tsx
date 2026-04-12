@@ -34,7 +34,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="w-full md:w-[480px] h-full flex flex-col bg-[#fdfbf9] pointer-events-auto shadow-2xl"
+              className="w-full md:w-[480px] h-full flex flex-col bg-[#fdfbf9] pointer-events-auto shadow-2xl overscroll-contain"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {/* Header */}
@@ -44,7 +44,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     {t.cart}
                   </h2>
                 </div>
-                <button onClick={onClose} className="p-2 text-[#1c1917] bg-[#f5f5f4] rounded-full hover:bg-[#e7e5e4] transition-colors">
+                <button aria-label="Close cart" onClick={onClose} className="p-2 text-[#1c1917] bg-[#f5f5f4] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -69,7 +69,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         <div>
                           <div className="flex justify-between items-start gap-4">
                             <h4 className="text-[1.1rem] font-bold leading-tight line-clamp-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
-                            <button onClick={() => onRemove(item.id, item.note, false)} className="p-1 -m-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors">
+                            <button aria-label="Remove item" onClick={() => onRemove(item.id, item.note, false)} className="p-1 -m-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-sm">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -83,12 +83,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         <div className="flex items-center justify-between mt-3">
                           <span className="text-[0.95rem] font-bold text-[#44403c]">{formatCurrency(item.price)}</span>
                           <div className="flex items-center bg-[#f5f5f4] rounded-full px-1 py-1">
-                            <button onClick={() => onRemove(item.id, item.note, true)} className="w-7 h-7 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors">
+                            <button aria-label="Decrease quantity" onClick={() => onRemove(item.id, item.note, true)} className="w-7 h-7 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50">
                               <Minus className="w-3 h-3" />
                             </button>
                             <span className="text-[0.9rem] font-bold w-6 text-center text-[#1c1917]">{item.qty}</span>
-                            <button className="w-7 h-7 flex items-center justify-center opacity-30 cursor-not-allowed">
-                              <Plus className="w-3 h-3" />
+                            <button aria-label="Increase quantity disabled" className="w-7 h-7 flex items-center justify-center opacity-30 cursor-not-allowed">
+                              <Plus className="w-3 h-3" aria-hidden="true" />
                             </button>
                           </div>
                         </div>
@@ -122,7 +122,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       onClose();
                       setTimeout(onCheckout, 300);
                     }}
-                    className="w-full h-14 flex items-center justify-center bg-[#1c1917] text-white hover:bg-[#2d2d2d] active:scale-[0.98] transition-all rounded-full"
+                    className="w-full h-14 flex items-center justify-center bg-[#1c1917] text-white hover:bg-[#2d2d2d] active:scale-[0.98] transition-transform duration-200 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50"
                   >
                     <span className="text-[12px] uppercase tracking-widest font-bold">
                       {t.checkout}

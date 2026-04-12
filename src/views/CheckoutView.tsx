@@ -59,7 +59,8 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
         <div className="sticky top-0 z-30 px-6 sm:px-8 py-6 bg-[#fdfbf9]/90 backdrop-blur-md border-b border-[#e7e5e4]">
           <button
             onClick={onBack}
-            className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-[#1c1917] hover:text-[#a08850] transition-colors"
+            aria-label="Back to Menu"
+            className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-[#1c1917] hover:text-[#a08850] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-md px-2 py-1 -ml-2"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>{t.backToMenu}</span>
@@ -93,7 +94,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                       <button
                         key={method.id}
                         onClick={() => setPaymentMethod(method.id as any)}
-                        className={`relative flex items-center text-left p-5 transition-all outline-none rounded-lg ${
+                        className={`relative flex items-center text-left p-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-lg ${
                           active 
                             ? 'bg-[#1c1917] text-white' 
                             : 'bg-transparent text-[#1c1917] hover:bg-[#f5f5f4] border border-[#e7e5e4]'
@@ -123,7 +124,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                             <button
                               key={id}
                               onClick={() => setSelectedBank(id)}
-                              className={`p-4 text-center border transition-all rounded-md bg-white ${selectedBank === id ? 'border-[#1c1917] text-[#1c1917] font-bold' : 'border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30'}`}
+                              className={`p-4 text-center border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-md bg-white ${selectedBank === id ? 'border-[#1c1917] text-[#1c1917] font-bold' : 'border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30'}`}
                             >
                               <div className="text-[1rem]">{bank.name}</div>
                             </button>
@@ -138,7 +139,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         )}
                         <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
-                          <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                          <input type="file" aria-label="Upload transfer proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                           <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
                             <Upload className="w-5 h-5" />
                             <span className="font-medium text-[0.95rem]">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
@@ -158,7 +159,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         </div>
                         <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
-                          <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                          <input type="file" aria-label="Upload QRIS proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                           <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
                             <Upload className="w-5 h-5" />
                             <span className="font-medium text-[0.95rem]">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
@@ -210,7 +211,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 <button
                   onClick={() => onPlaceOrder(paymentMethod, selectedBank, transferProof)}
                   disabled={!canSubmit || loading}
-                  className="w-full h-14 flex items-center justify-center gap-2 bg-[#1c1917] text-white disabled:bg-[#e7e5e4] disabled:text-[#a8a29e] hover:bg-[#2d2d2d] transition-all rounded-full"
+                  className="w-full h-14 flex items-center justify-center gap-2 bg-[#1c1917] text-white disabled:bg-[#e7e5e4] disabled:text-[#a8a29e] hover:bg-[#2d2d2d] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50 rounded-full"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span className="text-[12px] uppercase tracking-widest font-bold">{t.placeOrder}</span>}
                 </button>

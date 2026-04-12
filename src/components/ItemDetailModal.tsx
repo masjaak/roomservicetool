@@ -58,13 +58,14 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="w-full max-w-lg bg-[#ffffff] pointer-events-auto flex flex-col sm:rounded-2xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[90vh]"
+              className="w-full max-w-lg bg-[#ffffff] pointer-events-auto flex flex-col sm:rounded-2xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[90vh] overscroll-contain"
             >
               {/* Image Header */}
-              <div className="relative w-full h-64 sm:h-72 bg-[#f5f5f4]">
+              <div className="relative w-full h-48 sm:h-64 bg-[#f5f5f4]">
                 <button
                   onClick={handleClose}
-                  className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+                  aria-label="Close modal"
+                  className="absolute top-4 right-4 z-10 w-9 h-9 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -121,7 +122,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       placeholder={t.placeholderNote}
-                      className="w-full bg-[#fdfbf9] border border-[#e7e5e4] rounded-lg p-4 text-[0.95rem] focus:outline-none focus:border-[#a08850] resize-none h-24 placeholder-[#a8a29e]"
+                      className="w-full bg-[#fdfbf9] border border-[#e7e5e4] rounded-lg p-4 text-[0.95rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 resize-none h-24 placeholder-[#a8a29e]"
                     />
                   </div>
 
@@ -130,7 +131,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                     <div className="border border-[#e7e5e4] rounded-lg overflow-hidden">
                       <button
                         onClick={() => setShowAllergens(!showAllergens)}
-                        className="w-full flex items-center justify-between p-4 bg-[#fdfbf9] text-[11px] uppercase tracking-widest font-bold text-[#1c1917]"
+                        className="w-full flex items-center justify-between p-4 bg-[#fdfbf9] text-[11px] uppercase tracking-widest font-bold text-[#1c1917] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
                       >
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="w-4 h-4 text-[#a08850]" />
@@ -167,7 +168,8 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                 <div className="flex items-center justify-between bg-[#f5f5f4] rounded-full px-2 h-14">
                   <button
                     onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] disabled:opacity-30 rounded-full hover:bg-[#e7e5e4] transition-colors"
+                    aria-label="Decrease quantity"
+                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] disabled:opacity-30 rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
                     disabled={qty <= 1}
                   >
                     <Minus className="w-4 h-4" />
@@ -175,7 +177,8 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                   <span className="text-[1rem] font-bold text-[#1c1917]">{qty}</span>
                   <button
                     onClick={() => setQty(qty + 1)}
-                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors"
+                    aria-label="Increase quantity"
+                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -184,7 +187,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                 {/* Add to Cart CTA */}
                 <button
                   onClick={handleAdd}
-                  className="h-14 bg-[#1c1917] text-[#ffffff] rounded-full flex items-center justify-between px-6 focus:outline-none hover:bg-[#2d2d2d] transition-colors active:scale-[0.98]"
+                  className="h-14 bg-[#1c1917] text-[#ffffff] rounded-full flex items-center justify-between px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50 hover:bg-[#2d2d2d] transition-colors active:scale-[0.98]"
                 >
                   <span className="text-[12px] font-bold uppercase tracking-widest">{t.addToCart}</span>
                   <span className="text-[14px] font-bold text-[#a08850]">{formatCurrency(totalPrice)}</span>

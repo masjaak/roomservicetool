@@ -101,7 +101,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
               return (
                 <div key={index} className="flex gap-8 group">
                   <div className="relative flex flex-col items-center">
-                    <div className={`w-10 h-10 flex items-center justify-center shrink-0 border-2 rounded-full transition-all duration-500 bg-[#fdfbf9] ${
+                    <div className={`w-10 h-10 flex items-center justify-center shrink-0 border-2 rounded-full transition duration-500 bg-[#fdfbf9] ${
                       isActive 
                         ? 'border-[#a08850] text-[#a08850] scale-110 shadow-[0_0_20px_rgba(160,136,80,0.2)]'
                         : isPast
@@ -118,7 +118,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
                     </div>
                   </div>
                   
-                  <div className={`pt-2 flex-1 transition-all duration-300 ${isActive ? 'opacity-100 translate-x-1' : isPast ? 'opacity-70' : 'opacity-40'}`}>
+                  <div className={`pt-2 flex-1 transition duration-300 ${isActive ? 'opacity-100 translate-x-1' : isPast ? 'opacity-70' : 'opacity-40'}`}>
                     <h3 className="text-[1.2rem] font-bold mb-1" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
                       {step.label}
                     </h3>

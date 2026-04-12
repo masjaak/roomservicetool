@@ -89,8 +89,9 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
 
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
               <button
+                aria-label="Close rating"
                 onClick={() => onSkip && onSkip()}
-                className="absolute top-4 right-4 p-2 rounded-full z-10"
+                className="absolute top-4 right-4 p-2 rounded-full z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
                 style={{ backgroundColor: 'rgba(26,26,26,0.05)', borderRadius: '1px' }}
               >
                 <X className="w-4 h-4" style={{ color: '#b8a898' }} />
@@ -114,10 +115,10 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   <button
                     key={n}
                     onClick={() => setOverallRating(n)}
-                    className="p-2 transition-all hover:bg-black/5"
+                    className="p-2 transition-colors hover:bg-black/5 rounded-full"
                   >
                     <Star
-                      className={`w-8 h-8 transition-all ${n <= overallRating ? 'scale-110' : ''}`}
+                      className={`w-8 h-8 transition-transform ${n <= overallRating ? 'scale-110' : ''}`}
                       style={{
                         color: n <= overallRating ? accentColor : '#d4ccbf',
                         fill: n <= overallRating ? accentColor : 'transparent',
@@ -156,7 +157,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                           {lang === 'ID' ? 'Kategori Kendala' : 'Issue Category'}
                         </label>
                         <select 
-                          className="w-full p-3 text-sm bg-white border outline-none appearance-none"
+                          className="w-full p-3 text-sm bg-white border outline-none appearance-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
                           style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}
                           value={issueCategory || ''}
                           onChange={(e) => setIssueCategory(e.target.value as any)}
@@ -181,7 +182,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                           placeholder="..." 
                           value={issueNote}
                           onChange={(e) => setIssueNote(e.target.value)}
-                          className="w-full p-3 text-sm bg-white border outline-none"
+                          className="w-full p-3 text-sm bg-white border outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
                           style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}
                         />
                       </div>
@@ -207,14 +208,14 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                     <div className="flex gap-2">
                       <button 
                         onClick={() => setWouldOrderAgain('yes')}
-                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-all border"
+                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-colors border"
                         style={wouldOrderAgain === 'yes' ? { backgroundColor: '#1a1a1a', color: '#fff', borderColor: '#1a1a1a', borderRadius: '1px' } : { backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}
                       >
                         {lang === 'ID' ? 'YA' : 'YES'}
                       </button>
                       <button 
                         onClick={() => setWouldOrderAgain('no')}
-                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-all border"
+                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-colors border"
                         style={wouldOrderAgain === 'no' ? { backgroundColor: '#1a1a1a', color: '#fff', borderColor: '#1a1a1a', borderRadius: '1px' } : { backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}
                       >
                         {lang === 'ID' ? 'TIDAK' : 'NO'}
@@ -227,7 +228,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                     onChange={(e) => setComment(e.target.value)}
                     placeholder={lang === 'ID' ? 'Komentar tambahan (opsional)...' : 'Additional comments (optional)...'}
                     rows={2}
-                    className="w-full p-4 text-sm resize-none focus:outline-none transition-all placeholder:text-gray-300 border"
+                    className="w-full p-4 text-sm resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50 transition-shadow placeholder:text-gray-300 border"
                     style={{
                       backgroundColor: 'transparent',
                       borderColor: 'rgba(26,26,26,0.1)',
@@ -239,14 +240,14 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   <div className="pt-2">
                     <button
                       onClick={handleSubmit}
-                      className="w-full py-4 font-bold text-sm tracking-widest uppercase transition-all active:scale-[0.98]"
+                      className="w-full py-4 font-bold text-sm tracking-widest uppercase transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1a1a1a]/50"
                       style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', border: '1px solid transparent', borderRadius: '1px' }}
                     >
                       {t.submit}
                     </button>
                     <button
                       onClick={() => onSkip && onSkip()}
-                      className="w-full py-3 mt-2 text-[10px] font-bold tracking-widest uppercase transition-all"
+                      className="w-full py-3 mt-2 text-[10px] font-bold tracking-widest uppercase transition-colors hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
                       style={{ color: '#888' }}
                     >
                       {lang === 'ID' ? 'Lewati' : 'Skip'}

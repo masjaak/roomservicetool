@@ -12,8 +12,11 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLabel }) => {
   return (
-    <div className="w-full bg-[#ffffff] border-b border-[#e7e5e4] last:border-b-0 py-6 mb-2">
-      <div className="flex flex-row gap-5 items-start">
+    <div 
+      onClick={onClick}
+      className="w-full bg-[#ffffff] border-b border-[#e7e5e4] last:border-b-0 py-6 mb-2 cursor-pointer group"
+    >
+      <div className="flex flex-row gap-4 items-start">
         {/* Left: Content */}
         <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
           <div>
@@ -32,7 +35,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
             </div>
             
             {/* Title & Price */}
-            <h3 className="text-[1.15rem] leading-tight font-bold mb-1" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+            <h3 className="text-[1.1rem] leading-tight font-bold mb-1" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
               {item.name}
             </h3>
             <p className="text-[0.95rem] font-bold tracking-tight mb-2" style={{ color: '#44403c' }}>
@@ -40,7 +43,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
             </p>
             
             {/* Description */}
-            <p className="text-[0.8rem] leading-relaxed text-[#78716c] line-clamp-2 pr-2 mb-4 font-normal">
+            <p className="text-[0.8rem] leading-relaxed text-[#78716c] line-clamp-2 pr-1 mb-3 font-normal">
               {item.description}
             </p>
             
@@ -58,29 +61,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
               )}
             </div>
           </div>
-
-          {/* CTA: Distinct, unmistakable action */}
-          <div className="mt-5">
-            <button
-              onClick={(e) => { e.stopPropagation(); onClick(); }}
-              className="group inline-flex items-center gap-2 px-6 py-2.5 bg-[#f5f5f4] hover:bg-[#2d2d2d] hover:text-[#ffffff] text-[#1c1917] rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add</span>
-            </button>
-          </div>
         </div>
 
-        {/* Right: Image */}
-        <div 
-          className="relative w-[100px] sm:w-[130px] aspect-square flex-shrink-0 bg-[#f5f5f4] rounded-lg overflow-hidden cursor-pointer"
-          onClick={onClick}
-        >
-          <ImageWithFallback
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-          />
+        {/* Right: Image & Action */}
+        <div className="flex flex-col items-center flex-shrink-0 w-[110px] sm:w-[130px]">
+          <div className="relative w-full aspect-square bg-[#f5f5f4] rounded-lg overflow-hidden shrink-0 mb-3">
+            <ImageWithFallback
+              src={item.image}
+              alt={item.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          
+          {/* Action Button - Always visible, right below image */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            style={{ touchAction: 'manipulation' }}
+            className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-[#f5f5f4] group-hover:bg-[#1c1917] group-hover:text-[#ffffff] text-[#1c1917] rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 touch-manipulation"
+          >
+            <Plus className="w-3 h-3" aria-hidden="true" />
+            <span>Add</span>
+          </button>
         </div>
       </div>
     </div>

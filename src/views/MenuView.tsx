@@ -73,7 +73,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
             </div>
             <button
               onClick={onLogout}
-              className="px-4 py-2 flex items-center justify-center gap-2 border border-[#e7e5e4] text-[10px] font-bold uppercase tracking-widest text-[#1c1917] hover:bg-[#1c1917] hover:text-white transition-colors rounded-full"
+              className="px-4 py-2 flex items-center justify-center gap-2 border border-[#e7e5e4] text-[10px] font-bold uppercase tracking-widest text-[#1c1917] hover:bg-[#1c1917] hover:text-white transition-colors rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
             >
               <span className="hidden sm:inline">{lang === 'ID' ? 'Keluar' : 'Exit'}</span>
               <LogOut className="w-3.5 h-3.5" />
@@ -87,10 +87,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
               placeholder={t.search}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-10 py-3.5 rounded-xl bg-[#f5f5f4] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus:outline-none focus:ring-2 focus:ring-[#1c1917]/20 transition-all border-none"
+              className="w-full pl-12 pr-10 py-3.5 rounded-xl bg-[#f5f5f4] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/20 transition-shadow border-none"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#a8a29e] hover:text-[#1c1917] transition-colors">
+              <button aria-label="Clear search" onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#a8a29e] hover:text-[#1c1917] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-full">
                 <XCircle className="w-4 h-4" />
               </button>
             )}
@@ -105,7 +105,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-all ${
+                  className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 ${
                     selectedCategory === cat
                       ? 'bg-[#1c1917] text-[#ffffff]'
                       : 'bg-transparent text-[#78716c] hover:bg-[#f5f5f4]'
@@ -163,7 +163,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
             >
               <button
                 onClick={onOpenCart}
-                className="w-full max-w-md h-16 flex items-center justify-between px-6 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] pointer-events-auto transition-transform active:scale-[0.98] bg-[#1c1917] text-white"
+                aria-label="Open cart"
+                className="w-full max-w-md h-16 flex items-center justify-between px-6 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] pointer-events-auto transition-transform active:scale-[0.98] bg-[#1c1917] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50"
               >
                 <div className="flex items-center gap-4">
                   <div className="relative">
