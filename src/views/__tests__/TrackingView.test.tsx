@@ -30,7 +30,9 @@ describe('TrackingView', () => {
     // Should see Tracking Title
     expect(screen.getByText('Order Status')).toBeTruthy();
     // Should see confirmed step
-    expect(screen.getByText('Order received')).toBeTruthy();
+    expect(screen.getAllByText('Order received').length).toBeGreaterThan(0);
+    expect(screen.getByText('Service details')).toBeTruthy();
+    expect(screen.getByText('Estimated arrival')).toBeTruthy();
   });
 
   it('renders WhatsApp fallback correctly if blocked URL is present', () => {
