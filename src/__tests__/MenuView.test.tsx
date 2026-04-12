@@ -36,8 +36,8 @@ describe('MenuView', () => {
       />
     );
 
-    expect(screen.getByText('Private dining for Room 123')).toBeTruthy();
-    expect(screen.getByText('Curated around the clock')).toBeTruthy();
-    expect(screen.getAllByText('Curated selection').length).toBeGreaterThan(0);
+    expect(screen.getByText('In-Room Dining : 123')).toBeTruthy();
+    expect(screen.getByText('An elevated in-room dining experience')).toBeTruthy();
+    expect(screen.getAllByText('Curated Selection').length).toBeGreaterThan(0);
   });
 });

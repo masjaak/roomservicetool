@@ -1,60 +1,11 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Clock, Receipt, ChevronLeft, Building2, QrCode, CreditCard, CheckCircle2, Upload, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CartItem, Language } from '../types';
-import { BANKS, TRANSLATIONS } from '../data/constants';
-import { formatCurrency, calculateSubtotal, calculateTax, calculateTotal } from '../utils/format';
-import type { PaymentMethod } from '../machine/types';
+import re
 
-interface CheckoutViewProps {
-  cart: CartItem[];
-  onBack: () => void;
-  onPlaceOrder: (paymentMethod: PaymentMethod, selectedBank: string | null, proof: File | null) => void;
-  loading: boolean;
-  error?: string | null;
-  phoneNumber: string;
-  lang: Language;
-}
+# 1. Fix CheckoutView.tsx
+try:
+    content = open('src/views/CheckoutView.tsx').read()
+    start_idx = content.rfind('  return (')
 
-export const CheckoutView: React.FC<CheckoutViewProps> = ({
-  cart,
-  onBack,
-  onPlaceOrder,
-  loading,
-  error,
-  phoneNumber,
-  lang,
-}) => {
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('room');
-  const [selectedBank, setSelectedBank] = useState<string | null>(null);
-  const [transferProof, setTransferProof] = useState<File | null>(null);
-  const t = TRANSLATIONS[lang];
-  const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
-  const trayCountLabel = lang === 'ID'
-    ? `${itemCount} item di tray Anda`
-    : `${itemCount} item${itemCount === 1 ? '' : 's'} in your tray`;
-
-  const subtotal = calculateSubtotal(cart);
-  const taxService = calculateTax(subtotal);
-  const grandTotal = calculateTotal(subtotal);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setTransferProof(e.target.files[0]);
-    }
-  };
-
-  const canSubmit = paymentMethod === 'room' 
-    ? true 
-    : paymentMethod === 'bank' 
-      ? selectedBank && transferProof 
-      : transferProof;
-
-  const accentColor = '#a08850';
-  const accentBg = 'rgba(160,136,80,0.08)';
-  const accentBorder = 'rgba(160,136,80,0.3)';
-
-  return (
+    new_return = """  return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
@@ -241,3 +192,146 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
     </motion.div>
   );
 };
+"""
+    new_content = content[:start_idx] + new_return
+    # Add imports to top
+    if 'ArrowLeft' not in new_content[:start_idx]:
+        new_content = new_content.replace('ChevronLeft', 'ArrowLeft, Clock, Receipt, ChevronLeft')
+    open('src/views/CheckoutView.tsx', 'w').write(new_content)
+except Exception as e:
+    print("Checkout failed", e)
+
+# 2. Fix ItemDetailModal to not have rounded-32px and have Playfair Display and correct layout.
+try:
+    content = open('src/components/ItemDetailModal.tsx').read()
+    start_idx = content.rfind('  return (')
+    new_return = """  return (
+    <AnimatePresence>
+      {isOpen && item && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-[#fcfaf7]/90 backdrop-blur-sm z-50 pointer-events-auto"
+          />
+          <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              className="w-full max-w-lg bg-white pointer-events-auto overflow-hidden shadow-2xl border flex flex-col max-h-[90vh]"
+              style={{ borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
+            >
+              {/* Header Image */}
+              <div className="relative h-[45vh] min-h-[300px] w-full bg-[#fbfaf8]">
+                <ImageWithFallback 
+                  src={item.image} 
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Close Button overlay */}
+                <div className="absolute top-4 right-4 z-10 flex gap-2">
+                  <button
+                    onClick={onClose}
+                    className="w-10 h-10 flex items-center justify-center bg-white/90 backdrop-blur border text-[#1a1a1a] transition-all hover:bg-[#1a1a1a] hover:text-white"
+                    style={{ borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Content body mapping to a printed order sheet */}
+              <div className="flex-1 overflow-y-auto px-8 py-8 styling-sheet border-t" style={{ borderColor: 'rgba(26,26,26,0.1)', fontFamily: "'Lato', sans-serif" }}>
+                
+                <div className="mb-8">
+                  <h2 className="text-[2.2rem] leading-tight mb-3" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a' }}>
+                    {item.name}
+                  </h2>
+                  <p className="text-xl tracking-widest font-light" style={{ color: '#8a7648' }}>
+                    {formatCurrency(item.price)}
+                  </p>
+                </div>
+
+                <p className="text-sm leading-relaxed font-light mb-8 pt-6 border-t" style={{ color: '#574b3f', borderColor: 'rgba(26,26,26,0.1)' }}>
+                  {item.description}
+                </p>
+
+                {item.dietaryTags && item.dietaryTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {item.dietaryTags.map(tag => (
+                      <span key={tag} className="border px-4 py-2 text-[9px] uppercase tracking-[0.25em] font-semibold" style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="space-y-6 pt-6 border-t" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: '#1a1a1a' }}>
+                      {t.specialInstructions}
+                    </label>
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder={lang === 'ID' ? 'Ketik permintaan khusus di sini...' : 'Type specific preferences here...'}
+                      className="w-full text-sm font-light p-4 border focus:ring-0 transition-colors"
+                      style={{ backgroundColor: '#fcfaf7', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.15)', borderRadius: '1px' }}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Controls */}
+              <div className="p-8 border-t bg-white" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
+                <div className="flex gap-4">
+                  {/* Quantity */}
+                  <div className="border flex items-center px-4" style={{ borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}>
+                    <button
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      className="w-8 h-8 flex items-center justify-center transition-all disabled:opacity-30"
+                      disabled={qty <= 1}
+                      style={{ color: '#1a1a1a' }}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="text-sm font-medium w-8 text-center" style={{ color: '#1a1a1a' }}>{qty}</span>
+                    <button
+                      onClick={() => setQty(qty + 1)}
+                      className="w-8 h-8 flex items-center justify-center transition-all"
+                      style={{ color: '#1a1a1a' }}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Add to Cart */}
+                  <button
+                    onClick={handleAdd}
+                    className="flex-1 py-4 px-6 text-[10px] uppercase tracking-[0.25em] font-semibold flex items-center justify-between transition-colors outline-none"
+                    style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', borderRadius: '1px' }}
+                  >
+                    <span>{t.addToCart}</span>
+                    <span style={{ color: 'rgba(251,250,248,0.7)' }}>{formatCurrency(item.price * qty)}</span>
+                  </button>
+                </div>
+              </div>
+
+            </motion.div>
+          </div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+"""
+    new_content = content[:start_idx] + new_return
+    open('src/components/ItemDetailModal.tsx', 'w').write(new_content)
+except Exception as e:
+    print("Item exception:", e)
+

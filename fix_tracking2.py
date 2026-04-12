@@ -1,106 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { FileText, CheckCircle2, ChefHat, Search, Bell, Star, Clock } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { TRANSLATIONS } from '../data/constants';
-import { Language, FeedbackPayload } from '../types';
-import { RatingModal } from '../components/RatingModal';
-import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { mapOrderStatusToStep } from '../utils/statusMapping';
-import { buildLegacyFeedback } from '../utils/feedbackMapping';
+import re
 
-interface TrackingViewProps {
-  roomNumber: string;
-  onFinish: () => void;
-  lang: Language;
-  orderId: string | null;
-  blockedWaUrl?: string | null;
-}
+content = open('src/views/TrackingView.tsx').read()
 
-export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish, lang, orderId, blockedWaUrl }) => {
-  const [orderStatus, setOrderStatus] = useState(0);
-  const [showRating, setShowRating] = useState(false);
-  const t = TRANSLATIONS[lang];
+# Find the main return statement by searching for the start of the return (
+# that precedes <motion.div
+start_idx = content.find("  return (\n    <motion.div")
 
-  useEffect(() => {
-    if (!orderId) return;
+if start_idx == -1:
+    print("Could not find start idx!")
+    exit(1)
 
-    const unsubscribe = onSnapshot(doc(db, 'orders', orderId), (snapshot) => {
-      if (!snapshot.exists()) return;
-
-      const data = snapshot.data();
-      const status = data.status;
-
-      const newStep = mapOrderStatusToStep(status);
-      setOrderStatus(newStep);
-
-      if (status === 'completed' || status === 'delivered') {
-        setTimeout(() => setShowRating(true), 2000);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [orderId]);
-
-  const handleSubmitFeedback = async (payload: FeedbackPayload) => {
-    if (orderId) {
-      try {
-        const legacyData = buildLegacyFeedback(payload);
-        await updateDoc(doc(db, 'orders', orderId), {
-          ...legacyData,
-          feedbackSubmittedAt: new Date().toISOString(),
-        });
-      } catch (e) {
-        console.error('Feedback error:', e);
-      }
-    }
-    onFinish();
-  };
-
-  const handleSkipFeedback = () => {
-    // Just close/skip without writing to DB
-    onFinish();
-  };
-
-  const steps = [
-    { 
-      icon: <FileText className="w-5 h-5" />, 
-      label: lang === 'ID' ? 'Pesanan Diterima' : 'Order received', 
-      sub: lang === 'ID' ? 'Pesanan Anda sudah diterima dan dikirim ke dapur.' : 'Your order has been logged and sent to the kitchen.' 
-    },
-    { 
-      icon: <CheckCircle2 className="w-5 h-5" />, 
-      label: lang === 'ID' ? 'Dikonfirmasi Dapur' : 'Confirmed by kitchen', 
-      sub: lang === 'ID' ? 'Dapur telah mengonfirmasi pesanan dan memasukkannya ke antrean.' : 'The kitchen has confirmed your order and queued preparation.' 
-    },
-    { 
-      icon: <ChefHat className="w-5 h-5" />, 
-      label: lang === 'ID' ? 'Sedang Dipersiapkan' : 'Being prepared', 
-      sub: lang === 'ID' ? 'Hidangan Anda sedang dipersiapkan.' : 'Your dishes are being freshly prepared.' 
-    },
-    { 
-      icon: <Search className="w-5 h-5" />, 
-      label: lang === 'ID' ? 'Pemeriksaan Kualitas' : 'Quality check', 
-      sub: lang === 'ID' ? 'Pesanan Anda sedang diperiksa sebelum diantar.' : 'Your order is being checked before dispatch.' 
-    },
-    { 
-      icon: <Bell className="w-5 h-5" />, 
-      label: lang === 'ID' ? 'Sedang Diantar' : 'On the way', 
-      sub: lang === 'ID' ? `Staf kami sedang menuju Kamar ${roomNumber}.` : `Our staff is on the way to Room ${roomNumber}.` 
-    },
-    { 
-      icon: <Star className="w-5 h-5" />, 
-      label: lang === 'ID' ? 'Pesanan Tiba' : 'Delivered', 
-      sub: lang === 'ID' ? 'Pesanan Anda telah tiba. Selamat menikmati.' : 'Your order has arrived. Enjoy your meal.' 
-    },
-  ];
-
-  const lastUpdated = new Date().toLocaleTimeString(lang === 'ID' ? 'id-ID' : 'en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
-  return (
+new_return = """  return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -238,3 +148,10 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
     </motion.div>
   );
 };
+"""
+
+new_content = content[:start_idx] + new_return
+if 'import { FileText' in new_content and 'Clock' not in new_content[:start_idx]:
+    new_content = new_content.replace('import { FileText', 'import { FileText, Clock')
+
+open('src/views/TrackingView.tsx', 'w').write(new_content)

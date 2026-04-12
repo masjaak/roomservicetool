@@ -193,16 +193,52 @@ html {
   --am-graphite: #2d2d2d;
   --am-charcoal: #3a3a3a;
   --am-ivory: #faf8f5;
+  --am-paper: #f1ebe2;
   --am-stone: #c4b5a4;
   --am-warm-stone: #b8a898;
   --am-brass: #a08850;
   --am-muted-brass: #8a7648;
-  --am-font-heading: 'DM Serif Display', serif;
-  --am-font-body: 'Inter', sans-serif;
+  --am-ink: #1f1d1a;
+  --am-font-heading: 'Cormorant Garamond', serif;
+  --am-font-body: 'Manrope', sans-serif;
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(196, 181, 164, 0.18), transparent 24%),
+    linear-gradient(180deg, #f7f1e8 0%, #faf8f5 48%, #f4ede5 100%);
 }
 
 body {
   font-family: var(--am-font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--am-ink);
+  background:
+    radial-gradient(circle at top left, rgba(196, 181, 164, 0.18), transparent 24%),
+    linear-gradient(180deg, #f7f1e8 0%, #faf8f5 48%, #f4ede5 100%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(45, 45, 45, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 45, 45, 0.018) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+  opacity: 0.25;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: rgba(160, 136, 80, 0.22);
+  color: var(--am-ink);
 }

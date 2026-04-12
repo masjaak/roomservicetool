@@ -28,7 +28,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
   const [issueNote, setIssueNote] = useState('');
 
   const t = TRANSLATIONS[lang];
-  const accentColor = '#a08850';
+  const accentColor = '#8a7648';
 
   const handleSubmit = () => {
     onRate({
@@ -82,22 +82,25 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            className="w-full max-w-lg rounded-2xl overflow-hidden relative max-h-[90vh] flex flex-col"
-            style={{ backgroundColor: '#faf8f5' }}
+            className="w-full max-w-xl border overflow-hidden relative max-h-[90vh] flex flex-col"
+            style={{ backgroundColor: '#fcfaf7', boxShadow: '0 28px 80px rgba(0,0,0,0.22)', borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
           >
-            <div className="h-1 flex-shrink-0" style={{ backgroundColor: '#2d2d2d' }} />
+            <div className="h-1 flex-shrink-0" style={{ backgroundColor: '#1a1a1a' }} />
 
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
               <button
                 onClick={() => onSkip && onSkip()}
                 className="absolute top-4 right-4 p-2 rounded-full z-10"
-                style={{ backgroundColor: 'rgba(45,45,45,0.05)' }}
+                style={{ backgroundColor: 'rgba(26,26,26,0.05)', borderRadius: '1px' }}
               >
                 <X className="w-4 h-4" style={{ color: '#b8a898' }} />
               </button>
 
               <div className="text-center mb-6">
-                <h3 className="text-xl font-bold mb-1" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] mb-3" style={{ color: '#8a7648' }}>
+                  {lang === 'ID' ? 'Penutup layanan' : 'Service close'}
+                </p>
+                <h3 className="text-[2rem] font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 600 }}>
                   {t.rateTitle}
                 </h3>
                 <p className="text-xs" style={{ color: '#b8a898' }}>
@@ -111,7 +114,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   <button
                     key={n}
                     onClick={() => setOverallRating(n)}
-                    className="p-2 rounded-full transition-all hover:bg-black/5"
+                    className="p-2 transition-all hover:bg-black/5"
                   >
                     <Star
                       className={`w-8 h-8 transition-all ${n <= overallRating ? 'scale-110' : ''}`}
@@ -130,7 +133,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   animate={{ opacity: 1, height: 'auto' }}
                   className="space-y-6"
                 >
-                  <div className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div className="p-4" style={{ backgroundColor: '#fff', border: '1px solid rgba(26,26,26,0.1)', borderRadius: '1px' }}>
                     <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4" style={{ color: '#888' }}>
                       {lang === 'ID' ? 'Kualitas Layanan' : 'Service Quality'}
                     </h4>
@@ -143,7 +146,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   </div>
 
                   {overallRating <= 3 && (
-                    <div className="p-5 border bg-[#faf8f5]" style={{ borderColor: 'rgba(45,45,45,0.06)' }}>
+                    <div className="p-5 border bg-[#fff]" style={{ borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}>
                       <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#c45050' }}>
                         {lang === 'ID' ? 'Kami Mohon Maaf' : 'We apologize'}
                       </p>
@@ -154,7 +157,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                         </label>
                         <select 
                           className="w-full p-3 text-sm bg-white border outline-none appearance-none"
-                          style={{ borderColor: 'rgba(45,45,45,0.1)', color: '#2d2d2d' }}
+                          style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}
                           value={issueCategory || ''}
                           onChange={(e) => setIssueCategory(e.target.value as any)}
                         >
@@ -179,7 +182,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                           value={issueNote}
                           onChange={(e) => setIssueNote(e.target.value)}
                           className="w-full p-3 text-sm bg-white border outline-none"
-                          style={{ borderColor: 'rgba(45,45,45,0.1)', color: '#2d2d2d' }}
+                          style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}
                         />
                       </div>
 
@@ -188,16 +191,16 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                           type="checkbox" 
                           checked={requestManagerFollowUp === 'yes'}
                           onChange={(e) => setRequestManagerFollowUp(e.target.checked ? 'yes' : 'no')}
-                          className="w-4 h-4 text-[#2d2d2d] focus:ring-[#2d2d2d]"
+                          className="w-4 h-4 text-[#1a1a1a] focus:ring-[#1a1a1a]"
                         />
-                        <span className="text-xs font-semibold" style={{ color: '#2d2d2d' }}>
+                        <span className="text-xs font-semibold" style={{ color: '#1a1a1a' }}>
                           {lang === 'ID' ? 'Minta Manajer Menghubungi Saya' : 'Request Manager Follow-up'}
                         </span>
                       </label>
                     </div>
                   )}
 
-                  <div className="pt-4 border-t" style={{ borderColor: 'rgba(45,45,45,0.06)' }}>
+                  <div className="pt-4 border-t" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
                     <span className="text-[10px] font-bold uppercase tracking-widest block mb-3 text-center" style={{ color: '#888' }}>
                       {lang === 'ID' ? 'Akan pesan lagi?' : 'Would you order again?'}
                     </span>
@@ -205,14 +208,14 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                       <button 
                         onClick={() => setWouldOrderAgain('yes')}
                         className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-all border"
-                        style={wouldOrderAgain === 'yes' ? { backgroundColor: '#2d2d2d', color: '#fff', borderColor: '#2d2d2d' } : { backgroundColor: 'transparent', color: '#888', borderColor: 'rgba(45,45,45,0.1)' }}
+                        style={wouldOrderAgain === 'yes' ? { backgroundColor: '#1a1a1a', color: '#fff', borderColor: '#1a1a1a', borderRadius: '1px' } : { backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}
                       >
                         {lang === 'ID' ? 'YA' : 'YES'}
                       </button>
                       <button 
                         onClick={() => setWouldOrderAgain('no')}
                         className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-all border"
-                        style={wouldOrderAgain === 'no' ? { backgroundColor: '#2d2d2d', color: '#fff', borderColor: '#2d2d2d' } : { backgroundColor: 'transparent', color: '#888', borderColor: 'rgba(45,45,45,0.1)' }}
+                        style={wouldOrderAgain === 'no' ? { backgroundColor: '#1a1a1a', color: '#fff', borderColor: '#1a1a1a', borderRadius: '1px' } : { backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}
                       >
                         {lang === 'ID' ? 'TIDAK' : 'NO'}
                       </button>
@@ -227,16 +230,17 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                     className="w-full p-4 text-sm resize-none focus:outline-none transition-all placeholder:text-gray-300 border"
                     style={{
                       backgroundColor: 'transparent',
-                      borderColor: 'rgba(45,45,45,0.1)',
-                      color: '#2d2d2d',
+                      borderColor: 'rgba(26,26,26,0.1)',
+                      color: '#1a1a1a',
+                      borderRadius: '1px'
                     }}
                   />
 
                   <div className="pt-2">
                     <button
                       onClick={handleSubmit}
-                      className="w-full py-4 rounded-full font-bold text-sm tracking-widest uppercase transition-all active:scale-[0.98]"
-                      style={{ backgroundColor: '#2d2d2d', color: '#faf8f5', border: '1px solid transparent' }}
+                      className="w-full py-4 font-bold text-sm tracking-widest uppercase transition-all active:scale-[0.98]"
+                      style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', border: '1px solid transparent', borderRadius: '1px' }}
                     >
                       {t.submit}
                     </button>

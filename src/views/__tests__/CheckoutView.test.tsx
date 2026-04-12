@@ -31,8 +31,8 @@ describe('CheckoutView', () => {
       />
     );
 
-    expect(screen.getByText('Order review')).toBeTruthy();
-    expect(screen.getAllByText('2 items in your tray').length).toBeGreaterThan(0);
-    expect(screen.getByText('Payment guidance')).toBeTruthy();
+    expect(screen.getByText('Reservation Folio')).toBeTruthy();
+    expect(screen.getAllByText('2 selected items').length).toBeGreaterThan(0);
+    expect(screen.getByText('Billing Method')).toBeTruthy();
   });
 });

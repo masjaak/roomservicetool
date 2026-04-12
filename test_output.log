@@ -1,0 +1,431 @@
+
+> atelier-meridian-room-service@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.4 /Users/masjak/Documents/Hcsroomservice
+
+ ✓ src/__tests__/menu-integrity.test.ts (11 tests) 67ms
+ ✓ src/machine/__tests__/reducer.test.ts (35 tests) 59ms
+ ✓ src/machine/__tests__/effects.test.ts (12 tests) 158ms
+ ✓ src/__tests__/brand-guard.test.ts (8 tests) 214ms
+ ❯ src/__tests__/MenuView.test.tsx (0 test)
+ReferenceError: ArrowLeft is not defined
+    at CheckoutView (/Users/masjak/Documents/Hcsroomservice/src/views/CheckoutView.tsx:74:16)
+    at renderWithHooks (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:360:16)
+    at invokeEventListeners (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:114:17)
+ReferenceError: ArrowLeft is not defined
+    at CheckoutView (/Users/masjak/Documents/Hcsroomservice/src/views/CheckoutView.tsx:74:16)
+    at renderWithHooks (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/masjak/Documents/Hcsroomservice/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/generated/idl/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:360:16)
+    at invokeEventListeners (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:296:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:243:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/masjak/Documents/Hcsroomservice/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:114:17)
+stderr | src/views/__tests__/CheckoutView.test.tsx > CheckoutView > renders the order review and payment guidance hierarchy
+The above error occurred in the <CheckoutView> component:
+
+    at CheckoutView (/Users/masjak/Documents/Hcsroomservice/src/views/CheckoutView.tsx:8:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+ ❯ src/views/__tests__/CheckoutView.test.tsx (1 test | 1 failed) 134ms
+     × renders the order review and payment guidance hierarchy 117ms
+ ❯ src/views/__tests__/TrackingView.test.tsx (2 tests | 2 failed) 523ms
+     × renders successfully without crashing when valid orderId is passed 446ms
+     × renders WhatsApp fallback correctly if blocked URL is present 72ms
+ ✓ src/utils/__tests__/feedbackMapping.test.ts (3 tests) 7ms
+ ✓ src/machine/__tests__/guards.test.ts (20 tests) 18ms
+ ✓ src/utils/__tests__/statusMapping.test.ts (7 tests) 14ms
+ ✓ src/utils/__tests__/adminMappers.test.ts (4 tests) 6ms
+ ✓ src/__tests__/calculations.test.ts (6 tests) 6ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/MenuView.test.tsx [ src/__tests__/MenuView.test.tsx ]
+Error: Transform failed with 1 error:
+/Users/masjak/Documents/Hcsroomservice/src/components/ItemDetailModal.tsx:111:21: ERROR: Expected ")" but found "}"
+  Plugin: vite:esbuild
+  File: /Users/masjak/Documents/Hcsroomservice/src/components/ItemDetailModal.tsx:111:21
+  
+  Expected ")" but found "}"
+  109|                      {item.dietaryTags?.map(tag => (
+  110|                        <span key={tag} className="px-3 py-1.5 text-[#8a7648]">{tag}</span>
+  111|                      )}
+     |                       ^
+  112|                    </div>
+  113|  
+  
+ ❯ failureErrorWithLog node_modules/esbuild/lib/main.js:1467:15
+ ❯ node_modules/esbuild/lib/main.js:736:50
+ ❯ responseCallbacks.<computed> node_modules/esbuild/lib/main.js:603:9
+ ❯ handleIncomingPacket node_modules/esbuild/lib/main.js:658:12
+ ❯ Socket.readFromStdout node_modules/esbuild/lib/main.js:581:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/__tests__/CheckoutView.test.tsx > CheckoutView > renders the order review and payment guidance hierarchy
+ReferenceError: ArrowLeft is not defined
+ ❯ CheckoutView src/views/CheckoutView.tsx:74:16
+     72|               style={{ color: '#1a1a1a', borderRadius: '1px' }}
+     73|             >
+     74|               <ArrowLeft className="w-5 h-5" />
+       |                ^
+     75|             </button>
+     76|             <h2 className="text-[2rem] leading-[1]" style={{ fontFamil…
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ beginWork$1 node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync node_modules/react-dom/cjs/react-dom.development.js:26505:5
+ ❯ renderRootSync node_modules/react-dom/cjs/react-dom.development.js:26473:7
+ ❯ recoverFromConcurrentError node_modules/react-dom/cjs/react-dom.development.js:25889:20
+ ❯ performConcurrentWorkOnRoot node_modules/react-dom/cjs/react-dom.development.js:25789:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/views/__tests__/TrackingView.test.tsx > TrackingView > renders successfully without crashing when valid orderId is passed
+TestingLibraryElementError: Unable to find an element with the text: Service Itinerary. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen overflow-hidden"[39m
+      [33mstyle[39m=[32m"background-color: transparent; font-family: \"Manrope\", sans-serif; opacity: 0;"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"w-full max-w-5xl mx-auto min-h-screen relative flex flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pt-16 sm:pt-20 pb-12 px-5 sm:px-6 bg-white border-b"[39m
+          [33mstyle[39m=[32m"border-color: rgba(45, 45, 45, 0.06);"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-[34px] px-6 py-7 sm:px-8 sm:py-8 text-center"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 29, 26); box-shadow: 0 24px 50px rgba(31,29,26,0.2);"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"[39m
+              [33mstyle[39m=[32m"background-color: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-clock w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"12"[39m
+                  [33mr[39m=[32m"10"[39m
+                [36m/>[39m
+                [36m<polyline[39m
+                  [33mpoints[39m=[32m"12 6 12 12 16 14"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] font-bold tracking-[0.28em] uppercase mb-3"[39m
+              [33mstyle[39m=[32m"color: rgb(196, 181, 164);"[39m
+            [36m>[39m
+              [0mService in progress[0m
+            [36m</p>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-[2.2rem] sm:text-[3rem] leading-[0.94] mb-3"[39m
+              [33mstyle[39m=[32m"font-family: \"Cormorant Garamond\", serif; color: rgb(250, 248, 245); font-weight: 600;"[39m
+            [36m>[39m
+              [0mOrder Status[0m
+            [36m</h2>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm max-w-xl mx-auto leading-7"[39m
+              [33mstyle[39m=[32m"color: rgba(250, 248, 245, 0.72);"[39m
+            [36m>[39m
+              [0mEach handoff is surfaced clearly, from kitchen confirmation through final delivery to your room.[0m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.3em] mt-5"[39m
+              [33mstyle[39m=[32m"color: rgb(196, 181, 164);"[39m
+            [36m>[39m
+              [0mPrepared with care[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"px-5 sm:px-6 py-6 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-[32px] border p-5"[39m
+              [33mstyle[39m=[32m"background-color: rgba(255, 255, 255, 0.84); border-color: rgba(45, 45, 45, 0.06);"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.28em] mb-4"[39m
+                [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+              [36m>[39m
+                [0mService details[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-3"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-[20px] px-4 py-4"[39m
+                  [33mstyle[39m=[32m"background-color: rgb(250, 248, 245);"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.22em] mb-1"[39m
+                    [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+                  [36m>[39m
+                    [0mEstimated arrival[0m
+                  [36m</p>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm font-semibold"[39m
+                    [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                  [36m>[39m
+                    [0m20-30 min[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-[20px] px-4 py-4"[39m
+                  [33mstyle[39m=[32m"background-color: rgb(250, 248, 245);"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.22em] mb-1"[39m
+                    [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+                  [36m>[39m
+                    [0mRoom[0m
+                  [36m</p>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm font-semibold"[39m
+                    [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                  [36m>[39m
+                    [0m101[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-[20px] px-4 py-4"[39m
+                  [33mstyle[39m=[32m"background-color: rgb(250, 248, 245);"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.22em] mb-1"[39m
+                    [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+                  [36m>[39m
+                    [0mLast updated[0m
+                  [36m</p>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm font-semibold"[39m
+                    [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                  [36m>[39m
+                    [0m10:50 PM[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+       ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/views/__tests__/TrackingView.test.tsx:31:19
+     29|
+     30|     // Should see Tracking Title
+     31|     expect(screen.getByText('Service Itinerary')).toBeTruthy();
+       |                   ^
+     32|     // Should see confirmed step
+     33|     expect(screen.getAllByText('Preparation initiated').length).toBeGr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/views/__tests__/TrackingView.test.tsx > TrackingView > renders WhatsApp fallback correctly if blocked URL is present
+TestingLibraryElementError: Unable to find an element with the text: Open WhatsApp Manually. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen overflow-hidden"[39m
+      [33mstyle[39m=[32m"background-color: transparent; font-family: \"Manrope\", sans-serif; opacity: 0;"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"w-full max-w-5xl mx-auto min-h-screen relative flex flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pt-16 sm:pt-20 pb-12 px-5 sm:px-6 bg-white border-b"[39m
+          [33mstyle[39m=[32m"border-color: rgba(45, 45, 45, 0.06);"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"rounded-[34px] px-6 py-7 sm:px-8 sm:py-8 text-center"[39m
+            [33mstyle[39m=[32m"background-color: rgb(31, 29, 26); box-shadow: 0 24px 50px rgba(31,29,26,0.2);"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"[39m
+              [33mstyle[39m=[32m"background-color: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-clock w-6 h-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"12"[39m
+                  [33mr[39m=[32m"10"[39m
+                [36m/>[39m
+                [36m<polyline[39m
+                  [33mpoints[39m=[32m"12 6 12 12 16 14"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] font-bold tracking-[0.28em] uppercase mb-3"[39m
+              [33mstyle[39m=[32m"color: rgb(196, 181, 164);"[39m
+            [36m>[39m
+              [0mService in progress[0m
+            [36m</p>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-[2.2rem] sm:text-[3rem] leading-[0.94] mb-3"[39m
+              [33mstyle[39m=[32m"font-family: \"Cormorant Garamond\", serif; color: rgb(250, 248, 245); font-weight: 600;"[39m
+            [36m>[39m
+              [0mOrder Status[0m
+            [36m</h2>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm max-w-xl mx-auto leading-7"[39m
+              [33mstyle[39m=[32m"color: rgba(250, 248, 245, 0.72);"[39m
+            [36m>[39m
+              [0mEach handoff is surfaced clearly, from kitchen confirmation through final delivery to your room.[0m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.3em] mt-5"[39m
+              [33mstyle[39m=[32m"color: rgb(196, 181, 164);"[39m
+            [36m>[39m
+              [0mPrepared with care[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"px-5 sm:px-6 py-6 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-[32px] border p-5"[39m
+              [33mstyle[39m=[32m"background-color: rgba(255, 255, 255, 0.84); border-color: rgba(45, 45, 45, 0.06);"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.28em] mb-4"[39m
+                [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+              [36m>[39m
+                [0mService details[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-3"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-[20px] px-4 py-4"[39m
+                  [33mstyle[39m=[32m"background-color: rgb(250, 248, 245);"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.22em] mb-1"[39m
+                    [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+                  [36m>[39m
+                    [0mEstimated arrival[0m
+                  [36m</p>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm font-semibold"[39m
+                    [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                  [36m>[39m
+                    [0m20-30 min[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-[20px] px-4 py-4"[39m
+                  [33mstyle[39m=[32m"background-color: rgb(250, 248, 245);"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.22em] mb-1"[39m
+                    [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+                  [36m>[39m
+                    [0mRoom[0m
+                  [36m</p>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm font-semibold"[39m
+                    [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                  [36m>[39m
+                    [0m101[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"rounded-[20px] px-4 py-4"[39m
+                  [33mstyle[39m=[32m"background-color: rgb(250, 248, 245);"[39m
+                [36m>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-[10px] font-bold uppercase tracking-[0.22em] mb-1"[39m
+                    [33mstyle[39m=[32m"color: rgb(138, 118, 72);"[39m
+                  [36m>[39m
+                    [0mLast updated[0m
+                  [36m</p>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"text-sm font-semibold"[39m
+                    [33mstyle[39m=[32m"color: rgb(45, 45, 45);"[39m
+                  [36m>[39m
+                    [0m10:50 PM[0m
+                  [36m</p>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+       ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/views/__tests__/TrackingView.test.tsx:51:19
+     49|     );
+     50|
+     51|     expect(screen.getByText('Open WhatsApp Manually')).toBeTruthy();
+       |                   ^
+     52|   });
+     53| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  3 failed | 9 passed (12)
+      Tests  3 failed | 106 passed (109)
+   Start at  22:50:44
+   Duration  6.80s (transform 1.42s, setup 0ms, import 4.55s, tests 1.21s, environment 28.66s)
+

@@ -55,15 +55,16 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
   const grandTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
-  const heroTitle = lang === 'ID' ? `Private dining untuk Kamar ${roomNumber}` : `Private dining for Room ${roomNumber}`;
-  const heroEyebrow = lang === 'ID' ? 'Dikurasi sepanjang hari' : 'Curated around the clock';
+  const heroTitle = lang === 'ID' ? `In-Room Dining : ${roomNumber}` : `In-Room Dining : ${roomNumber}`;
+  const heroEyebrow = lang === 'ID' ? 'Menu sepanjang hari' : 'All-day dining';
+  const heroKicker = lang === 'ID' ? 'Pengalaman in-room dining' : 'An elevated in-room dining experience';
   const heroDescription = lang === 'ID'
-    ? 'Pilihan hidangan khas, comfort food, dan minuman dipresentasikan dengan ritme yang lebih rapi dan mudah dijelajahi.'
-    : 'A more composed in-room dining experience with signature plates, classics, and refreshments presented with clear hierarchy.';
-  const sectionTitle = lang === 'ID' ? 'Pilihan kurasi' : 'Curated selection';
+    ? 'Sebuah seleksi hidangan khas yang dikurasi khusus untuk melengkapi waktu Anda, dihadirkan dengan keanggunan.'
+    : 'A thoughtfully curated selection of signature dishes, designed to complement your time with quiet elegance.';
+  const sectionTitle = lang === 'ID' ? 'Seleksi Kurasi' : 'Curated Selection';
   const sectionDescription = lang === 'ID'
-    ? 'Jelajahi berdasarkan kategori atau gunakan pencarian untuk menemukan hidangan yang tepat.'
-    : 'Browse by course or search directly to find the right dish for the moment.';
+    ? 'Telusuri koleksi hidangan kami berdasarkan kategori.'
+    : 'Peruse our dining collection by course or signature.';
 
   const filteredItems = searchQuery.length > 0
     ? MENU_ITEMS.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -74,40 +75,45 @@ export const MenuView: React.FC<MenuViewProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen pb-36"
-      style={{ backgroundColor: '#faf8f5', fontFamily: "'Inter', sans-serif" }}
+      style={{ backgroundColor: '#fbfaf8', fontFamily: "'Lato', sans-serif" }}
     >
       <div className="w-full max-w-6xl mx-auto min-h-screen relative">
         {/* Header */}
-        <div className="sticky top-0 z-30 px-5 sm:px-6 pt-5 pb-4 backdrop-blur-md" style={{ backgroundColor: 'rgba(250,248,245,0.92)', boxShadow: '0 1px 0 rgba(0,0,0,0.06)' }}>
-          <div className="flex items-center justify-between mb-5">
+        <div className="sticky top-0 z-30 px-6 sm:px-10 pt-6 pb-5 backdrop-blur-md" style={{ backgroundColor: 'rgba(251,250,248,0.95)', borderBottom: '1px solid rgba(26,26,26,0.06)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
-              <p className="text-[10px] font-semibold tracking-widest uppercase mb-1" style={{ color: '#b8a898' }}>
+              <p className="text-[9px] font-semibold tracking-[0.3em] uppercase mb-3" style={{ color: '#8a7648' }}>
                 {getGreeting()}
               </p>
-              <h2 className="text-2xl sm:text-[2rem] leading-none" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+              <h2 className="text-[2.5rem] sm:text-[3.5rem] leading-[1]" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 500 }}>
                 {heroTitle}
               </h2>
             </div>
             <button
               onClick={handleLogout}
-              className="h-11 px-4 flex items-center justify-center rounded-full transition-all text-[10px] font-bold uppercase tracking-[0.28em]"
-              style={{ backgroundColor: '#fff', color: '#7c6a54', border: '1px solid rgba(45,45,45,0.08)' }}
+              className="h-10 px-5 flex items-center justify-center transition-colors border text-[9px] font-semibold uppercase tracking-[0.25em] hover:bg-[#1a1a1a] hover:text-[#fbfaf8]"
+              style={{ backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.15)', borderRadius: '2px' }}
             >
               <span className="hidden sm:inline mr-2">{lang === 'ID' ? 'Keluar' : 'Switch'}</span>
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-            <div className="rounded-[28px] border px-5 py-5 sm:px-7 sm:py-6" style={{ backgroundColor: '#2d2d2d', borderColor: 'rgba(255,255,255,0.08)' }}>
-              <div className="flex items-center gap-2 mb-4 text-[10px] font-bold uppercase tracking-[0.28em]" style={{ color: '#c4b5a4' }}>
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{heroEyebrow}</span>
+          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+            <div className="border px-6 py-8 sm:px-10 sm:py-10 flex flex-col justify-between" style={{ backgroundColor: '#1a1a1a', borderColor: 'rgba(255,255,255,0.05)', borderRadius: '2px' }}>
+              <div>
+                <div className="flex items-center gap-3 mb-5 text-[9px] font-semibold uppercase tracking-[0.3em]" style={{ color: '#b59c6b' }}>
+                  <Sparkles className="w-3 h-3" />
+                  <span>{heroEyebrow}</span>
+                </div>
+                <h3 className="text-[2rem] sm:text-[2.8rem] leading-[1.1] mb-5 max-w-lg" style={{ fontFamily: "'Playfair Display', serif", color: '#fbfaf8', fontWeight: 400 }}>
+                  {heroKicker}
+                </h3>
+                <p className="text-sm leading-relaxed max-w-xl font-light" style={{ color: 'rgba(251,250,248,0.7)' }}>
+                  {heroDescription}
+                </p>
               </div>
-              <p className="text-sm sm:text-[15px] leading-7 max-w-2xl" style={{ color: 'rgba(250,248,245,0.76)' }}>
-                {heroDescription}
-              </p>
-              <div className="grid grid-cols-3 gap-3 mt-6">
+              <div className="grid grid-cols-3 gap-0 mt-10 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                 {[
                   {
                     icon: Clock3,
@@ -121,31 +127,30 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   },
                   {
                     icon: ArrowUpRight,
-                    title: lang === 'ID' ? 'Layanan' : 'Service',
+                    title: lang === 'ID' ? 'Opsional' : 'Surcharge',
                     value: '21%',
                   },
-                ].map(({ icon: Icon, title, value }) => (
-                  <div key={title} className="rounded-[22px] px-4 py-4 border" style={{ backgroundColor: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}>
-                    <Icon className="w-4 h-4 mb-3" style={{ color: '#c4b5a4' }} />
-                    <p className="text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: 'rgba(250,248,245,0.55)' }}>{title}</p>
-                    <p className="text-sm font-semibold" style={{ color: '#faf8f5' }}>{value}</p>
+                ].map(({ icon: Icon, title, value }, idx) => (
+                  <div key={title} className={`py-6 flex flex-col items-center justify-center text-center ${idx !== 2 ? 'border-r' : ''}`} style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                    <p className="text-[8px] uppercase tracking-[0.3em] mb-2 font-semibold" style={{ color: 'rgba(251,250,248,0.5)' }}>{title}</p>
+                    <p className="text-[13px] font-medium" style={{ color: '#fbfaf8' }}>{value}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-[28px] border px-5 py-5 sm:px-6 sm:py-6" style={{ backgroundColor: '#f3eee7', borderColor: 'rgba(45,45,45,0.08)' }}>
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] mb-3" style={{ color: '#8a7648' }}>
+            <div className="border border-t-4 px-6 py-8 sm:px-8 sm:py-10" style={{ backgroundColor: '#fff', borderColor: 'rgba(26,26,26,0.05)', borderTopColor: '#1a1a1a', borderRadius: '2px' }}>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: '#8a7648' }}>
                 {sectionTitle}
               </p>
-              <p className="text-sm leading-7 mb-5" style={{ color: '#574b3f' }}>
+              <p className="text-sm leading-relaxed mb-8 font-light" style={{ color: '#574b3f' }}>
                 {sectionDescription}
               </p>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {categoryCounts.slice(0, 3).map(({ category, count }) => (
-                  <div key={category} className="flex items-center justify-between rounded-[18px] px-4 py-3" style={{ backgroundColor: '#fff', border: '1px solid rgba(45,45,45,0.06)' }}>
-                    <span className="text-sm font-semibold" style={{ color: '#2d2d2d' }}>{category}</span>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#8a7648' }}>{count}</span>
+                  <div key={category} className="flex items-center justify-between pb-3 border-b" style={{ borderColor: 'rgba(26,26,26,0.08)' }}>
+                    <span className="text-[13px] uppercase tracking-[0.1em]" style={{ color: '#1a1a1a' }}>{category}</span>
+                    <span className="text-[10px] font-semibold" style={{ color: '#8a7648' }}>({count})</span>
                   </div>
                 ))}
               </div>
@@ -153,33 +158,33 @@ export const MenuView: React.FC<MenuViewProps> = ({
           </div>
         </div>
 
-        <div className="px-5 sm:px-6 pt-6 grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
-          <div className="lg:sticky lg:top-[230px] h-fit space-y-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#8a7648' }} />
+        <div className="px-6 sm:px-10 pt-10 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
+          <div className="lg:sticky lg:top-[280px] h-fit space-y-8">
+            <div className="relative border-b" style={{ borderColor: 'rgba(26,26,26,0.2)' }}>
               <input
                 type="text"
                 placeholder={t.search}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-10 py-4 rounded-2xl text-sm font-medium focus:outline-none transition-all"
-                style={{ backgroundColor: '#fff', color: '#2d2d2d', border: '1px solid rgba(45,45,45,0.08)' }}
+                className="w-full pl-0 pr-8 py-3 text-sm focus:outline-none transition-all placeholder-[#888] bg-transparent"
+                style={{ color: '#1a1a1a' }}
               />
-              {searchQuery && (
+              {searchQuery ? (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
-                  style={{ color: '#b8a898' }}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 p-1"
+                  style={{ color: '#1a1a1a' }}
                 >
-                  <XCircle className="w-4 h-4" />
+                  <XCircle className="w-3.5 h-3.5" />
                 </button>
+              ) : (
+                <Search className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: '#1a1a1a' }} />
               )}
             </div>
 
-            <div className="rounded-[28px] border p-3" style={{ backgroundColor: '#fff', borderColor: 'rgba(45,45,45,0.06)' }}>
+            <div className="space-y-1">
               {CATEGORIES.map((cat) => {
                 const isActive = selectedCategory === cat && !searchQuery;
-                const categoryCount = MENU_ITEMS.filter((item) => item.category === cat).length;
                 return (
                   <button
                     key={cat}
@@ -187,30 +192,20 @@ export const MenuView: React.FC<MenuViewProps> = ({
                       setSelectedCategory(cat);
                       setSearchQuery('');
                     }}
-                    className="w-full flex items-center justify-between rounded-[20px] px-4 py-3 text-left transition-all"
-                    style={isActive
-                      ? { backgroundColor: '#2d2d2d', color: '#faf8f5' }
-                      : { backgroundColor: 'transparent', color: '#4e4338' }}
+                    className="w-full flex items-center justify-between py-3 text-left transition-all border-b"
+                    style={{ borderColor: 'transparent', borderBottomColor: isActive ? '#1a1a1a' : 'rgba(26,26,26,0.06)' }}
                   >
-                    <span className="text-sm font-semibold">{cat}</span>
-                    <span
-                      className="text-[10px] font-bold uppercase tracking-[0.22em] rounded-full px-2 py-1"
-                      style={isActive
-                        ? { backgroundColor: 'rgba(255,255,255,0.1)', color: '#c4b5a4' }
-                        : { backgroundColor: '#f3eee7', color: '#8a7648' }}
-                    >
-                      {categoryCount}
-                    </span>
+                    <span className={`text-[11px] uppercase tracking-[0.2em] ${isActive ? 'font-semibold' : 'font-normal'}`} style={{ color: isActive ? '#1a1a1a' : '#888' }}>{cat}</span>
                   </button>
                 );
               })}
             </div>
 
-            <div className="rounded-[28px] border p-5" style={{ backgroundColor: '#f7f2ea', borderColor: 'rgba(45,45,45,0.06)' }}>
-              <p className="text-[10px] uppercase tracking-[0.24em] font-bold mb-2" style={{ color: '#8a7648' }}>
+            <div className="p-6 border" style={{ backgroundColor: '#fff', borderColor: 'rgba(26,26,26,0.06)', borderRadius: '2px' }}>
+              <p className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-3" style={{ color: '#8a7648' }}>
                 {lang === 'ID' ? 'Catatan layanan' : 'Service note'}
               </p>
-              <p className="text-sm leading-7" style={{ color: '#574b3f' }}>
+              <p className="text-xs leading-relaxed font-light" style={{ color: '#574b3f' }}>
                 {lang === 'ID'
                   ? 'Tagihan dan pajak 21% ditambahkan saat checkout. Gunakan catatan item untuk preferensi dapur.'
                   : 'Tax and service are added at checkout. Use item notes for kitchen preferences and delivery instructions.'}
@@ -219,21 +214,21 @@ export const MenuView: React.FC<MenuViewProps> = ({
           </div>
 
           <div className="min-w-0">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-4 border-b" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] mb-2" style={{ color: '#8a7648' }}>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: '#8a7648' }}>
                   {sectionTitle}
                 </p>
-                <h3 className="text-3xl leading-none" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+                <h3 className="text-[2.2rem] sm:text-[3rem] leading-[1]" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 500 }}>
                   {searchQuery ? t.search : selectedCategory}
                 </h3>
               </div>
-              <p className="text-xs sm:text-sm max-w-md" style={{ color: '#7a6a5a' }}>
+              <p className="text-xs max-w-sm font-light text-right hidden sm:block" style={{ color: '#574b3f' }}>
                 {searchQuery
                   ? t.searchEmpty
                   : lang === 'ID'
-                    ? 'Disusun agar mudah dibaca, dengan detail servis, estimasi waktu, dan harga yang lebih tegas.'
-                    : 'Structured for quick reading, with clearer service detail, prep cues, and stronger pricing hierarchy.'}
+                    ? 'Disusun agar mencerminkan keunggulan cita rasa lokal dan internasional, dengan detail waktu pengolahan yang transparan.'
+                    : 'Structured to reflect the excellence of our kitchen, complete with transparent preparation cues.'}
               </p>
             </div>
 
@@ -241,16 +236,14 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="py-20 flex flex-col items-center justify-center text-center px-6 rounded-[28px] border border-dashed"
-                style={{ borderColor: 'rgba(184,168,152,0.3)', backgroundColor: 'rgba(255,255,255,0.55)' }}
+                className="py-32 flex flex-col items-center justify-center text-center px-10 border"
+                style={{ borderColor: 'rgba(26,26,26,0.1)', backgroundColor: '#fff', borderRadius: '2px' }}
               >
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#fff' }}>
-                  <SearchX className="w-6 h-6" style={{ color: '#b8a898' }} />
-                </div>
-                <h3 className="text-xl mb-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#2d2d2d' }}>
+                <SearchX className="w-8 h-8 mb-6" style={{ color: '#b59c6b' }} />
+                <h3 className="text-[2rem] sm:text-[2.5rem] mb-4" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 400 }}>
                   {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
                 </h3>
-                <p className="text-sm max-w-[280px]" style={{ color: '#7a6a5a' }}>
+                <p className="text-sm max-w-[320px] font-light" style={{ color: '#574b3f' }}>
                   {searchQuery ? t.searchEmpty : t.emptyMenuDesc}
                 </p>
               </motion.div>
@@ -280,25 +273,25 @@ export const MenuView: React.FC<MenuViewProps> = ({
             >
               <button
                 onClick={onOpenCart}
-                className="w-full max-w-xl flex items-center justify-between px-5 py-4 rounded-[24px] shadow-2xl pointer-events-auto transition-transform active:scale-95"
-                style={{ backgroundColor: '#2d2d2d', color: '#faf8f5', border: '1px solid rgba(255,255,255,0.08)' }}
+                className="w-full max-w-xl flex items-center justify-between px-8 py-5 shadow-2xl pointer-events-auto transition-transform active:scale-[0.99] border"
+                style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-[#2d2d2d] bg-[#faf8f5]">
+                <div className="flex items-center gap-6">
+                  <div className="w-8 h-8 flex items-center justify-center text-[10px] font-bold border" style={{ borderColor: 'rgba(251,250,248,0.3)', color: '#fbfaf8', borderRadius: '1px' }}>
                     {totalQty}
                   </div>
                   <div className="text-left">
-                    <p className="text-[10px] uppercase tracking-[0.24em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
+                    <p className="text-[8px] uppercase tracking-[0.3em] font-semibold" style={{ color: '#b59c6b' }}>
                       {lang === 'ID' ? 'Siap ditinjau' : 'Ready to review'}
                     </p>
-                    <span className="text-sm font-semibold tracking-wide uppercase">{t.cart}</span>
+                    <span className="text-xs font-semibold tracking-[0.2em] uppercase mt-1 block">{t.cart}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-[0.24em]" style={{ color: 'rgba(250,248,245,0.6)' }}>
+                  <p className="text-[8px] uppercase tracking-[0.3em] font-semibold" style={{ color: 'rgba(251,250,248,0.5)' }}>
                     {lang === 'ID' ? 'Total sementara' : 'Current total'}
                   </p>
-                  <span className="text-sm font-bold" style={{ color: '#c4b5a4' }}>{formatCurrency(grandTotal)}</span>
+                  <span className="text-sm font-semibold tracking-wider mt-1 block" style={{ color: '#fbfaf8' }}>{formatCurrency(grandTotal)}</span>
                 </div>
               </button>
             </motion.div>
