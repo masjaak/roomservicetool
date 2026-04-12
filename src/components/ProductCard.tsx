@@ -12,66 +12,77 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLabel }) => {
   return (
-    <button
-      onClick={onClick}
-      className="w-full text-left group transition-all duration-500 overflow-hidden bg-transparent border-b pb-8 mb-4 last:border-b-0 hover:bg-white/50"
-      style={{ borderColor: 'rgba(0,0,0,0.06)' }}
-    >
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 items-stretch">
-        <div className="relative w-full sm:w-48 aspect-[4/5] sm:aspect-[4/5] flex-shrink-0 overflow-hidden bg-[#faf8f5]">
-          <ImageWithFallback
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105 filter group-hover:contrast-125"
-          />
-        </div>
-
-        <div className="flex-1 min-w-0 flex flex-col pt-2 sm:pt-4">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            {item.tag && (
-              <span className="text-[10px] px-2 py-0.5 font-medium uppercase tracking-[0.15em] text-[#574b3f] border border-[#e7e5e4]">
-                {item.tag}
-              </span>
-            )}
-            {item.serviceTag && (
-              <span className="text-[10px] px-2 py-0.5 font-medium uppercase tracking-[0.15em] text-white bg-[#1c1917]">
-                {item.serviceTag}
-              </span>
-            )}
-          </div>
-        
-          <div className="flex justify-between items-start gap-4 mb-2">
-            <h3 className="text-[1.5rem] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1c1917', fontWeight: 600 }}>
+    <div className="w-full bg-[#ffffff] border-b border-[#e7e5e4] last:border-b-0 py-6 mb-2">
+      <div className="flex flex-row gap-5 items-start">
+        {/* Left: Content */}
+        <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
+          <div>
+            {/* Tagging / Badge */}
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              {item.tag && (
+                <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-[0.1em] text-[#78716c] bg-[#f5f5f4] rounded-sm">
+                  {item.tag}
+                </span>
+              )}
+              {item.serviceTag && (
+                <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-[0.1em] text-white bg-[#2d2d2d] rounded-sm">
+                  {item.serviceTag}
+                </span>
+              )}
+            </div>
+            
+            {/* Title & Price */}
+            <h3 className="text-[1.15rem] leading-tight font-bold mb-1" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
               {item.name}
             </h3>
-            <p className="text-[0.9rem] font-medium tracking-wide mt-1" style={{ color: '#1c1917', fontFamily: "'Manrope', sans-serif" }}>
+            <p className="text-[0.95rem] font-bold tracking-tight mb-2" style={{ color: '#44403c' }}>
               {item.price > 0 ? formatCurrency(item.price) : freeLabel}
             </p>
-          </div>
-        
-          <p className="text-[0.9rem] leading-[1.6] leading-relaxed line-clamp-2 max-w-lg mb-6" style={{ color: '#78716c', fontWeight: 400, fontFamily: "'Manrope', sans-serif" }}>
-            {item.description}
-          </p>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-auto pt-2">
-            <div className="flex items-center gap-4">
+            
+            {/* Description */}
+            <p className="text-[0.8rem] leading-relaxed text-[#78716c] line-clamp-2 pr-2 mb-4 font-normal">
+              {item.description}
+            </p>
+            
+            {/* Meta */}
+            <div className="flex items-center gap-3">
               {item.prepTime && (
-                <span className="text-[10px] uppercase tracking-[0.15em] font-semibold text-[#a8a29e]">
-                  {item.prepTime}
+                <span className="text-[10px] font-semibold text-[#a8a29e] flex items-center gap-1">
+                  <span>⏰</span> {item.prepTime}
                 </span>
               )}
               {item.spiceLevel && item.spiceLevel !== 'None' && (
-                <span style={{ color: item.spiceLevel === 'Hot' ? '#991b1b' : '#a8a29e' }} className="text-[10px] uppercase tracking-[0.15em] font-semibold">
+                <span style={{ color: item.spiceLevel === 'Hot' ? '#b91c1c' : '#d97706' }} className="text-[10px] font-bold">
                   {item.spiceLevel}
                 </span>
               )}
             </div>
-            <div className="w-full sm:w-auto h-12 sm:h-11 px-6 ml-auto flex items-center justify-center sm:justify-start gap-3 text-[11px] uppercase tracking-[0.2em] font-medium transition-all bg-[#f5f5f4] text-[#1c1917] group-hover:bg-[#1c1917] group-hover:text-white mt-4 sm:mt-0">
-              <span>View dish</span>
-            </div>
+          </div>
+
+          {/* CTA: Distinct, unmistakable action */}
+          <div className="mt-5">
+            <button
+              onClick={(e) => { e.stopPropagation(); onClick(); }}
+              className="group inline-flex items-center gap-2 px-6 py-2.5 bg-[#f5f5f4] hover:bg-[#2d2d2d] hover:text-[#ffffff] text-[#1c1917] rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add</span>
+            </button>
           </div>
         </div>
+
+        {/* Right: Image */}
+        <div 
+          className="relative w-[100px] sm:w-[130px] aspect-square flex-shrink-0 bg-[#f5f5f4] rounded-lg overflow-hidden cursor-pointer"
+          onClick={onClick}
+        >
+          <ImageWithFallback
+            src={item.image}
+            alt={item.name}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+          />
+        </div>
       </div>
-    </button>
+    </div>
   );
 };

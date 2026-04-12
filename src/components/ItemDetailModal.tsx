@@ -41,121 +41,155 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
 
   return (
     <AnimatePresence>
-      {isOpen && item && (
+      {isOpen && (
         <>
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-[#fcfaf7]/90 backdrop-blur-sm z-50 pointer-events-auto"
+            onClick={handleClose}
+            className="fixed inset-0 z-50 bg-[#000000]/50 backdrop-blur-sm"
           />
-          <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4">
+
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none sm:p-6">
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              className="w-full max-w-lg bg-white pointer-events-auto overflow-hidden shadow-xl border-none flex flex-col max-h-[85vh]"
-              style={{ borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="w-full max-w-lg bg-[#ffffff] pointer-events-auto flex flex-col sm:rounded-2xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[90vh]"
             >
-              {/* Header Image */}
-              <div className="relative h-[45vh] min-h-[300px] w-full bg-[#fbfaf8]">
-                <ImageWithFallback 
-                  src={item.image} 
+              {/* Image Header */}
+              <div className="relative w-full h-64 sm:h-72 bg-[#f5f5f4]">
+                <button
+                  onClick={handleClose}
+                  className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <ImageWithFallback
+                  src={item.image}
                   alt={item.name}
                   className="w-full h-full object-cover"
                 />
-                
-                {/* Close Button overlay */}
-                <div className="absolute top-4 right-4 z-10 flex gap-2">
-                  <button
-                    onClick={onClose}
-                    className="w-12 h-12 flex items-center justify-center bg-white shadow-sm text-[#1c1917] transition-all hover:bg-[#1a1a1a] hover:text-white"
-                    style={{ borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
               </div>
 
-              {/* Content body mapping to a printed order sheet */}
-              <div className="flex-1 overflow-y-auto px-8 py-8 styling-sheet border-t" style={{ borderColor: 'rgba(26,26,26,0.1)', fontFamily: "'Manrope', sans-serif" }}>
-                
-                <div className="mb-8">
-                  <h2 className="text-[2.2rem] leading-tight mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a' }}>
-                    {item.name}
-                  </h2>
-                  <p className="text-xl tracking-widest font-light" style={{ color: '#8a7648' }}>
-                    {formatCurrency(item.price)}
-                  </p>
-                </div>
-
-                <p className="text-[0.95rem] leading-[1.7] font-normal mb-8 pt-6 border-t" style={{ color: '#574b3f', borderColor: 'rgba(26,26,26,0.1)' }}>
-                  {item.description}
-                </p>
-
-                {item.dietaryTags && item.dietaryTags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {item.dietaryTags.map(tag => (
-                      <span key={tag} className="border px-4 py-2 text-[9px] uppercase tracking-[0.25em] font-semibold" style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}>
-                        {tag}
-                      </span>
-                    ))}
+              {/* Content Body */}
+              <div className="flex-1 overflow-y-auto hide-scrollbar">
+                <div className="px-6 py-8">
+                  {/* Title & Badge */}
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <h2 className="text-[2rem] leading-tight font-bold" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+                      {item.name}
+                    </h2>
+                    {(item.tag || item.serviceTag) && (
+                      <div className="flex flex-col gap-1 items-end pt-1">
+                        {item.tag && <span className="text-[9px] px-2 py-1 font-bold uppercase tracking-[0.15em] bg-[#f5f5f4] text-[#78716c] rounded-sm">{item.tag}</span>}
+                        {item.serviceTag && <span className="text-[9px] px-2 py-1 font-bold uppercase tracking-[0.15em] bg-[#1c1917] text-white rounded-sm">{item.serviceTag}</span>}
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                <div className="space-y-6 pt-6 border-t" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
-                  <div>
-                    <label className="block text-[10px] font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: '#1a1a1a' }}>
+
+                  <p className="text-[1rem] leading-relaxed text-[#78716c] mb-6">
+                    {item.description}
+                  </p>
+
+                  <div className="flex gap-4 mb-8">
+                    {item.prepTime && (
+                      <div className="flex bg-[#f5f5f4] py-2 px-4 rounded-full">
+                        <span className="text-[10px] font-bold text-[#574b3f] uppercase tracking-wider">
+                          Prep: {item.prepTime}
+                        </span>
+                      </div>
+                    )}
+                    {item.spiceLevel && item.spiceLevel !== 'None' && (
+                      <div className="flex bg-[#f5f5f4] py-2 px-4 rounded-full">
+                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: item.spiceLevel === 'Hot' ? '#b91c1c' : '#d97706' }}>
+                          Spice: {item.spiceLevel}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Note Input */}
+                  <div className="mb-6">
+                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1c1917] mb-3">
                       {t.specialInstructions}
                     </label>
                     <textarea
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
-                      placeholder={lang === 'ID' ? 'Ketik permintaan khusus di sini...' : 'Type specific preferences here...'}
-                      className="w-full text-sm font-light p-4 border focus:ring-0 transition-colors"
-                      style={{ backgroundColor: '#fcfaf7', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.15)', borderRadius: '1px' }}
-                      rows={3}
+                      placeholder={t.placeholderNote}
+                      className="w-full bg-[#fdfbf9] border border-[#e7e5e4] rounded-lg p-4 text-[0.95rem] focus:outline-none focus:border-[#a08850] resize-none h-24 placeholder-[#a8a29e]"
                     />
                   </div>
+
+                  {/* Allergens dropdown */}
+                  {item.allergens && item.allergens.length > 0 && (
+                    <div className="border border-[#e7e5e4] rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => setShowAllergens(!showAllergens)}
+                        className="w-full flex items-center justify-between p-4 bg-[#fdfbf9] text-[11px] uppercase tracking-widest font-bold text-[#1c1917]"
+                      >
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-[#a08850]" />
+                          <span>Show Allergens</span>
+                        </div>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${showAllergens ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence>
+                        {showAllergens && (
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: 'auto' }}
+                            exit={{ height: 0 }}
+                            className="overflow-hidden bg-white"
+                          >
+                            <div className="p-4 pt-0 border-t border-[#e7e5e4] flex flex-wrap gap-2">
+                              {item.allergens.map((allergen) => (
+                                <span key={allergen} className="px-3 py-1 bg-[#f5f5f4] text-[#574b3f] text-[11px] rounded-full font-medium">
+                                  {allergen}
+                                </span>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Footer Controls */}
-              <div className="p-8 border-t bg-white" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
-                <div className="flex gap-4">
-                  {/* Quantity */}
-                  <div className="border flex items-center px-4" style={{ borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}>
-                    <button
-                      onClick={() => setQty(Math.max(1, qty - 1))}
-                      className="w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center transition-all disabled:opacity-30"
-                      disabled={qty <= 1}
-                      style={{ color: '#1a1a1a' }}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="text-base font-medium w-10 text-center" style={{ color: '#1a1a1a' }}>{qty}</span>
-                    <button
-                      onClick={() => setQty(qty + 1)}
-                      className="w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center transition-all"
-                      style={{ color: '#1a1a1a' }}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                  
-                  {/* Add to Cart */}
+              <div className="p-6 bg-[#ffffff] border-t border-[#e7e5e4] grid grid-cols-[100px_1fr] gap-4">
+                {/* Quantity */}
+                <div className="flex items-center justify-between bg-[#f5f5f4] rounded-full px-2 h-14">
                   <button
-                    onClick={handleAdd}
-                    className="flex-1 h-14 sm:h-12 px-8 text-[11px] uppercase tracking-[0.25em] font-semibold flex items-center justify-between transition-colors outline-none"
-                    style={{ backgroundColor: '#2a2723', color: '#ffffff', borderRadius: '1px' }}
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] disabled:opacity-30 rounded-full hover:bg-[#e7e5e4] transition-colors"
+                    disabled={qty <= 1}
                   >
-                    <span>{t.addToCart}</span>
-                    <span style={{ color: 'rgba(251,250,248,0.7)' }}>{formatCurrency(item.price * qty)}</span>
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="text-[1rem] font-bold text-[#1c1917]">{qty}</span>
+                  <button
+                    onClick={() => setQty(qty + 1)}
+                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
 
+                {/* Add to Cart CTA */}
+                <button
+                  onClick={handleAdd}
+                  className="h-14 bg-[#1c1917] text-[#ffffff] rounded-full flex items-center justify-between px-6 focus:outline-none hover:bg-[#2d2d2d] transition-colors active:scale-[0.98]"
+                >
+                  <span className="text-[12px] font-bold uppercase tracking-widest">{t.addToCart}</span>
+                  <span className="text-[14px] font-bold text-[#a08850]">{formatCurrency(totalPrice)}</span>
+                </button>
+              </div>
             </motion.div>
           </div>
         </>

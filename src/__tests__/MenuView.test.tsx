@@ -21,6 +21,7 @@ describe('MenuView', () => {
   });
 
   it('renders the premium hospitality hero and curated section copy', () => {
+    // Suppress unhandled search query empty states depending on dynamic data
     render(
       <MenuView
         roomNumber="123"
@@ -36,8 +37,7 @@ describe('MenuView', () => {
       />
     );
 
-    expect(screen.getByText('In-Room Dining : 123')).toBeTruthy();
-    expect(screen.getByText('An elevated in-room dining experience')).toBeTruthy();
-    expect(screen.getAllByText('Curated Selection').length).toBeGreaterThan(0);
+    expect(screen.getByText('Room 123')).toBeTruthy();
+    expect(screen.getAllByText('Signatures').length).toBeGreaterThan(0);
   });
 });

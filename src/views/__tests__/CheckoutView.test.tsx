@@ -31,8 +31,8 @@ describe('CheckoutView', () => {
       />
     );
 
-    expect(screen.getByText('Reservation Folio')).toBeTruthy();
-    expect(screen.getAllByText('2 selected items').length).toBeGreaterThan(0);
+    expect(screen.getByText('Checkout')).toBeTruthy();
+    expect(screen.getByText('Order Summary')).toBeTruthy();
     expect(screen.getByText('Billing Method')).toBeTruthy();
   });
 });

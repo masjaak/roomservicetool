@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, Search, XCircle, SearchX, Sparkles, Clock3, UtensilsCrossed, ArrowUpRight } from 'lucide-react';
+import { LogOut, Search, XCircle, SearchX, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MenuItem, CartItem, Language } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
@@ -37,14 +37,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const t = TRANSLATIONS[lang];
   const [searchQuery, setSearchQuery] = useState('');
-  const categoryCounts = CATEGORIES.map((category) => ({
-    category,
-    count: MENU_ITEMS.filter((item) => item.category === category).length,
-  }));
-
-  const handleLogout = () => {
-    onLogout();
-  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -55,16 +47,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
   const grandTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
-  const heroTitle = lang === 'ID' ? `In-Room Dining : ${roomNumber}` : `In-Room Dining : ${roomNumber}`;
-  const heroEyebrow = lang === 'ID' ? 'Menu sepanjang hari' : 'All-day dining';
-  const heroKicker = lang === 'ID' ? 'Pengalaman in-room dining' : 'An elevated in-room dining experience';
-  const heroDescription = lang === 'ID'
-    ? 'Sebuah seleksi hidangan khas yang dikurasi khusus untuk melengkapi waktu Anda, dihadirkan dengan keanggunan.'
-    : 'A thoughtfully curated selection of signature dishes, designed to complement your time with quiet elegance.';
-  const sectionTitle = lang === 'ID' ? 'Seleksi Kurasi' : 'Curated Selection';
-  const sectionDescription = lang === 'ID'
-    ? 'Telusuri koleksi hidangan kami berdasarkan kategori.'
-    : 'Peruse our dining collection by course or signature.';
 
   const filteredItems = searchQuery.length > 0
     ? MENU_ITEMS.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -74,231 +56,131 @@ export const MenuView: React.FC<MenuViewProps> = ({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen pb-36"
-      style={{ backgroundColor: '#fdfbf9', fontFamily: "'Manrope', sans-serif" }}
+      className="min-h-screen pb-36 bg-[#fdfbf9]"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <div className="w-full max-w-6xl mx-auto min-h-screen relative">
-        {/* Header */}
-        <div className="px-6 sm:px-10 pt-10 pb-12" style={{ backgroundColor: 'transparent', borderBottom: '1px solid rgba(26,26,26,0.06)' }}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+      <div className="w-full max-w-4xl mx-auto min-h-screen relative">
+        {/* Top Header */}
+        <div className="px-6 sm:px-8 pt-10 pb-6">
+          <div className="flex flex-row items-start justify-between mb-6">
             <div>
-              <p className="text-[9px] font-semibold tracking-[0.3em] uppercase mb-3" style={{ color: '#8a7648' }}>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#a08850] mb-2">
                 {getGreeting()}
               </p>
-              <h2 className="text-[2rem] sm:text-[2.75rem] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 500 }}>
-                {heroTitle}
+              <h2 className="text-[2.5rem] leading-none" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
+                Room {roomNumber}
               </h2>
             </div>
             <button
-              onClick={handleLogout}
-              className="h-10 px-5 flex items-center justify-center transition-colors border text-[9px] font-semibold uppercase tracking-[0.25em] hover:bg-[#1a1a1a] hover:text-[#fbfaf8]"
-              style={{ backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.15)', borderRadius: '2px' }}
+              onClick={onLogout}
+              className="px-4 py-2 flex items-center justify-center gap-2 border border-[#e7e5e4] text-[10px] font-bold uppercase tracking-widest text-[#1c1917] hover:bg-[#1c1917] hover:text-white transition-colors rounded-full"
             >
-              <span className="hidden sm:inline mr-2">{lang === 'ID' ? 'Keluar' : 'Switch'}</span>
+              <span className="hidden sm:inline">{lang === 'ID' ? 'Keluar' : 'Exit'}</span>
               <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-            <div className="border px-6 py-8 sm:px-10 sm:py-10 flex flex-col justify-between" style={{ backgroundColor: '#f8f6f0', borderColor: 'rgba(0,0,0,0.05)', borderRadius: '2px' }}>
-              <div>
-                <div className="flex items-center gap-3 mb-5 text-[9px] font-semibold uppercase tracking-[0.3em]" style={{ color: '#b59c6b' }}>
-                  
-                  <span>{heroEyebrow}</span>
-                </div>
-                <h3 className="text-[2rem] sm:text-[2.8rem] leading-[1.1] mb-5 max-w-lg" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 500 }}>
-                  {heroKicker}
-                </h3>
-                <p className="text-sm leading-relaxed max-w-xl font-light" style={{ color: '#574b3f' }}>
-                  {heroDescription}
-                </p>
-              </div>
-              <div className="grid grid-cols-3 gap-0 mt-10 border-t" style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
-                {[
-                  {
-                    icon: Clock3,
-                    title: lang === 'ID' ? 'Estimasi' : 'Estimated',
-                    value: '20-30 min',
-                  },
-                  {
-                    icon: UtensilsCrossed,
-                    title: lang === 'ID' ? 'Pilihan' : 'Selection',
-                    value: `${MENU_ITEMS.length} ${lang === 'ID' ? 'hidangan' : 'dishes'}`,
-                  },
-                  {
-                    icon: ArrowUpRight,
-                    title: lang === 'ID' ? 'Opsional' : 'Surcharge',
-                    value: '21%',
-                  },
-                ].map(({ icon: Icon, title, value }, idx) => (
-                  <div key={title} className={`py-6 flex flex-col items-center justify-center text-center ${idx !== 2 ? 'border-r' : ''}`} style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
-                    <p className="text-[8px] uppercase tracking-[0.3em] mb-2 font-semibold" style={{ color: '#1a1a1a' }}>{title}</p>
-                    <p className="text-[13px] font-medium" style={{ color: '#1c1917' }}>{value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className=" px-6 py-8 sm:px-8 sm:py-10" style={{ backgroundColor: '#ffffff', borderColor: 'rgba(0,0,0,0.05)', borderTopColor: 'transparent', borderRadius: '2px' }}>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: '#8a7648' }}>
-                {sectionTitle}
-              </p>
-              <p className="text-sm leading-relaxed mb-8 font-light" style={{ color: '#574b3f' }}>
-                {sectionDescription}
-              </p>
-              <div className="space-y-4">
-                {categoryCounts.slice(0, 3).map(({ category, count }) => (
-                  <div key={category} className="flex items-center justify-between pb-3 border-b" style={{ borderColor: 'rgba(26,26,26,0.08)' }}>
-                    <span className="text-[13px] uppercase tracking-[0.1em]" style={{ color: '#1a1a1a' }}>{category}</span>
-                    <span className="text-[10px] font-semibold" style={{ color: '#8a7648' }}>({count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a8a29e]" />
+            <input
+              type="text"
+              placeholder={t.search}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-10 py-3.5 rounded-xl bg-[#f5f5f4] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus:outline-none focus:ring-2 focus:ring-[#1c1917]/20 transition-all border-none"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#a8a29e] hover:text-[#1c1917] transition-colors">
+                <XCircle className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="px-6 sm:px-10 pt-10 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
-          <div className="lg:sticky lg:top-[40px] h-fit space-y-8 mt-4">
-            <div className="relative border-b" style={{ borderColor: 'rgba(26,26,26,0.2)' }}>
-              <input
-                type="text"
-                placeholder={t.search}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-0 pr-8 py-3 text-sm focus:outline-none transition-all placeholder-[#888] bg-transparent"
-                style={{ color: '#1a1a1a' }}
-              />
-              {searchQuery ? (
+        {/* Sticky Category Navigation */}
+        {!searchQuery && (
+          <div className="sticky top-0 z-30 bg-[#fdfbf9]/90 backdrop-blur-md border-b border-[#e7e5e4] px-4">
+            <div className="flex overflow-x-auto hide-scrollbar gap-2 py-3">
+              {CATEGORIES.map((cat) => (
                 <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 p-1"
-                  style={{ color: '#1a1a1a' }}
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-all ${
+                    selectedCategory === cat
+                      ? 'bg-[#1c1917] text-[#ffffff]'
+                      : 'bg-transparent text-[#78716c] hover:bg-[#f5f5f4]'
+                  }`}
                 >
-                  <XCircle className="w-3.5 h-3.5" />
+                  {cat}
                 </button>
-              ) : (
-                <Search className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: '#1a1a1a' }} />
-              )}
-            </div>
-
-            <div className="space-y-1">
-              {CATEGORIES.map((cat) => {
-                const isActive = selectedCategory === cat && !searchQuery;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => {
-                      setSelectedCategory(cat);
-                      setSearchQuery('');
-                    }}
-                    className="w-full flex items-center justify-between py-4 text-left transition-all border-b"
-                    style={{ borderColor: 'transparent', borderBottomColor: isActive ? '#1a1a1a' : 'rgba(26,26,26,0.06)' }}
-                  >
-                    <span className={`text-[12px] uppercase tracking-[0.2em] ${isActive ? 'font-semibold' : 'font-normal'}`} style={{ color: isActive ? '#1a1a1a' : '#888' }}>{cat}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="p-6 border" style={{ backgroundColor: '#ffffff', borderColor: 'rgba(26,26,26,0.06)', borderRadius: '2px' }}>
-              <p className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-3" style={{ color: '#8a7648' }}>
-                {lang === 'ID' ? 'Catatan layanan' : 'Service note'}
-              </p>
-              <p className="text-xs leading-relaxed font-light" style={{ color: '#574b3f' }}>
-                {lang === 'ID'
-                  ? 'Tagihan dan pajak 21% ditambahkan saat checkout. Gunakan catatan item untuk preferensi dapur.'
-                  : 'Tax and service are added at checkout. Use item notes for kitchen preferences and delivery instructions.'}
-              </p>
+              ))}
             </div>
           </div>
+        )}
 
-          <div className="min-w-0">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-4 border-b" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: '#8a7648' }}>
-                  {sectionTitle}
-                </p>
-                <h3 className="text-[2.2rem] sm:text-[3rem] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 500 }}>
-                  {searchQuery ? t.search : selectedCategory}
-                </h3>
+        {/* List Header */}
+        <div className="px-6 sm:px-8 mt-6 mb-4">
+          <h3 className="text-[1.2rem] font-bold" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+            {searchQuery ? t.search : selectedCategory}
+          </h3>
+        </div>
+
+        {/* Item List */}
+        <div className="px-6 sm:px-8 flex flex-col">
+          {filteredItems.length === 0 ? (
+            <div className="py-20 flex flex-col items-center justify-center text-center px-4">
+              <div className="w-16 h-16 rounded-full bg-[#f5f5f4] flex items-center justify-center mb-4">
+                <SearchX className="w-6 h-6 text-[#a8a29e]" />
               </div>
-              <p className="text-xs max-w-sm font-light text-right hidden sm:block" style={{ color: '#574b3f' }}>
-                {searchQuery
-                  ? t.searchEmpty
-                  : lang === 'ID'
-                    ? 'Disusun agar mencerminkan keunggulan cita rasa lokal dan internasional, dengan detail waktu pengolahan yang transparan.'
-                    : 'Structured to reflect the excellence of our kitchen, complete with transparent preparation cues.'}
+              <h3 className="text-[1.25rem] font-bold text-[#1c1917] mb-2 font-serif">
+                {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
+              </h3>
+              <p className="text-[0.95rem] text-[#78716c] max-w-xs leading-relaxed">
+                {searchQuery ? t.searchEmpty : t.emptyMenuDesc}
               </p>
             </div>
-
-            {filteredItems.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="py-32 flex flex-col items-center justify-center text-center px-10 border"
-                style={{ borderColor: 'rgba(26,26,26,0.1)', backgroundColor: '#ffffff', borderRadius: '2px' }}
-              >
-                <SearchX className="w-8 h-8 mb-6" style={{ color: '#b59c6b' }} />
-                <h3 className="text-[2rem] sm:text-[2.5rem] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 400 }}>
-                  {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
-                </h3>
-                <p className="text-sm max-w-[320px] font-light" style={{ color: '#574b3f' }}>
-                  {searchQuery ? t.searchEmpty : t.emptyMenuDesc}
-                </p>
-              </motion.div>
-            ) : (
-              <div className="grid gap-4 xl:grid-cols-2">
-                {filteredItems.map((item) => (
-                  <ProductCard
-                    key={item.id}
-                    item={item}
-                    onClick={() => setSelectedItem(item)}
-                    freeLabel={t.free}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          ) : (
+            filteredItems.map((item) => (
+              <ProductCard
+                key={item.id}
+                item={item}
+                onClick={() => setSelectedItem(item)}
+                freeLabel={t.free}
+              />
+            ))
+          )}
         </div>
 
         {/* Floating Cart CTA */}
         <AnimatePresence>
           {totalQty > 0 && (
             <motion.div
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              className="fixed bottom-6 left-0 right-0 px-5 sm:px-6 z-40 flex justify-center pointer-events-none"
+              initial={{ y: 150 }}
+              animate={{ y: 0 }}
+              exit={{ y: 150 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-6 left-0 right-0 px-6 z-40 flex justify-center pointer-events-none"
             >
               <button
                 onClick={onOpenCart}
-                className="w-full max-w-xl flex items-center justify-between px-6 py-4 h-16 shadow-xl pointer-events-auto transition-transform active:scale-[0.99] border"
-                style={{ backgroundColor: '#1a1a1a', color: '#1c1917', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}
+                className="w-full max-w-md h-16 flex items-center justify-between px-6 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] pointer-events-auto transition-transform active:scale-[0.98] bg-[#1c1917] text-white"
               >
-                <div className="flex items-center gap-6">
-                  <div className="w-8 h-8 flex items-center justify-center text-[10px] font-bold border" style={{ borderColor: 'rgba(251,250,248,0.3)', color: '#1c1917', borderRadius: '1px' }}>
-                    {totalQty}
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <ShoppingBag className="w-5 h-5 text-white" />
+                    <div className="absolute -top-2 -right-3 w-5 h-5 bg-[#a08850] rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm border border-[#1c1917]">
+                      {totalQty}
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <p className="text-[8px] uppercase tracking-[0.3em] font-semibold" style={{ color: '#b59c6b' }}>
-                      {lang === 'ID' ? 'Siap ditinjau' : 'Ready to review'}
-                    </p>
-                    <span className="text-xs font-semibold tracking-[0.2em] uppercase mt-1 block">{t.cart}</span>
-                  </div>
+                  <span className="text-[12px] font-bold tracking-widest uppercase ml-2">{t.cart}</span>
                 </div>
-                <div className="text-right">
-                  <p className="text-[8px] uppercase tracking-[0.3em] font-semibold" style={{ color: '#1a1a1a' }}>
-                    {lang === 'ID' ? 'Total sementara' : 'Current total'}
-                  </p>
-                  <span className="text-sm font-semibold tracking-wider mt-1 block" style={{ color: '#1c1917' }}>{formatCurrency(grandTotal)}</span>
-                </div>
+                <span className="text-[14px] font-bold text-[#a08850]">{formatCurrency(grandTotal)}</span>
               </button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Modals */}
+        {/* Overlays */}
         <ItemDetailModal
           item={selectedItem}
           isOpen={!!selectedItem}

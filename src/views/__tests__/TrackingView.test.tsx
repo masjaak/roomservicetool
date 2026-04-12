@@ -28,11 +28,9 @@ describe('TrackingView', () => {
     );
 
     // Should see Tracking Title
-    expect(screen.getByText('Service Itinerary')).toBeTruthy();
+    expect(screen.getByText('Service Status')).toBeTruthy();
     // Should see confirmed step
-    expect(screen.getAllByText('Preparation initiated').length).toBeGreaterThan(0);
-    expect(screen.getByText('Service details')).toBeTruthy();
-    expect(screen.getByText('Expected arrival')).toBeTruthy();
+    expect(screen.getAllByText('Order Confirmed').length).toBeGreaterThan(0);
   });
 
   it('renders WhatsApp fallback correctly if blocked URL is present', () => {
@@ -48,6 +46,6 @@ describe('TrackingView', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Open WhatsApp Manually')).toBeTruthy();
+    expect(screen.getByText('Open Manual Chat')).toBeTruthy();
   });
 });

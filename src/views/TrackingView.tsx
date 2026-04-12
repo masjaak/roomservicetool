@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FileText, CheckCircle2, ChefHat, Search, Bell, Star, Clock } from 'lucide-react';
+import { FileText, CheckCircle2, ChefHat, Search, Bell, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { TRANSLATIONS } from '../data/constants';
 import { Language, FeedbackPayload } from '../types';
@@ -52,126 +52,94 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   };
 
   const steps = [
-    { icon: <FileText className="w-6 h-6" />, label: 'Order received', sub: 'Your order has been logged and sent to the kitchen.' },
-    { icon: <CheckCircle2 className="w-6 h-6" />, label: 'Confirmed by kitchen', sub: 'The kitchen has confirmed your order and queued preparation.' },
-    { icon: <ChefHat className="w-6 h-6" />, label: 'Being prepared', sub: 'Your dishes are being freshly prepared.' },
-    { icon: <Search className="w-6 h-6" />, label: 'Quality check', sub: 'Your order is being checked before dispatch.' },
-    { icon: <Bell className="w-6 h-6" />, label: 'On the way', sub: `Our staff is on the way to Room ${roomNumber}.` },
-    { icon: <Star className="w-6 h-6" />, label: 'Delivered', sub: 'Your order has arrived. Enjoy your meal.' },
+    { icon: <FileText className="w-5 h-5" />, label: 'Order Confirmed', sub: 'Logged and sent to the kitchen.' },
+    { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Kitchen Acknowledged', sub: 'Your order is queued for preparation.' },
+    { icon: <ChefHat className="w-5 h-5" />, label: 'Preparing', sub: 'Your dishes are being freshly prepared.' },
+    { icon: <Search className="w-5 h-5" />, label: 'Quality Check', sub: 'Final inspection holding standard.' },
+    { icon: <Bell className="w-5 h-5" />, label: 'On The Way', sub: `Staff is en route to Room ${roomNumber}.` },
+    { icon: <Star className="w-5 h-5" />, label: 'Delivered', sub: 'Enjoy your experience.' },
   ];
 
-  const lastUpdated = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32" style={{ backgroundColor: '#fdfbf9', fontFamily: "'Manrope', sans-serif" }}>
-      <div className="w-full max-w-4xl mx-auto px-6 sm:px-12 pt-16">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32 bg-[#fdfbf9]" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="w-full max-w-3xl mx-auto px-6 sm:px-12 pt-16">
         
-        <div className="mb-20 pb-16 border-b-2 border-[#e7e5e4]">
-          <p className="text-[12px] uppercase tracking-[0.3em] font-bold mb-6 text-[#78716c]">
+        <div className="mb-14 pb-12 border-b border-[#e7e5e4]">
+          <p className="text-[10px] uppercase tracking-widest font-bold mb-4 text-[#a08850]">
             Room {roomNumber}
           </p>
-          <h2 className="text-[3rem] sm:text-[4.5rem] leading-[1] mb-8" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1c1917', fontWeight: 500 }}>
-            Service Itinerary
+          <h2 className="text-[2.5rem] leading-tight mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
+            Service Status
           </h2>
-          <div className="inline-flex items-center px-6 py-3 border-2 border-[#1c1917] bg-[#ffffff] text-[12px] uppercase font-bold tracking-[0.25em] text-[#1c1917]">
+          <div className="inline-flex items-center px-4 py-2 border border-[#e7e5e4] bg-white rounded-md text-[11px] uppercase font-bold tracking-widest text-[#1c1917]">
             Order #{orderId?.slice(-6).toUpperCase() || 'UNKNOWN'}
           </div>
         </div>
 
         {blockedWaUrl && (
-          <div className="mb-16 p-8 border-2 border-[#1c1917] bg-[#f5f5f4]">
-            <p className="text-[12px] font-bold uppercase tracking-[0.2em] mb-6 text-[#1c1917]">
-              WhatsApp message blocked by browser. Please click below:
+          <div className="mb-12 p-6 rounded-lg border border-[#e7e5e4] bg-white">
+            <p className="text-[11px] font-bold uppercase tracking-widest mb-4 text-[#1c1917]">
+              WhatsApp message blocked by browser
             </p>
             <a 
               href={blockedWaUrl} target="_blank" rel="noopener noreferrer" 
-              className="inline-flex h-14 px-8 items-center justify-center text-[11px] uppercase font-bold tracking-[0.25em] bg-[#1c1917] text-[#ffffff] hover:bg-black"
+              className="inline-flex h-12 px-6 items-center justify-center rounded-full text-[11px] uppercase font-bold tracking-widest bg-[#1c1917] text-white hover:bg-[#2d2d2d]"
             >
-              Open WhatsApp Manually
+              Open Manual Chat
             </a>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-[1fr_350px] gap-16">
-          <div className="relative pl-8 sm:pl-12 pb-16">
-            <div className="absolute top-0 bottom-0 left-8 sm:left-12 w-[2px] bg-[#e7e5e4]" />
-            
-            <div className="space-y-16 relative z-10">
-              {steps.map((step, index) => {
-                const isCompleted = index < orderStatus;
-                const isCurrent = index === orderStatus;
-                let displayTitle = step.label;
-                if (index === 0 && displayTitle === 'Order received') displayTitle = 'Preparation initiated';
-                
-                return (
-                  <div key={index} className="relative flex gap-8 pb-4">
-                    <div className="absolute -left-8 sm:-left-12 w-20 flex justify-center">
-                      <div className={`w-14 h-14 flex items-center justify-center border-2 transition-colors ${
-                        isCurrent ? 'border-[#1c1917] bg-[#1c1917] text-white' : 
-                        isCompleted ? 'border-[#1c1917] bg-[#ffffff] text-[#1c1917]' : 'border-[#e7e5e4] bg-[#ffffff] text-[#d6d3d1]'
-                      }`}>
-                        {step.icon}
-                      </div>
-                    </div>
-                    
-                    <div className={`flex-1 pt-2 ml-[3.5rem] transition-opacity ${isCompleted || isCurrent ? 'opacity-100' : 'opacity-40'}`}>
-                      <h3 className="text-[1.5rem] leading-none mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1c1917', fontWeight: 600 }}>
-                        {displayTitle}
-                      </h3>
-                      {isCurrent && (
-                         <span className="inline-block mb-3 text-[10px] uppercase tracking-[0.25em] font-bold text-[#b91c1c]">Current</span>
+        <div className="relative pl-6 pb-16">
+          <div className="absolute top-0 bottom-0 left-[23px] w-px bg-[#e7e5e4]" />
+          
+          <div className="space-y-12 relative z-10">
+            {steps.map((step, index) => {
+              const isActive = index === orderStatus;
+              const isPast = index < orderStatus;
+              
+              return (
+                <div key={index} className="flex gap-8 group">
+                  <div className="relative flex flex-col items-center">
+                    <div className={`w-10 h-10 flex items-center justify-center shrink-0 border-2 rounded-full transition-all duration-500 bg-[#fdfbf9] ${
+                      isActive 
+                        ? 'border-[#a08850] text-[#a08850] scale-110 shadow-[0_0_20px_rgba(160,136,80,0.2)]'
+                        : isPast
+                          ? 'border-[#1c1917] bg-[#1c1917] text-white'
+                          : 'border-[#e7e5e4] text-[#a8a29e]'
+                    }`}>
+                      {isActive ? (
+                        <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
+                          {step.icon}
+                        </motion.div>
+                      ) : (
+                        step.icon
                       )}
-                      
-                      <p className="text-[1.05rem] leading-relaxed font-normal text-[#574b3f]">
-                        {step.sub}
-                      </p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <div className="border-2 border-[#e7e5e4] bg-[#ffffff] p-8 sm:p-10">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-8 text-[#1c1917] border-b-2 border-[#1c1917] pb-4 inline-block">
-                Service details
-              </p>
-              <div className="space-y-6">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-[#78716c]">Room</p>
-                  <p className="text-[1.1rem] font-bold text-[#1c1917]">{roomNumber}</p>
+                  
+                  <div className={`pt-2 flex-1 transition-all duration-300 ${isActive ? 'opacity-100 translate-x-1' : isPast ? 'opacity-70' : 'opacity-40'}`}>
+                    <h3 className="text-[1.2rem] font-bold mb-1" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+                      {step.label}
+                    </h3>
+                    <p className={`text-[0.95rem] ${isActive ? 'text-[#a08850] font-medium' : 'text-[#78716c]'}`}>
+                      {step.sub}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-[#78716c]">Expected arrival</p>
-                  <p className="text-[1.1rem] font-bold text-[#1c1917]">20-30 min</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2 text-[#78716c]">Last updated</p>
-                  <p className="text-[1.1rem] font-bold text-[#1c1917]">{lastUpdated}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="border-2 border-[#1c1917] bg-[#1c1917] p-8 sm:p-10">
-              <p className="text-[12px] font-bold uppercase tracking-[0.2em] mb-4 text-[#ffffff]">
-                Exceptional Support
-              </p>
-              <p className="text-[1rem] font-normal mb-8 leading-relaxed text-[#f5f5f4]/80">
-                Require an adjustment? Our dining concierge is available via WhatsApp.
-              </p>
-              <button
-                onClick={onFinish}
-                className="w-full h-14 text-[11px] uppercase tracking-[0.25em] font-bold border-2 border-white/30 text-white hover:bg-white hover:text-black transition-colors"
-              >
-                Contact Concierge
-              </button>
-            </div>
+              );
+            })}
           </div>
         </div>
 
       </div>
-      <RatingModal isOpen={showRating} onRate={handleSubmitFeedback} onSkip={onFinish} lang={lang} />
+
+      <RatingModal
+        isOpen={showRating}
+        onSkip={() => setShowRating(false)}
+        onRate={handleSubmitFeedback}
+        lang={lang}
+      />
     </motion.div>
   );
 };

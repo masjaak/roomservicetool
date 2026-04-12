@@ -42,6 +42,8 @@ export default function App() {
       allergens: item.allergens,
     };
     dispatch({ type: AppEvent.AddItem, payload: { item: entry, qty, note } });
+    // UX FIX: Automatically show cart to confirm addition
+    dispatch({ type: AppEvent.OpenCart });
   }, []);
 
   const removeFromCart = useCallback((index: number) => {

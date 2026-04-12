@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Clock, Receipt, ChevronLeft, Building2, QrCode, CreditCard, CheckCircle2, Upload, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, Clock, Receipt, Building2, QrCode, CheckCircle2, Upload, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CartItem, Language } from '../types';
 import { BANKS, TRANSLATIONS } from '../data/constants';
@@ -30,9 +30,6 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
   const [transferProof, setTransferProof] = useState<File | null>(null);
   const t = TRANSLATIONS[lang];
   const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
-  const trayCountLabel = lang === 'ID'
-    ? `${itemCount} hidangan terpilih`
-    : `${itemCount} selected items`;
 
   const subtotal = calculateSubtotal(cart);
   const taxService = calculateTax(subtotal);
@@ -55,38 +52,39 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen pb-32"
-      style={{ backgroundColor: '#fdfbf9', fontFamily: "'Manrope', sans-serif" }}
+      className="min-h-screen pb-32 bg-[#fdfbf9]"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <div className="w-full max-w-6xl mx-auto min-h-screen relative">
-        <div className="sticky top-0 z-30 px-6 sm:px-12 py-6 bg-[#fdfbf9]/95 backdrop-blur-md border-b-2 border-[#e7e5e4]">
+      <div className="w-full max-w-5xl mx-auto min-h-screen relative">
+        <div className="sticky top-0 z-30 px-6 sm:px-8 py-6 bg-[#fdfbf9]/90 backdrop-blur-md border-b border-[#e7e5e4]">
           <button
             onClick={onBack}
-            className="flex items-center gap-4 text-[12px] font-bold uppercase tracking-[0.2em] text-[#1c1917] hover:opacity-50 transition-opacity"
+            className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-[#1c1917] hover:text-[#a08850] transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
             <span>{t.backToMenu}</span>
           </button>
         </div>
 
-        <div className="px-6 sm:px-12 pt-12 pb-16">
-          <h2 className="text-[2.5rem] sm:text-[3.5rem] leading-[1] mb-12" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1c1917', fontWeight: 500 }}>
-            Reservation Folio
+        <div className="px-6 sm:px-8 pt-10 pb-16">
+          <h2 className="text-[2.5rem] leading-none mb-10" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
+            Checkout
           </h2>
           
-          <div className="grid lg:grid-cols-[1fr_450px] gap-16">
-            <div className="space-y-12">
+          <div className="grid lg:grid-cols-[1fr_380px] gap-12">
+            <div className="space-y-10">
               <section>
-                <div className="flex items-center gap-3 mb-8 pb-4 border-b-2 border-[#e7e5e4]">
-                  <Clock className="w-5 h-5 text-[#1c1917]" />
-                  <h3 className="text-[14px] tracking-[0.2em] uppercase font-bold text-[#1c1917]">
+                <div className="flex items-center gap-3 mb-6 pb-3 border-b border-[#e7e5e4]">
+                  <Receipt className="w-4 h-4 text-[#a08850]" />
+                  <h3 className="text-[12px] tracking-widest uppercase font-bold text-[#1c1917]">
                     Billing Method
                   </h3>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
+                
+                <div className="flex flex-col gap-3">
                   {[
-                    { id: 'room', label: lang === 'ID' ? 'Tagih ke Kamar' : 'Charge to Room', desc: lang === 'ID' ? 'Akan ditambahkan ke tagihan akhir Anda' : 'Will be added to your final folio', icon: Receipt },
-                    { id: 'qris', label: 'QRIS', desc: lang === 'ID' ? 'Pembayaran instan via dompet digital' : 'Instant digital wallet payment', icon: QrCode },
+                    { id: 'room', label: lang === 'ID' ? 'Tagih ke Kamar' : 'Charge to Room', desc: lang === 'ID' ? 'Akan ditambahkan ke tagihan akhir' : 'Will be added to your final folio', icon: Receipt },
+                    { id: 'qris', label: 'QRIS', desc: lang === 'ID' ? 'Pembayaran instan dompet digital' : 'Instant digital wallet payment', icon: QrCode },
                     { id: 'bank', label: lang === 'ID' ? 'Transfer Bank' : 'Bank Transfer', desc: lang === 'ID' ? 'Nomor rekening akan ditampilkan' : 'Account details will be provided', icon: Building2 }
                   ].map(method => {
                     const active = paymentMethod === method.id;
@@ -95,133 +93,126 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                       <button
                         key={method.id}
                         onClick={() => setPaymentMethod(method.id as any)}
-                        className={`relative flex flex-col text-left p-6 sm:p-8 transition-all border-2 ${active ? 'border-[#1c1917] bg-[#1c1917] text-white' : 'border-[#e7e5e4] bg-[#ffffff] text-[#1c1917] hover:border-[#1c1917]'}`}
+                        className={`relative flex items-center text-left p-5 transition-all outline-none rounded-lg ${
+                          active 
+                            ? 'bg-[#1c1917] text-white' 
+                            : 'bg-transparent text-[#1c1917] hover:bg-[#f5f5f4] border border-[#e7e5e4]'
+                        }`}
                       >
-                        <div className="flex items-center justify-between w-full mb-4">
-                          <span className="text-[1.1rem] font-bold tracking-wide">{method.label}</span>
-                          <Icon className={`w-6 h-6 ${active ? 'text-white' : 'text-[#78716c]'}`} />
+                        <div className="flex-1 flex items-center gap-4">
+                          <Icon className={`w-5 h-5 ${active ? 'text-[#a08850]' : 'text-[#78716c]'}`} />
+                          <div>
+                            <h4 className={`text-[1rem] font-bold ${active ? 'text-white' : 'text-[#1c1917]'}`}>{method.label}</h4>
+                            <p className={`text-[0.85rem] mt-0.5 ${active ? 'text-[#a8a29e]' : 'text-[#78716c]'}`}>{method.desc}</p>
+                          </div>
                         </div>
-                        <span className={`text-[0.95rem] leading-relaxed ${active ? 'text-white/80' : 'text-[#574b3f]'}`}>{method.desc}</span>
+                        {active && <CheckCircle2 className="w-5 h-5 text-[#a08850]" />}
                       </button>
-                    )
+                    );
                   })}
                 </div>
 
-                {paymentMethod !== 'room' && (
-                  <section className="mt-8 p-8 border-2 border-[#e7e5e4] bg-[#ffffff]">
-                    <h4 className="text-[12px] uppercase tracking-[0.2em] font-bold mb-6 text-[#1c1917]">
-                      {lang === 'ID' ? 'Unggah Bukti Transfer' : 'Upload Proof of Payment'}
-                    </h4>
-                    
-                    <div className="space-y-8">
-                      {paymentMethod === 'bank' && (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {BANKS.map(bank => (
-                            <button 
-                              key={bank.id}
-                              onClick={() => setSelectedBank(bank.id)}
-                              className={`p-4 text-[1rem] font-bold border-2 transition-colors ${selectedBank === bank.id ? 'bg-[#1c1917] text-white border-[#1c1917]' : 'bg-[#f5f5f4] text-[#1c1917] border-transparent hover:border-[#1c1917]'}`}
+                {/* Sub-panels for payment selection */}
+                <AnimatePresence>
+                  {paymentMethod === 'bank' && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-4">
+                      <div className="p-6 bg-[#f5f5f4] rounded-lg">
+                        <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Select Destination Bank</label>
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                          {Object.entries(BANKS).map(([id, bank]) => (
+                            <button
+                              key={id}
+                              onClick={() => setSelectedBank(id)}
+                              className={`p-4 text-center border transition-all rounded-md bg-white ${selectedBank === id ? 'border-[#1c1917] text-[#1c1917] font-bold' : 'border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30'}`}
                             >
-                              {bank.name}
+                              <div className="text-[1rem]">{bank.name}</div>
                             </button>
                           ))}
                         </div>
-                      )}
-                      <div>
-                        <p className="text-[1rem] font-normal mb-4 text-[#574b3f]">
-                          {lang === 'ID' ? 'Silakan unggah bukti tangkapan layar pembayaran Anda:' : 'Please upload your payment screenshot:'}
-                        </p>
-                        
-                        <div 
-                          className={`relative border-2 border-dashed p-12 flex flex-col items-center justify-center text-center transition-colors hover:bg-[#f5f5f4] ${transferProof ? 'border-[#1c1917] bg-[#f5f5f4]' : 'border-[#d6d3d1] bg-[#ffffff]'}`}
-                        >
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                          />
-                          {transferProof ? (
-                            <>
-                              <CheckCircle2 className="w-10 h-10 text-[#1c1917] mb-4" />
-                              <p className="text-[1.1rem] font-bold mb-2 text-[#1c1917]">{transferProof.name}</p>
-                              <p className="text-[0.95rem] font-bold uppercase tracking-[0.1em] text-[#78716c]">Tap to change file</p>
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="w-10 h-10 text-[#1c1917] opacity-50 mb-4" />
-                              <p className="text-[1.1rem] font-bold mb-2 text-[#1c1917]">{lang === 'ID' ? 'Pilih berkas' : 'Select a file'}</p>
-                              <p className="text-[0.9rem] font-bold uppercase tracking-[0.1em] text-[#78716c]">JPG, PNG max 5MB</p>
-                            </>
-                          )}
+                        {selectedBank && (
+                          <div className="mb-6 p-4 bg-white border border-[#e7e5e4] rounded-md">
+                            <p className="text-[0.8rem] text-[#78716c] uppercase tracking-widest mb-1 font-bold">Transfer to</p>
+                            <p className="text-[1.2rem] font-medium text-[#1c1917] tracking-wider mb-1">{BANKS[selectedBank as keyof typeof BANKS].account}</p>
+                            <p className="text-[0.95rem] text-[#1c1917]">Atelier Meridian</p>
+                          </div>
+                        )}
+                        <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
+                        <div className="relative">
+                          <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
+                            <Upload className="w-5 h-5" />
+                            <span className="font-medium text-[0.95rem]">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </section>
-                )}
+                    </motion.div>
+                  )}
+
+                  {paymentMethod === 'qris' && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-4">
+                      <div className="p-6 bg-[#f5f5f4] rounded-lg">
+                        <div className="flex justify-center mb-6">
+                            <div className="w-48 h-48 bg-white border border-[#e7e5e4] flex items-center justify-center text-[#a8a29e] rounded-md shadow-sm">
+                                [QRIS Placeholder]
+                            </div>
+                        </div>
+                        <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
+                        <div className="relative">
+                          <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
+                            <Upload className="w-5 h-5" />
+                            <span className="font-medium text-[0.95rem]">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </section>
             </div>
 
-            <div className="lg:pl-6">
-              <div className="bg-[#ffffff] border-2 border-[#1c1917] p-8 sm:p-10 h-fit sticky top-28">
-                <div className="flex items-center gap-3 mb-8 pb-4 border-b-2 border-[#e7e5e4]">
-                  <Receipt className="w-5 h-5 text-[#1c1917]" />
-                  <h3 className="text-[12px] tracking-[0.2em] uppercase font-bold text-[#1c1917]">
-                    {trayCountLabel}
-                  </h3>
-                </div>
-
-                <div className="space-y-6 mb-10 overflow-y-auto max-h-[400px] pr-2">
-                  {cart.map((item) => (
-                    <div key={`${item.id}-${item.note}`} className="flex gap-5 pb-6 border-b-2 border-[#f5f5f4]">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[1.1rem] font-bold text-[#1c1917] mb-2">{item.name}</p>
-                        <div className="flex justify-between items-center text-[#574b3f]">
-                          <span className="text-[1rem] font-semibold">{item.qty} ×</span>
-                          <span className="text-[1rem] font-semibold tracking-wider text-[#1c1917]">{formatCurrency(item.price * item.qty)}</span>
-                        </div>
-                      </div>
+            {/* Order Summary Side */}
+            <div>
+              <div className="bg-[#ffffff] border border-[#e7e5e4] p-6 lg:p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] sticky top-32">
+                <h3 className="text-[1.2rem] font-bold mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>Order Summary</h3>
+                <div className="space-y-4 mb-6">
+                  {cart.map(item => (
+                    <div key={`${item.id}-${item.note}`} className="flex justify-between text-[0.95rem]">
+                      <span className="text-[#44403c]"><span className="text-[#a08850] mr-2">{item.qty}x</span> {item.name}</span>
+                      <span className="text-[#1c1917] font-medium">{formatCurrency(item.price * item.qty)}</span>
                     </div>
                   ))}
                 </div>
-
-                <div className="space-y-4 pt-6 border-t-2 border-[#e7e5e4] mb-12">
-                  <div className="flex justify-between text-[1rem] font-normal text-[#574b3f]">
+                
+                <div className="h-px bg-[#e7e5e4] mb-6" />
+                
+                <div className="space-y-3 mb-6 font-medium">
+                  <div className="flex justify-between text-[#78716c] text-[0.95rem]">
                     <span>{t.subtotal}</span>
-                    <span className="tracking-widest">{formatCurrency(subtotal)}</span>
+                    <span>{formatCurrency(subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-[1rem] font-normal text-[#574b3f]">
-                    <span>{t.serviceTax}</span>
-                    <span className="tracking-widest">{formatCurrency(taxService)}</span>
+                  <div className="flex justify-between text-[#78716c] text-[0.95rem]">
+                    <span>{t.tax}</span>
+                    <span>{formatCurrency(taxService)}</span>
                   </div>
-                  <div className="flex justify-between text-[1.4rem] font-bold pt-6 mt-4 border-t-2 border-[#1c1917] text-[#1c1917]">
-                    <span className="uppercase">{t.total}</span>
-                    <span className="tracking-widest">{formatCurrency(grandTotal)}</span>
+                  <div className="flex justify-between text-[#1c1917] text-[1.2rem] font-bold mt-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                    <span>{t.total}</span>
+                    <span>{formatCurrency(grandTotal)}</span>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="p-4 mb-8 bg-[#fef2f2] border-2 border-[#ef4444] text-[#b91c1c] text-[1rem] font-bold">
+                  <div className="mb-6 p-4 bg-[#fef2f2] text-[#b91c1c] text-[0.85rem] rounded-md font-medium">
                     {error}
                   </div>
                 )}
 
                 <button
                   onClick={() => onPlaceOrder(paymentMethod, selectedBank, transferProof)}
-                  disabled={loading || !canSubmit}
-                  className="w-full h-16 sm:h-20 flex items-center justify-between px-6 sm:px-8 text-[12px] sm:text-[14px] uppercase tracking-[0.25em] font-bold transition-all bg-[#1c1917] text-[#ffffff] hover:bg-black disabled:opacity-50 disabled:bg-[#d6d3d1]"
+                  disabled={!canSubmit || loading}
+                  className="w-full h-14 flex items-center justify-center gap-2 bg-[#1c1917] text-white disabled:bg-[#e7e5e4] disabled:text-[#a8a29e] hover:bg-[#2d2d2d] transition-all rounded-full"
                 >
-                  <span>
-                    {loading ? 'Processing...' : lang === 'ID' ? 'Konfirmasi' : 'Finalize Reservation'}
-                  </span>
-                  {!loading ? (
-                    <div className="flex items-center gap-4">
-                      <span className="text-[1.1rem] tracking-widest">{formatCurrency(grandTotal)}</span>
-                      <ArrowLeft className="w-5 h-5 rotate-180" />
-                    </div>
-                  ) : (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  )}
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span className="text-[12px] uppercase tracking-widest font-bold">{t.placeOrder}</span>}
                 </button>
               </div>
             </div>
