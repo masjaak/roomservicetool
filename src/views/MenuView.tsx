@@ -75,17 +75,17 @@ export const MenuView: React.FC<MenuViewProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen pb-36"
-      style={{ backgroundColor: '#fbfaf8', fontFamily: "'Lato', sans-serif" }}
+      style={{ backgroundColor: '#fdfbf9', fontFamily: "'Manrope', sans-serif" }}
     >
       <div className="w-full max-w-6xl mx-auto min-h-screen relative">
         {/* Header */}
-        <div className="sticky top-0 z-30 px-6 sm:px-10 pt-6 pb-5 backdrop-blur-md" style={{ backgroundColor: 'rgba(251,250,248,0.95)', borderBottom: '1px solid rgba(26,26,26,0.06)' }}>
+        <div className="px-6 sm:px-10 pt-10 pb-12" style={{ backgroundColor: 'transparent', borderBottom: '1px solid rgba(26,26,26,0.06)' }}>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
               <p className="text-[9px] font-semibold tracking-[0.3em] uppercase mb-3" style={{ color: '#8a7648' }}>
                 {getGreeting()}
               </p>
-              <h2 className="text-[2.5rem] sm:text-[3.5rem] leading-[1]" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 500 }}>
+              <h2 className="text-[2rem] sm:text-[2.75rem] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 500 }}>
                 {heroTitle}
               </h2>
             </div>
@@ -100,20 +100,20 @@ export const MenuView: React.FC<MenuViewProps> = ({
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-            <div className="border px-6 py-8 sm:px-10 sm:py-10 flex flex-col justify-between" style={{ backgroundColor: '#1a1a1a', borderColor: 'rgba(255,255,255,0.05)', borderRadius: '2px' }}>
+            <div className="border px-6 py-8 sm:px-10 sm:py-10 flex flex-col justify-between" style={{ backgroundColor: '#f8f6f0', borderColor: 'rgba(0,0,0,0.05)', borderRadius: '2px' }}>
               <div>
                 <div className="flex items-center gap-3 mb-5 text-[9px] font-semibold uppercase tracking-[0.3em]" style={{ color: '#b59c6b' }}>
-                  <Sparkles className="w-3 h-3" />
+                  
                   <span>{heroEyebrow}</span>
                 </div>
-                <h3 className="text-[2rem] sm:text-[2.8rem] leading-[1.1] mb-5 max-w-lg" style={{ fontFamily: "'Playfair Display', serif", color: '#fbfaf8', fontWeight: 400 }}>
+                <h3 className="text-[2rem] sm:text-[2.8rem] leading-[1.1] mb-5 max-w-lg" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 500 }}>
                   {heroKicker}
                 </h3>
-                <p className="text-sm leading-relaxed max-w-xl font-light" style={{ color: 'rgba(251,250,248,0.7)' }}>
+                <p className="text-sm leading-relaxed max-w-xl font-light" style={{ color: '#574b3f' }}>
                   {heroDescription}
                 </p>
               </div>
-              <div className="grid grid-cols-3 gap-0 mt-10 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+              <div className="grid grid-cols-3 gap-0 mt-10 border-t" style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
                 {[
                   {
                     icon: Clock3,
@@ -131,15 +131,15 @@ export const MenuView: React.FC<MenuViewProps> = ({
                     value: '21%',
                   },
                 ].map(({ icon: Icon, title, value }, idx) => (
-                  <div key={title} className={`py-6 flex flex-col items-center justify-center text-center ${idx !== 2 ? 'border-r' : ''}`} style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-                    <p className="text-[8px] uppercase tracking-[0.3em] mb-2 font-semibold" style={{ color: 'rgba(251,250,248,0.5)' }}>{title}</p>
-                    <p className="text-[13px] font-medium" style={{ color: '#fbfaf8' }}>{value}</p>
+                  <div key={title} className={`py-6 flex flex-col items-center justify-center text-center ${idx !== 2 ? 'border-r' : ''}`} style={{ borderColor: 'rgba(0,0,0,0.08)' }}>
+                    <p className="text-[8px] uppercase tracking-[0.3em] mb-2 font-semibold" style={{ color: '#1a1a1a' }}>{title}</p>
+                    <p className="text-[13px] font-medium" style={{ color: '#1c1917' }}>{value}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="border border-t-4 px-6 py-8 sm:px-8 sm:py-10" style={{ backgroundColor: '#fff', borderColor: 'rgba(26,26,26,0.05)', borderTopColor: '#1a1a1a', borderRadius: '2px' }}>
+            <div className=" px-6 py-8 sm:px-8 sm:py-10" style={{ backgroundColor: '#ffffff', borderColor: 'rgba(0,0,0,0.05)', borderTopColor: 'transparent', borderRadius: '2px' }}>
               <p className="text-[9px] font-semibold uppercase tracking-[0.3em] mb-4" style={{ color: '#8a7648' }}>
                 {sectionTitle}
               </p>
@@ -159,7 +159,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         </div>
 
         <div className="px-6 sm:px-10 pt-10 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
-          <div className="lg:sticky lg:top-[280px] h-fit space-y-8">
+          <div className="lg:sticky lg:top-[40px] h-fit space-y-8 mt-4">
             <div className="relative border-b" style={{ borderColor: 'rgba(26,26,26,0.2)' }}>
               <input
                 type="text"
@@ -201,7 +201,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               })}
             </div>
 
-            <div className="p-6 border" style={{ backgroundColor: '#fff', borderColor: 'rgba(26,26,26,0.06)', borderRadius: '2px' }}>
+            <div className="p-6 border" style={{ backgroundColor: '#ffffff', borderColor: 'rgba(26,26,26,0.06)', borderRadius: '2px' }}>
               <p className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-3" style={{ color: '#8a7648' }}>
                 {lang === 'ID' ? 'Catatan layanan' : 'Service note'}
               </p>
@@ -219,7 +219,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 <p className="text-[9px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: '#8a7648' }}>
                   {sectionTitle}
                 </p>
-                <h3 className="text-[2.2rem] sm:text-[3rem] leading-[1]" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 500 }}>
+                <h3 className="text-[2.2rem] sm:text-[3rem] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 500 }}>
                   {searchQuery ? t.search : selectedCategory}
                 </h3>
               </div>
@@ -237,10 +237,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="py-32 flex flex-col items-center justify-center text-center px-10 border"
-                style={{ borderColor: 'rgba(26,26,26,0.1)', backgroundColor: '#fff', borderRadius: '2px' }}
+                style={{ borderColor: 'rgba(26,26,26,0.1)', backgroundColor: '#ffffff', borderRadius: '2px' }}
               >
                 <SearchX className="w-8 h-8 mb-6" style={{ color: '#b59c6b' }} />
-                <h3 className="text-[2rem] sm:text-[2.5rem] mb-4" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 400 }}>
+                <h3 className="text-[2rem] sm:text-[2.5rem] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a', fontWeight: 400 }}>
                   {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
                 </h3>
                 <p className="text-sm max-w-[320px] font-light" style={{ color: '#574b3f' }}>
@@ -274,10 +274,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <button
                 onClick={onOpenCart}
                 className="w-full max-w-xl flex items-center justify-between px-8 py-5 shadow-2xl pointer-events-auto transition-transform active:scale-[0.99] border"
-                style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}
+                style={{ backgroundColor: '#1a1a1a', color: '#1c1917', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}
               >
                 <div className="flex items-center gap-6">
-                  <div className="w-8 h-8 flex items-center justify-center text-[10px] font-bold border" style={{ borderColor: 'rgba(251,250,248,0.3)', color: '#fbfaf8', borderRadius: '1px' }}>
+                  <div className="w-8 h-8 flex items-center justify-center text-[10px] font-bold border" style={{ borderColor: 'rgba(251,250,248,0.3)', color: '#1c1917', borderRadius: '1px' }}>
                     {totalQty}
                   </div>
                   <div className="text-left">
@@ -288,10 +288,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[8px] uppercase tracking-[0.3em] font-semibold" style={{ color: 'rgba(251,250,248,0.5)' }}>
+                  <p className="text-[8px] uppercase tracking-[0.3em] font-semibold" style={{ color: '#1a1a1a' }}>
                     {lang === 'ID' ? 'Total sementara' : 'Current total'}
                   </p>
-                  <span className="text-sm font-semibold tracking-wider mt-1 block" style={{ color: '#fbfaf8' }}>{formatCurrency(grandTotal)}</span>
+                  <span className="text-sm font-semibold tracking-wider mt-1 block" style={{ color: '#1c1917' }}>{formatCurrency(grandTotal)}</span>
                 </div>
               </button>
             </motion.div>

@@ -113,7 +113,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
           <p className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-6" style={{ color: '#8a7648' }}>
             {lang === 'ID' ? 'Kamar' : 'Room'} {roomNumber}
           </p>
-          <h2 className="text-[2.8rem] sm:text-[3.5rem] leading-[1] mb-6" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a' }}>
+          <h2 className="text-[2.8rem] sm:text-[3.5rem] leading-[1] mb-6" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a' }}>
             Service Itinerary
           </h2>
           <div className="inline-flex items-center px-4 py-2 border text-[10px] uppercase font-semibold tracking-[0.25em]" style={{ backgroundColor: '#fff', borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}>
@@ -134,7 +134,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
               target="_blank" 
               rel="noopener noreferrer" 
               className="inline-flex px-8 py-3 text-[10px] uppercase font-semibold tracking-[0.25em] transition-colors"
-              style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', borderRadius: '1px' }}
+              style={{ backgroundColor: '#1c1917', color: '#ffffff', borderRadius: '1px' }}
             >
               Open WhatsApp Manually
             </a>

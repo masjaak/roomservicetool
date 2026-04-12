@@ -123,7 +123,7 @@ export default function App() {
 
   // --- Render based on state machine screen ---
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#faf8f5', fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#fdfbf9', fontFamily: "'Manrope', sans-serif" }}>
       <AnimatePresence mode="wait">
         {state.screen === Screen.Welcome && (
           <LoginView

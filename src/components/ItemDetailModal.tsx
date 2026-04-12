@@ -55,7 +55,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
               initial={{ opacity: 0, y: 10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              className="w-full max-w-lg bg-white pointer-events-auto overflow-hidden shadow-2xl border flex flex-col max-h-[90vh]"
+              className="w-full max-w-lg bg-white pointer-events-auto overflow-hidden shadow-xl border-none flex flex-col max-h-[85vh]"
               style={{ borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
             >
               {/* Header Image */}
@@ -79,10 +79,10 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
               </div>
 
               {/* Content body mapping to a printed order sheet */}
-              <div className="flex-1 overflow-y-auto px-8 py-8 styling-sheet border-t" style={{ borderColor: 'rgba(26,26,26,0.1)', fontFamily: "'Lato', sans-serif" }}>
+              <div className="flex-1 overflow-y-auto px-8 py-8 styling-sheet border-t" style={{ borderColor: 'rgba(26,26,26,0.1)', fontFamily: "'Manrope', sans-serif" }}>
                 
                 <div className="mb-8">
-                  <h2 className="text-[2.2rem] leading-tight mb-3" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a' }}>
+                  <h2 className="text-[2.2rem] leading-tight mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a' }}>
                     {item.name}
                   </h2>
                   <p className="text-xl tracking-widest font-light" style={{ color: '#8a7648' }}>
@@ -148,7 +148,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                   <button
                     onClick={handleAdd}
                     className="flex-1 py-4 px-6 text-[10px] uppercase tracking-[0.25em] font-semibold flex items-center justify-between transition-colors outline-none"
-                    style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', borderRadius: '1px' }}
+                    style={{ backgroundColor: '#2a2723', color: '#ffffff', borderRadius: '1px' }}
                   >
                     <span>{t.addToCart}</span>
                     <span style={{ color: 'rgba(251,250,248,0.7)' }}>{formatCurrency(item.price * qty)}</span>

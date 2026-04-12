@@ -1,4 +1,11 @@
-import React from 'react';
+import re
+
+with open('src/components/ProductCard.tsx', 'r') as f:
+    content = f.read()
+
+# Let's completely rewrite ProductCard for a luxury feel:
+# Removed ugly borders, replaced with subtle line separators, quiet typography, sophisticated layout.
+new_card = """import React from 'react';
 import { Plus } from 'lucide-react';
 import { MenuItem } from '../types';
 import { formatCurrency } from '../utils/format';
@@ -74,3 +81,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
     </button>
   );
 };
+"""
+
+with open('src/components/ProductCard.tsx', 'w') as f:
+    f.write(new_card)
+
+print("ProductCard refined.")

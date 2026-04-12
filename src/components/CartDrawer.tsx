@@ -49,7 +49,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed inset-y-0 right-0 w-full md:w-[480px] z-50 flex flex-col shadow-2xl border-l"
+              className="fixed inset-y-0 right-0 w-full md:w-[480px] z-50 flex flex-col shadow-xl border-l-0"
               style={{ backgroundColor: '#fbfaf8', borderColor: 'rgba(26,26,26,0.1)' }}
             >
               {/* Header */}
@@ -58,7 +58,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <p className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-2" style={{ color: '#8a7648' }}>
                     {lang === 'ID' ? 'Kamar' : 'Room'} {roomNumber}
                   </p>
-                  <h2 className="text-[1.8rem] leading-[1]" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a' }}>
+                  <h2 className="text-[1.8rem] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a' }}>
                     {t.cart}
                   </h2>
                 </div>
@@ -157,7 +157,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       onCheckout();
                     }}
                     className="w-full py-4 font-bold text-xs tracking-[0.2em] uppercase transition-opacity hover:opacity-90"
-                    style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8' }}
+                    style={{ backgroundColor: '#1c1917', color: '#ffffff' }}
                   >
                     {t.checkout}
                   </button>

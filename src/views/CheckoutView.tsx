@@ -60,7 +60,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="min-h-screen pb-24"
-      style={{ backgroundColor: '#fcfaf7', fontFamily: "'Lato', sans-serif" }}
+      style={{ backgroundColor: '#fcfaf7', fontFamily: "'Manrope', sans-serif" }}
     >
       <div className="w-full max-w-6xl mx-auto min-h-screen relative">
         {/* Header / Sticky Header */}
@@ -73,7 +73,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h2 className="text-[2rem] leading-[1]" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a' }}>
+            <h2 className="text-[2rem] leading-[1]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1a1a1a' }}>
               Reservation Folio
             </h2>
           </div>
@@ -220,7 +220,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 onClick={() => onPlaceOrder(paymentMethod, selectedBank, transferProof)}
                 disabled={loading || !canSubmit}
                 className="w-full flex items-center justify-between py-5 px-6 pointer-events-auto transition-colors disabled:bg-gray-200 disabled:text-gray-400 disabled:border-transparent border"
-                style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '1px' }}
+                style={{ backgroundColor: '#1c1917', color: '#ffffff', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '1px' }}
               >
                 <span className="text-[10px] uppercase tracking-[0.3em] font-semibold">
                   {loading ? 'Processing...' : lang === 'ID' ? 'Konfirmasi Pesanan' : 'Finalize Reservation'}
