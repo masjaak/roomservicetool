@@ -136,6 +136,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
                       </p>
                     </div>
                   </div>
+                </div>
               );
             })}
           </div>
