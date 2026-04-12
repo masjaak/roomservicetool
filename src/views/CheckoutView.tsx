@@ -94,17 +94,17 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                       <button
                         key={method.id}
                         onClick={() => setPaymentMethod(method.id as any)}
-                        className={`relative flex items-center text-left p-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-lg ${
+                        className={`relative flex items-center text-left p-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50 rounded-lg border ${
                           active 
-                            ? 'bg-[#1c1917] text-white' 
-                            : 'bg-transparent text-[#1c1917] hover:bg-[#f5f5f4] border border-[#e7e5e4]'
+                            ? 'bg-stone-900 border-stone-900 text-white shadow-md' 
+                            : 'bg-white text-stone-900 hover:bg-stone-50 border-[#e7e5e4]'
                         }`}
                       >
                         <div className="flex-1 flex items-center gap-4">
-                          <Icon className={`w-5 h-5 ${active ? 'text-[#a08850]' : 'text-[#78716c]'}`} />
+                          <Icon className={`w-5 h-5 ${active ? 'text-[#a08850]' : 'text-stone-500'}`} />
                           <div>
-                            <h4 className={`text-[1rem] font-bold ${active ? 'text-white' : 'text-[#1c1917]'}`}>{method.label}</h4>
-                            <p className={`text-[0.85rem] mt-0.5 ${active ? 'text-[#a8a29e]' : 'text-[#78716c]'}`}>{method.desc}</p>
+                            <h4 className={`text-[1rem] font-bold ${active ? 'text-white' : 'text-stone-900'}`}>{method.label}</h4>
+                            <p className={`text-[0.85rem] mt-0.5 ${active ? 'text-stone-300' : 'text-stone-500'}`}>{method.desc}</p>
                           </div>
                         </div>
                         {active && <CheckCircle2 className="w-5 h-5 text-[#a08850]" />}
@@ -176,11 +176,17 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
             <div>
               <div className="bg-[#ffffff] border border-[#e7e5e4] p-6 lg:p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] sticky top-32">
                 <h3 className="text-[1.2rem] font-bold mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>Order Summary</h3>
-                <div className="space-y-4 mb-6">
-                  {cart.map(item => (
-                    <div key={`${item.id}-${item.note}`} className="flex justify-between items-start text-[0.95rem] gap-4">
-                      <span className="text-[#44403c] flex-1 pr-2"><span className="text-[#a08850] mr-2 font-bold">{item.qty}x</span> {item.name}</span>
-                      <span className="text-[#1c1917] font-medium whitespace-nowrap">{formatCurrency(item.price * item.qty)}</span>
+                <div className="space-y-0 mb-6">
+                  {cart.map((item, i) => (
+                    <div key={`${item.id}-${item.note}`} className={`flex justify-between items-start text-[0.95rem] gap-4 py-3 ${i !== cart.length - 1 ? 'border-b border-[#f5f5f4]' : ''}`}>
+                      <div className="text-[#44403c] flex-1 pr-2 leading-relaxed">
+                        <span className="text-[#a08850] mr-3 font-bold">{item.qty}x</span> 
+                        <span className="font-medium text-[#1c1917]">{item.name}</span>
+                        {item.note && (
+                           <p className="text-[0.8rem] text-[#a8a29e] mt-1 ml-7">{item.note}</p>
+                        )}
+                      </div>
+                      <span className="text-[#1c1917] font-medium whitespace-nowrap pt-0.5">{formatCurrency(item.price * item.qty)}</span>
                     </div>
                   ))}
                 </div>

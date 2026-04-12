@@ -27,7 +27,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-[#000000]/60 backdrop-blur-sm" onClick={onClose} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-[#000000]/70" onClick={onClose} />
           <div className="fixed inset-0 z-50 flex justify-end pointer-events-none">
             <motion.div
               initial={{ x: '100%' }}
@@ -67,8 +67,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
-                          <div className="flex justify-between items-start gap-4">
-                            <h4 className="text-[1.1rem] font-bold leading-tight flex-1 pr-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
+                          <div className="flex justify-between items-start gap-3">
+                            <h4 className="text-[1.1rem] font-bold leading-snug flex-1 pr-1" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
                             <button aria-label="Remove item" onClick={() => onRemove(item.id, item.note, false)} className="p-2 -mr-2 -mt-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-sm">
                               <Trash2 className="w-4 h-4" />
                             </button>

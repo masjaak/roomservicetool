@@ -90,21 +90,20 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
           </div>
         )}
 
-        <div className="relative pl-2 sm:pl-6 pb-16">
-          {/* Vertical connecting line */}
-          <div className="absolute top-0 bottom-0 left-[27px] sm:left-[43px] w-px bg-[#e7e5e4]" />
-          
-          <div className="space-y-12 relative z-10">
+        <div className="pb-16 mt-6">
+          <div className="space-y-0">
             {steps.map((step, index) => {
               const isActive = index === orderStatus;
               const isPast = index < orderStatus;
+              const isLast = index === steps.length - 1;
               
               return (
-                <div key={index} className="flex gap-8 group">
-                  <div className="relative flex flex-col items-center">
-                    <div className={`w-10 h-10 flex items-center justify-center shrink-0 border-2 rounded-full transition duration-500 bg-[#fdfbf9] ${
+                <div key={index} className="flex gap-6 sm:gap-8 group min-h-[100px]">
+                  {/* Timeline Node Column */}
+                  <div className="flex flex-col items-center">
+                    <div className={`w-12 h-12 flex items-center justify-center shrink-0 border-[2px] rounded-full transition-all duration-500 bg-white z-10 ${
                       isActive 
-                        ? 'border-[#a08850] text-[#a08850] scale-110 shadow-[0_0_20px_rgba(160,136,80,0.2)]'
+                        ? 'border-[#a08850] text-[#a08850] scale-110 shadow-[0_4px_20px_rgba(160,136,80,0.15)] bg-[#fdfbf9]'
                         : isPast
                           ? 'border-[#1c1917] bg-[#1c1917] text-white'
                           : 'border-[#e7e5e4] text-[#a8a29e]'
@@ -117,13 +116,18 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
                         step.icon
                       )}
                     </div>
+                    {/* Connecting Line (drawn dynamically via flex) */}
+                    {!isLast && (
+                      <div className={`w-px flex-1 my-2 transition-colors duration-500 ${isPast ? 'bg-[#1c1917]' : 'bg-[#e7e5e4]'}`} />
+                    )}
                   </div>
                   
-                  <div className={`pt-2 flex-1 transition duration-300 ${isActive ? 'opacity-100 translate-x-1' : isPast ? 'opacity-70' : 'opacity-40'}`}>
-                    <h3 className="text-[1.2rem] font-bold mb-1" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+                  {/* Content Column */}
+                  <div className={`pt-2 flex-1 pb-10 transition duration-300 ${isActive ? 'opacity-100 translate-x-1' : isPast ? 'opacity-90' : 'opacity-40'}`}>
+                    <h3 className="text-[1.3rem] font-bold mb-1.5" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
                       {step.label}
                     </h3>
-                    <p className={`text-[0.95rem] ${isActive ? 'text-[#a08850] font-medium' : 'text-[#78716c]'}`}>
+                    <p className={`text-[0.95rem] leading-relaxed ${isActive ? 'text-[#a08850] font-medium' : 'text-[#78716c]'}`}>
                       {step.sub}
                     </p>
                   </div>
