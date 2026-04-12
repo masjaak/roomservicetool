@@ -34,11 +34,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="w-full md:w-[480px] h-full flex flex-col bg-[#fdfbf9] pointer-events-auto shadow-2xl overscroll-contain"
+              <div className="w-full md:w-[480px] h-full flex flex-col bg-[#f5f5f4] pointer-events-auto shadow-2xl overscroll-contain"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-6 border-b border-[#e7e5e4] bg-[#ffffff]">
+              <div className="flex items-center justify-between px-6 py-6 bg-white shadow-sm z-10 relative">
                 <div>
                   <h2 className="text-[2rem] leading-none" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
                     {t.cart}
@@ -53,7 +53,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                 {cart.length === 0 ? (
                   <div className="py-24 flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 rounded-full bg-[#f5f5f4] flex items-center justify-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center mb-6">
                       <ShoppingBag className="w-6 h-6 text-[#a8a29e]" />
                     </div>
                     <p className="text-[1.2rem] font-bold text-[#1c1917] font-serif mb-2">{t.emptyCart}</p>
@@ -61,34 +61,34 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   </div>
                 ) : (
                   cart.map((item) => (
-                    <div key={`${item.id}-${item.note}`} className="flex flex-row gap-5 pb-6 border-b border-[#e7e5e4] last:border-b-0">
-                      <div className="w-24 h-24 flex-shrink-0 bg-[#f5f5f4] rounded-lg overflow-hidden">
+                    <div key={`${item.id}-${item.note}`} className="flex flex-row gap-4 p-4 bg-white border border-[#e7e5e4] rounded-xl shadow-sm">
+                      <div className="w-20 h-20 flex-shrink-0 bg-[#f5f5f4] rounded-lg overflow-hidden border border-[#e7e5e4]">
                         <ImageWithFallback src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start gap-3">
-                            <h4 className="text-[1.1rem] font-bold leading-snug flex-1 pr-1" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
+                            <h4 className="text-[1.05rem] font-bold leading-snug flex-1 pr-1" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
                             <button aria-label="Remove item" onClick={() => onRemove(item.id, item.note, false)} className="p-2 -mr-2 -mt-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-sm">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                           {item.note && (
-                            <div className="mt-2 bg-[#f5f5f4] p-2 rounded-md text-[0.8rem] font-medium text-[#78716c] flex gap-2">
-                              <MessageSquare className="w-3 h-3 shrink-0 text-[#a08850]" />
+                            <div className="mt-1.5 bg-[#fdfbf9] p-2 rounded-md text-[0.8rem] font-medium text-[#78716c] flex gap-2 border border-[#f5f5f4]">
+                              <MessageSquare className="w-3 h-3 shrink-0 text-[#a08850] mt-0.5" />
                               <p className="line-clamp-2">{item.note}</p>
                             </div>
                           )}
                         </div>
                         <div className="flex items-center justify-between mt-3">
                           <span className="text-[0.95rem] font-bold text-[#44403c]">{formatCurrency(item.price)}</span>
-                          <div className="flex items-center bg-[#fdfbf9] border border-[#e7e5e4] rounded-full p-0.5">
-                            <button aria-label="Decrease quantity" onClick={() => onRemove(item.id, item.note, true)} className="w-8 h-8 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#f5f5f4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50">
-                              <Minus className="w-3.5 h-3.5" />
+                          <div className="flex items-center bg-[#fdfbf9] border border-[#e7e5e4] rounded-full p-0.5 shadow-sm">
+                            <button aria-label="Decrease quantity" onClick={() => onRemove(item.id, item.note, true)} className="w-[30px] h-[30px] flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 bg-white shadow-sm border border-[#e7e5e4]">
+                              <Minus className="w-3 h-3" />
                             </button>
-                            <span className="text-[0.9rem] font-bold w-6 text-center text-[#1c1917] select-none">{item.qty}</span>
-                            <button aria-label="Increase quantity disabled" className="w-8 h-8 flex items-center justify-center opacity-30 cursor-not-allowed">
-                              <Plus className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span className="text-[0.85rem] font-bold w-6 text-center text-[#1c1917] select-none">{item.qty}</span>
+                            <button aria-label="Increase quantity disabled" className="w-[30px] h-[30px] flex items-center justify-center text-[#1c1917] rounded-full opacity-30 cursor-not-allowed bg-white border border-[#e7e5e4]">
+                              <Plus className="w-3 h-3" aria-hidden="true" />
                             </button>
                           </div>
                         </div>

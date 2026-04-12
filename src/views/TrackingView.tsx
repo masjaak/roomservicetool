@@ -98,15 +98,15 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
               const isLast = index === steps.length - 1;
               
               return (
-                <div key={index} className="flex gap-6 sm:gap-8 group min-h-[100px]">
+                <div key={index} className="flex gap-4 sm:gap-6 group">
                   {/* Timeline Node Column */}
                   <div className="flex flex-col items-center">
-                    <div className={`w-12 h-12 flex items-center justify-center shrink-0 border-[2px] rounded-full transition-all duration-500 bg-white z-10 ${
+                    <div className={`w-12 h-12 flex items-center justify-center shrink-0 border-[2px] rounded-full transition-all duration-500 z-10 ${
                       isActive 
-                        ? 'border-[#a08850] text-[#a08850] scale-110 shadow-[0_4px_20px_rgba(160,136,80,0.15)] bg-[#fdfbf9]'
+                        ? 'border-[#a08850] text-white bg-[#a08850] shadow-[0_4px_20px_rgba(160,136,80,0.3)]'
                         : isPast
                           ? 'border-[#1c1917] bg-[#1c1917] text-white'
-                          : 'border-[#e7e5e4] text-[#a8a29e]'
+                          : 'border-[#e7e5e4] bg-[#fdfbf9] text-[#a8a29e]'
                     }`}>
                       {isActive ? (
                         <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
@@ -116,18 +116,24 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
                         step.icon
                       )}
                     </div>
-                    {/* Connecting Line (drawn dynamically via flex) */}
+                    {/* Connecting Line */}
                     {!isLast && (
-                      <div className={`w-px flex-1 my-2 transition-colors duration-500 ${isPast ? 'bg-[#1c1917]' : 'bg-[#e7e5e4]'}`} />
+                      <div className={`w-1 flex-1 my-2 transition-colors duration-500 rounded-full ${isActive || isPast ? 'bg-[#1c1917]/10' : 'bg-[#e7e5e4]/50'}`} />
                     )}
                   </div>
                   
-                  {/* Content Column */}
-                  <div className={`pt-2 flex-1 pb-10 transition duration-300 ${isActive ? 'opacity-100 translate-x-1' : isPast ? 'opacity-90' : 'opacity-40'}`}>
-                    <h3 className="text-[1.3rem] font-bold mb-1.5" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+                  {/* Content Column (Framed Card) */}
+                  <div className={`flex-1 mb-8 p-5 sm:p-6 rounded-2xl border transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-white border-[#a08850] shadow-[0_8px_30px_rgba(160,136,80,0.06)]' 
+                      : isPast 
+                        ? 'bg-white border-[#e7e5e4]' 
+                        : 'bg-[#fdfbf9] border-[#e7e5e4]/50 opacity-60'
+                  }`}>
+                    <h3 className="text-[1.25rem] font-bold mb-2" style={{ color: isActive ? '#a08850' : '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
                       {step.label}
                     </h3>
-                    <p className={`text-[0.95rem] leading-relaxed ${isActive ? 'text-[#a08850] font-medium' : 'text-[#78716c]'}`}>
+                    <p className={`text-[0.95rem] leading-relaxed ${isActive ? 'text-[#1c1917] font-medium' : 'text-[#78716c]'}`}>
                       {step.sub}
                     </p>
                   </div>
