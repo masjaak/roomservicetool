@@ -70,7 +70,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                 <div className="absolute top-4 right-4 z-10 flex gap-2">
                   <button
                     onClick={onClose}
-                    className="w-10 h-10 flex items-center justify-center bg-white/90 backdrop-blur border text-[#1a1a1a] transition-all hover:bg-[#1a1a1a] hover:text-white"
+                    className="w-12 h-12 flex items-center justify-center bg-white shadow-sm text-[#1c1917] transition-all hover:bg-[#1a1a1a] hover:text-white"
                     style={{ borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
                   >
                     <X className="w-5 h-5" />
@@ -90,7 +90,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                   </p>
                 </div>
 
-                <p className="text-sm leading-relaxed font-light mb-8 pt-6 border-t" style={{ color: '#574b3f', borderColor: 'rgba(26,26,26,0.1)' }}>
+                <p className="text-[0.95rem] leading-[1.7] font-normal mb-8 pt-6 border-t" style={{ color: '#574b3f', borderColor: 'rgba(26,26,26,0.1)' }}>
                   {item.description}
                 </p>
 
@@ -128,16 +128,16 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                   <div className="border flex items-center px-4" style={{ borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}>
                     <button
                       onClick={() => setQty(Math.max(1, qty - 1))}
-                      className="w-8 h-8 flex items-center justify-center transition-all disabled:opacity-30"
+                      className="w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center transition-all disabled:opacity-30"
                       disabled={qty <= 1}
                       style={{ color: '#1a1a1a' }}
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="text-sm font-medium w-8 text-center" style={{ color: '#1a1a1a' }}>{qty}</span>
+                    <span className="text-base font-medium w-10 text-center" style={{ color: '#1a1a1a' }}>{qty}</span>
                     <button
                       onClick={() => setQty(qty + 1)}
-                      className="w-8 h-8 flex items-center justify-center transition-all"
+                      className="w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center transition-all"
                       style={{ color: '#1a1a1a' }}
                     >
                       <Plus className="w-4 h-4" />
@@ -147,7 +147,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                   {/* Add to Cart */}
                   <button
                     onClick={handleAdd}
-                    className="flex-1 py-4 px-6 text-[10px] uppercase tracking-[0.25em] font-semibold flex items-center justify-between transition-colors outline-none"
+                    className="flex-1 h-14 sm:h-12 px-8 text-[11px] uppercase tracking-[0.25em] font-semibold flex items-center justify-between transition-colors outline-none"
                     style={{ backgroundColor: '#2a2723', color: '#ffffff', borderRadius: '1px' }}
                   >
                     <span>{t.addToCart}</span>

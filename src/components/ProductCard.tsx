@@ -18,7 +18,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
       style={{ borderColor: 'rgba(0,0,0,0.06)' }}
     >
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 items-stretch">
-        <div className="relative w-full sm:w-40 sm:h-40 aspect-square flex-shrink-0 overflow-hidden bg-[#faf8f5]">
+        <div className="relative w-full sm:w-48 aspect-[4/5] sm:aspect-[4/5] flex-shrink-0 overflow-hidden bg-[#faf8f5]">
           <ImageWithFallback
             src={item.image}
             alt={item.name}
@@ -29,7 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
         <div className="flex-1 min-w-0 flex flex-col pt-2 sm:pt-4">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             {item.tag && (
-              <span className="text-[10px] px-2 py-0.5 font-medium uppercase tracking-[0.15em] text-[#78716c] border border-[#e7e5e4]">
+              <span className="text-[10px] px-2 py-0.5 font-medium uppercase tracking-[0.15em] text-[#574b3f] border border-[#e7e5e4]">
                 {item.tag}
               </span>
             )}
@@ -41,7 +41,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
           </div>
         
           <div className="flex justify-between items-start gap-4 mb-2">
-            <h3 className="text-[1.35rem] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1c1917', fontWeight: 600 }}>
+            <h3 className="text-[1.5rem] leading-[1.2]" style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1c1917', fontWeight: 600 }}>
               {item.name}
             </h3>
             <p className="text-[0.9rem] font-medium tracking-wide mt-1" style={{ color: '#1c1917', fontFamily: "'Manrope', sans-serif" }}>
@@ -49,24 +49,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
             </p>
           </div>
         
-          <p className="text-[0.85rem] leading-relaxed line-clamp-2 max-w-lg mb-6" style={{ color: '#78716c', fontWeight: 400, fontFamily: "'Manrope', sans-serif" }}>
+          <p className="text-[0.9rem] leading-[1.6] leading-relaxed line-clamp-2 max-w-lg mb-6" style={{ color: '#78716c', fontWeight: 400, fontFamily: "'Manrope', sans-serif" }}>
             {item.description}
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 mt-auto">
-            {item.prepTime && (
-              <span className="text-[10px] uppercase tracking-[0.15em] font-semibold text-[#a8a29e]">
-                {item.prepTime}
-              </span>
-            )}
-            {item.spiceLevel && item.spiceLevel !== 'None' && (
-              <span style={{ color: item.spiceLevel === 'Hot' ? '#991b1b' : '#a8a29e' }} className="text-[10px] uppercase tracking-[0.15em] font-semibold">
-                {item.spiceLevel}
-              </span>
-            )}
-            <div className="ml-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] font-semibold transition-all text-[#1c1917]/50 group-hover:text-[#1c1917]">
-              <span>View</span>
-              <Plus className="w-3.5 h-3.5" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-auto pt-2">
+            <div className="flex items-center gap-4">
+              {item.prepTime && (
+                <span className="text-[10px] uppercase tracking-[0.15em] font-semibold text-[#a8a29e]">
+                  {item.prepTime}
+                </span>
+              )}
+              {item.spiceLevel && item.spiceLevel !== 'None' && (
+                <span style={{ color: item.spiceLevel === 'Hot' ? '#991b1b' : '#a8a29e' }} className="text-[10px] uppercase tracking-[0.15em] font-semibold">
+                  {item.spiceLevel}
+                </span>
+              )}
+            </div>
+            <div className="w-full sm:w-auto h-12 sm:h-11 px-6 ml-auto flex items-center justify-center sm:justify-start gap-3 text-[11px] uppercase tracking-[0.2em] font-medium transition-all bg-[#f5f5f4] text-[#1c1917] group-hover:bg-[#1c1917] group-hover:text-white mt-4 sm:mt-0">
+              <span>View dish</span>
             </div>
           </div>
         </div>

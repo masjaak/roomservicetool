@@ -192,10 +192,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
                       setSelectedCategory(cat);
                       setSearchQuery('');
                     }}
-                    className="w-full flex items-center justify-between py-3 text-left transition-all border-b"
+                    className="w-full flex items-center justify-between py-4 text-left transition-all border-b"
                     style={{ borderColor: 'transparent', borderBottomColor: isActive ? '#1a1a1a' : 'rgba(26,26,26,0.06)' }}
                   >
-                    <span className={`text-[11px] uppercase tracking-[0.2em] ${isActive ? 'font-semibold' : 'font-normal'}`} style={{ color: isActive ? '#1a1a1a' : '#888' }}>{cat}</span>
+                    <span className={`text-[12px] uppercase tracking-[0.2em] ${isActive ? 'font-semibold' : 'font-normal'}`} style={{ color: isActive ? '#1a1a1a' : '#888' }}>{cat}</span>
                   </button>
                 );
               })}
@@ -273,7 +273,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
             >
               <button
                 onClick={onOpenCart}
-                className="w-full max-w-xl flex items-center justify-between px-8 py-5 shadow-2xl pointer-events-auto transition-transform active:scale-[0.99] border"
+                className="w-full max-w-xl flex items-center justify-between px-6 py-4 h-16 shadow-xl pointer-events-auto transition-transform active:scale-[0.99] border"
                 style={{ backgroundColor: '#1a1a1a', color: '#1c1917', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}
               >
                 <div className="flex items-center gap-6">
