@@ -34,7 +34,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              <div className="w-full md:w-[480px] h-full flex flex-col bg-[#f5f5f4] pointer-events-auto shadow-2xl overscroll-contain"
+              className="w-full md:w-[480px] h-full flex flex-col bg-[#f5f5f4] pointer-events-auto shadow-2xl overscroll-contain"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {/* Header */}
