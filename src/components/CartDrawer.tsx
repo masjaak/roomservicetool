@@ -68,8 +68,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start gap-4">
-                            <h4 className="text-[1.1rem] font-bold leading-tight line-clamp-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
-                            <button aria-label="Remove item" onClick={() => onRemove(item.id, item.note, false)} className="p-1 -m-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-sm">
+                            <h4 className="text-[1.1rem] font-bold leading-tight flex-1 pr-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
+                            <button aria-label="Remove item" onClick={() => onRemove(item.id, item.note, false)} className="p-2 -mr-2 -mt-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-sm">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -82,13 +82,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         </div>
                         <div className="flex items-center justify-between mt-3">
                           <span className="text-[0.95rem] font-bold text-[#44403c]">{formatCurrency(item.price)}</span>
-                          <div className="flex items-center bg-[#f5f5f4] rounded-full px-1 py-1">
-                            <button aria-label="Decrease quantity" onClick={() => onRemove(item.id, item.note, true)} className="w-7 h-7 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50">
-                              <Minus className="w-3 h-3" />
+                          <div className="flex items-center bg-[#fdfbf9] border border-[#e7e5e4] rounded-full p-0.5">
+                            <button aria-label="Decrease quantity" onClick={() => onRemove(item.id, item.note, true)} className="w-8 h-8 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#f5f5f4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50">
+                              <Minus className="w-3.5 h-3.5" />
                             </button>
-                            <span className="text-[0.9rem] font-bold w-6 text-center text-[#1c1917]">{item.qty}</span>
-                            <button aria-label="Increase quantity disabled" className="w-7 h-7 flex items-center justify-center opacity-30 cursor-not-allowed">
-                              <Plus className="w-3 h-3" aria-hidden="true" />
+                            <span className="text-[0.9rem] font-bold w-6 text-center text-[#1c1917] select-none">{item.qty}</span>
+                            <button aria-label="Increase quantity disabled" className="w-8 h-8 flex items-center justify-center opacity-30 cursor-not-allowed">
+                              <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
                           </div>
                         </div>
@@ -107,7 +107,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <span>{formatCurrency(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-[0.95rem] font-medium text-[#78716c]">
-                      <span>{t.tax}</span>
+                      <span>{t.serviceTax || (lang === 'ID' ? 'Service & Pajak' : 'Service & Tax')}</span>
                       <span>{formatCurrency(tax)}</span>
                     </div>
                     <div className="h-px bg-[#e7e5e4] my-2" />

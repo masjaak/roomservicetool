@@ -64,14 +64,14 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32 bg-[#fdfbf9]" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="w-full max-w-3xl mx-auto px-6 sm:px-12 pt-16">
         
-        <div className="mb-14 pb-12 border-b border-[#e7e5e4]">
+        <div className="mb-10 pb-8 border-b border-[#e7e5e4]">
           <p className="text-[10px] uppercase tracking-widest font-bold mb-4 text-[#a08850]">
             Room {roomNumber}
           </p>
           <h2 className="text-[2.5rem] leading-tight mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
             Service Status
           </h2>
-          <div className="inline-flex items-center px-4 py-2 border border-[#e7e5e4] bg-white rounded-md text-[11px] uppercase font-bold tracking-widest text-[#1c1917]">
+          <div className="inline-flex items-center px-3 py-1.5 border border-[#e7e5e4] bg-white rounded-md text-[10px] uppercase font-bold tracking-widest text-[#1c1917]">
             Order #{orderId?.slice(-6).toUpperCase() || 'UNKNOWN'}
           </div>
         </div>
@@ -90,8 +90,9 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
           </div>
         )}
 
-        <div className="relative pl-6 pb-16">
-          <div className="absolute top-0 bottom-0 left-[23px] w-px bg-[#e7e5e4]" />
+        <div className="relative pl-2 sm:pl-6 pb-16">
+          {/* Vertical connecting line */}
+          <div className="absolute top-0 bottom-0 left-[27px] sm:left-[43px] w-px bg-[#e7e5e4]" />
           
           <div className="space-y-12 relative z-10">
             {steps.map((step, index) => {

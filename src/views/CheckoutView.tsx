@@ -178,9 +178,9 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 <h3 className="text-[1.2rem] font-bold mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>Order Summary</h3>
                 <div className="space-y-4 mb-6">
                   {cart.map(item => (
-                    <div key={`${item.id}-${item.note}`} className="flex justify-between text-[0.95rem]">
-                      <span className="text-[#44403c]"><span className="text-[#a08850] mr-2">{item.qty}x</span> {item.name}</span>
-                      <span className="text-[#1c1917] font-medium">{formatCurrency(item.price * item.qty)}</span>
+                    <div key={`${item.id}-${item.note}`} className="flex justify-between items-start text-[0.95rem] gap-4">
+                      <span className="text-[#44403c] flex-1 pr-2"><span className="text-[#a08850] mr-2 font-bold">{item.qty}x</span> {item.name}</span>
+                      <span className="text-[#1c1917] font-medium whitespace-nowrap">{formatCurrency(item.price * item.qty)}</span>
                     </div>
                   ))}
                 </div>
@@ -193,7 +193,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                     <span>{formatCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-[#78716c] text-[0.95rem]">
-                    <span>{t.tax}</span>
+                    <span>{t.serviceTax || (lang === 'ID' ? 'Service & Pajak' : 'Service & Tax')}</span>
                     <span>{formatCurrency(taxService)}</span>
                   </div>
                   <div className="flex justify-between text-[#1c1917] text-[1.2rem] font-bold mt-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
