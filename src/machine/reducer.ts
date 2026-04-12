@@ -64,7 +64,12 @@ export function reducer(state: AppState, action: Action): AppState {
         screen: Screen.Confirmed, 
         isProcessing: false, 
         orderId: action.payload.id,
-        blockedWaUrl: action.payload.blockedWaUrl
+        blockedWaUrl: action.payload.blockedWaUrl,
+        lastOrder: {
+          id: action.payload.id,
+          items: s.cart,
+          blockedWaUrl: action.payload.blockedWaUrl
+        }
       };
     }
 

@@ -17,9 +17,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, 
       onClick={onClick}
       className="w-full bg-[#ffffff] border-b border-[#e7e5e4] last:border-b-0 py-6 mb-2 cursor-pointer group"
     >
-      <div className="flex flex-row gap-4 items-start">
+      <div className="flex flex-row gap-5 items-start p-4 bg-[#ffffff]">
         {/* Left: Content */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
+        <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
             {/* Tagging / Badge */}
             <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -65,24 +65,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, 
         </div>
 
         {/* Right: Image & Action */}
-        <div className="flex flex-col items-center flex-shrink-0 w-[110px] sm:w-[130px]">
-          <div className="relative w-full aspect-square bg-[#f5f5f4] rounded-lg overflow-hidden shrink-0 mb-3">
+        <div className="flex flex-col items-center shrink-0 w-24 sm:w-28 pl-1">
+          <div className="relative w-full aspect-square bg-[#f5f5f4] rounded-lg overflow-hidden shrink-0 mb-3 border border-[#e7e5e4]/50">
             <ImageWithFallback
               src={item.image}
               alt={item.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 max-w-full"
             />
           </div>
           
-          {/* Action Button - Always visible, right below image */}
-          <button
-            onClick={(e) => { e.stopPropagation(); onAdd(e); }}
-            style={{ touchAction: 'manipulation' }}
-            className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-3 bg-white border border-[#e7e5e4] shadow-sm text-[#1c1917] hover:border-[#1c1917] hover:bg-[#1c1917] hover:text-[#ffffff] rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 touch-manipulation group/add"
-          >
-            <Plus className="w-3 h-3 transition-transform group-hover/add:scale-110" aria-hidden="true" />
-            <span>Add</span>
-          </button>
+          {/* Isolated Action Button (Decoupled from Card Click) */}
+          <div className="w-full flex justify-end group/add">
+            <button
+              onClick={(e) => { e.stopPropagation(); onAdd(e); }}
+              style={{ touchAction: 'manipulation' }}
+              aria-label={`Add ${item.name} to cart`}
+              className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 bg-white border border-[#e7e5e4] shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-[#1c1917] hover:border-[#1c1917] hover:bg-[#1c1917] hover:text-[#ffffff] rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
+            >
+              <Plus className="w-3 h-3 transition-transform group-hover/add:scale-110" aria-hidden="true" />
+              <span>Add</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

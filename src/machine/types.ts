@@ -61,6 +61,11 @@ export interface AppState {
   isCartOpen: boolean;
   guest: GuestInfo;
   cart: CartEntry[];
+  lastOrder?: {
+    id: string;
+    items: CartEntry[];
+    blockedWaUrl: string | null;
+  } | null;
   selectedCategory: string;
   searchQuery: string;
   paymentMethod: PaymentMethod;
@@ -100,6 +105,7 @@ export function createInitialState(cart: CartEntry[] = []): AppState {
     isCartOpen: false,
     guest: { roomNumber: '', lastName: '', phoneNumber: '' },
     cart,
+    lastOrder: null,
     selectedCategory: 'Signatures',
     searchQuery: '',
     paymentMethod: 'room',
