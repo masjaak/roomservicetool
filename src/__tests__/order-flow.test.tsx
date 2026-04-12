@@ -13,15 +13,22 @@ const mockItem = {
 };
 
 describe('ProductCard UI Expectations', () => {
-  it('explicitly renders a direct Add button', () => {
+  it('explicitly renders a direct Add button, which adds to cart independently of the modal', () => {
     const clickSpy = vi.fn();
-    render(<ProductCard item={mockItem} onClick={clickSpy} freeLabel="Free" />);
+    const addSpy = vi.fn();
+    render(<ProductCard item={mockItem} onClick={clickSpy} onAdd={addSpy} freeLabel="Free" />);
 
     // Since the new rule specifies making CTA explicitly obvious
     const addBtn = screen.getByText('Add');
     expect(addBtn).toBeDefined();
 
     fireEvent.click(addBtn);
+    expect(addSpy).toHaveBeenCalled();
+    expect(clickSpy).not.toHaveBeenCalled();
+
+    const titleEl = screen.getByText('Test Item');
+    fireEvent.click(titleEl.parentElement!);
+    
     expect(clickSpy).toHaveBeenCalled();
   });
 });

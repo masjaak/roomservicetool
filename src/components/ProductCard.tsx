@@ -7,10 +7,11 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 interface ProductCardProps {
   item: MenuItem;
   onClick: () => void;
+  onAdd: (e: React.MouseEvent) => void;
   freeLabel: string;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLabel }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, freeLabel }) => {
   return (
     <div 
       onClick={onClick}
@@ -75,11 +76,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, freeLab
           
           {/* Action Button - Always visible, right below image */}
           <button
-            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            onClick={(e) => { e.stopPropagation(); onAdd(e); }}
             style={{ touchAction: 'manipulation' }}
-            className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 bg-[#f5f5f4] group-hover:bg-[#1c1917] group-hover:text-[#ffffff] text-[#1c1917] rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 touch-manipulation"
+            className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-3 bg-white border border-[#e7e5e4] shadow-sm text-[#1c1917] hover:border-[#1c1917] hover:bg-[#1c1917] hover:text-[#ffffff] rounded-full transition-colors font-bold text-[11px] uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 touch-manipulation group/add"
           >
-            <Plus className="w-3 h-3" aria-hidden="true" />
+            <Plus className="w-3 h-3 transition-transform group-hover/add:scale-110" aria-hidden="true" />
             <span>Add</span>
           </button>
         </div>

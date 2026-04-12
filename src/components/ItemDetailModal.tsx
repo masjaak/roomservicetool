@@ -61,7 +61,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
               className="w-full max-w-lg bg-[#ffffff] pointer-events-auto flex flex-col sm:rounded-2xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[90vh] overscroll-contain"
             >
               {/* Image Header */}
-              <div className="relative w-full h-48 sm:h-64 bg-[#f5f5f4]">
+              <div className="relative w-full aspect-[3/2] max-h-[30vh] sm:max-h-[40vh] bg-[#f5f5f4]">
                 <button
                   onClick={handleClose}
                   aria-label="Close modal"

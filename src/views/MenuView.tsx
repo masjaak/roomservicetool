@@ -87,7 +87,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               placeholder={t.search}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-10 py-3.5 rounded-xl bg-[#f5f5f4] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/20 transition-shadow border-none"
+              className="w-full pl-14 pr-10 py-3.5 rounded-xl bg-[#f5f5f4] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/20 transition-shadow border-none"
             />
             {searchQuery && (
               <button aria-label="Clear search" onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#a8a29e] hover:text-[#1c1917] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-full">
@@ -105,10 +105,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 ${
+                  className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-all shadow-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 ${
                     selectedCategory === cat
-                      ? 'bg-[#1c1917] text-[#ffffff]'
-                      : 'bg-transparent text-[#78716c] hover:bg-[#f5f5f4]'
+                      ? 'bg-[#1c1917] border-[#1c1917] text-[#ffffff]'
+                      : 'bg-[#ffffff] border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30 hover:text-[#1c1917]'
                   }`}
                 >
                   {cat}
@@ -145,6 +145,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 key={item.id}
                 item={item}
                 onClick={() => setSelectedItem(item)}
+                onAdd={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  addToCart(item, 1, '');
+                }}
                 freeLabel={t.free}
               />
             ))
