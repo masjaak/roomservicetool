@@ -125,17 +125,17 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         key={method.id}
                         onClick={() => handlePaymentMethodChange(method.id as PaymentMethod)}
                         aria-pressed={active}
-                        className={`relative flex items-center text-left p-5 transition-colors focus-visible:outline-none rounded-sm border ${
+                        className={`relative flex items-center text-left p-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50 rounded-lg border ${
                           active 
-                            ? 'bg-[#1c1917] border-[#1c1917] text-[#ffffff] shadow-lg' 
-                            : 'bg-[#ffffff] text-[#1c1917] hover:bg-[#f5f5f4] border-[#e7e5e4]'
+                            ? 'bg-stone-900 border-stone-900 text-white shadow-md' 
+                            : 'bg-white text-stone-900 hover:bg-stone-50 border-[#e7e5e4]'
                         }`}
                       >
                         <div className="flex-1 flex items-center gap-4">
                           <Icon className={`w-5 h-5 ${active ? 'text-[#a08850]' : 'text-stone-500'}`} />
                           <div>
-                            <h4 className={`text-[1rem] font-bold ${active ? 'text-[#ffffff]' : 'text-[#1c1917]'}`}>{method.label}</h4>
-                            <p className={`text-[0.85rem] mt-0.5 ${active ? 'text-[rgba(255,255,255,0.7)]' : 'text-[#78716c]'}`}>{method.desc}</p>
+                            <h4 className={`text-[1rem] font-bold ${active ? 'text-white' : 'text-stone-900'}`}>{method.label}</h4>
+                            <p className={`text-[0.85rem] mt-0.5 ${active ? 'text-stone-300' : 'text-stone-500'}`}>{method.desc}</p>
                           </div>
                         </div>
                         {active && <CheckCircle2 className="w-5 h-5 text-[#a08850]" />}
@@ -148,7 +148,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 <AnimatePresence>
                   {paymentMethod === 'bank' && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-4">
-                      <div className="p-6 bg-[#f5f5f4] rounded-sm">
+                      <div className="p-6 bg-[#f5f5f4] rounded-lg">
                         <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Select Destination Bank</label>
                         <div className="grid grid-cols-2 gap-3 mb-6">
                           {BANKS.map((bank) => (
@@ -156,14 +156,14 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                               key={bank.id}
                               onClick={() => setSelectedBank(bank.id)}
                               aria-pressed={selectedBank === bank.id}
-                              className={`p-4 text-center border transition-colors focus-visible:outline-none rounded-sm bg-[#ffffff] ${selectedBank === bank.id ? 'border-[#1c1917] text-[#1c1917] font-bold shadow-md' : 'border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30'}`}
+                              className={`p-4 text-center border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-md bg-white ${selectedBank === bank.id ? 'border-[#1c1917] text-[#1c1917] font-bold' : 'border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30'}`}
                             >
                               <div className="text-[1rem]">{bank.name}</div>
                             </button>
                           ))}
                         </div>
                         {selectedBankDetails && (
-                          <div className="mb-6 rounded-sm border border-[#e7e5e4] bg-[#ffffff] p-4">
+                          <div className="mb-6 rounded-xl border border-[#e7e5e4] bg-white p-4">
                             <div className="flex items-start justify-between gap-4">
                               <div>
                                 <p className="text-[0.8rem] text-[#78716c] uppercase tracking-widest mb-1 font-bold">Transfer to</p>
@@ -186,7 +186,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
                           <input type="file" aria-label="Upload transfer proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-sm ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-[#ffffff] hover:bg-[#fdfbf9]'}`}>
+                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
                             <Upload className="w-5 h-5" />
                             <span className="font-medium text-[0.95rem] truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
                           </div>
@@ -197,9 +197,9 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
 
                   {paymentMethod === 'qris' && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-4">
-                      <div className="p-6 bg-[#f5f5f4] rounded-sm">
+                      <div className="p-6 bg-[#f5f5f4] rounded-lg">
                         <div className="flex justify-center mb-6">
-                            <div className="w-48 h-48 bg-[#ffffff] border border-[#e7e5e4] flex flex-col items-center justify-center rounded-sm px-5 text-center text-[#a8a29e] shadow-sm">
+                            <div className="w-48 h-48 bg-white border border-[#e7e5e4] flex flex-col items-center justify-center rounded-md px-5 text-center text-[#a8a29e] shadow-sm">
                                 <span className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#78716c]">QRIS</span>
                                 <span className="text-[0.92rem] leading-relaxed">
                                   {lang === 'ID' ? 'Scan kode di meja layanan lalu unggah bukti pembayaran.' : 'Scan the code at the service desk, then upload your payment proof.'}
@@ -209,7 +209,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
                           <input type="file" aria-label="Upload QRIS proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-sm ${transferProof ? 'bg-[#ffffff] border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-[#ffffff] hover:bg-[#fdfbf9]'}`}>
+                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
                             <Upload className="w-5 h-5" />
                             <span className="font-medium text-[0.95rem] truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
                           </div>
@@ -223,7 +223,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
 
             {/* Order Summary Side */}
             <div>
-              <div className="bg-[#ffffff] border border-[#e7e5e4] p-6 lg:p-8 rounded-sm shadow-xl sticky top-32">
+              <div className="bg-[#ffffff] border border-[#e7e5e4] p-6 lg:p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] sticky top-32">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
                     <h3 className="text-[1.2rem] font-bold" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>Order Summary</h3>
@@ -274,7 +274,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 )}
 
                 {!canSubmit && (
-                  <div className="mb-6 rounded-sm border border-[#e7e5e4] bg-[#f5f5f4] px-4 py-3 text-[0.9rem] leading-relaxed text-[#57534e]">
+                  <div className="mb-6 rounded-xl border border-[#e7e5e4] bg-[#f5f5f4] px-4 py-3 text-[0.9rem] leading-relaxed text-[#57534e]">
                     {paymentMethod === 'bank'
                       ? (lang === 'ID'
                         ? 'Pilih bank tujuan dan unggah bukti transfer agar pesanan dapat diproses.'
@@ -290,7 +290,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 <button
                   onClick={() => onPlaceOrder(paymentMethod, selectedBank, transferProof)}
                   disabled={!canSubmit || loading}
-                  className="w-full h-14 flex items-center justify-center gap-2 bg-[#1c1917] text-[#ffffff] disabled:bg-[#e7e5e4] disabled:text-[#a8a29e] hover:bg-[#2d2d2d] transition-colors focus-visible:outline-none rounded-sm shadow-md"
+                  className="w-full h-14 flex items-center justify-center gap-2 bg-[#1c1917] text-white disabled:bg-[#e7e5e4] disabled:text-[#a8a29e] hover:bg-[#2d2d2d] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50 rounded-full"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span className="text-[12px] uppercase tracking-widest font-bold">{t.placeOrder}</span>}
                 </button>

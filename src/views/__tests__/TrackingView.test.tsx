@@ -33,7 +33,7 @@ describe('TrackingView', () => {
     );
 
     // Should see Tracking Title
-    expect(screen.getAllByText(/ORDER TRACKING/i).length).toBeGreaterThan(0);
+    expect(screen.getByText('Order Status')).toBeTruthy();
     // Should see confirmed step
     expect(screen.getAllByText('Order Confirmed').length).toBeGreaterThan(0);
   });
@@ -75,7 +75,7 @@ describe('TrackingView', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getAllByText(/ORDER TRACKING/i).length).toBeGreaterThan(0);
+    expect(screen.getByText('Current Status')).toBeTruthy();
     expect(screen.getAllByText('On The Way').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Staff is en route to Room 101.').length).toBeGreaterThan(0);
   });

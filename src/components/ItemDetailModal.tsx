@@ -58,16 +58,16 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="w-full max-w-lg bg-[#ffffff] pointer-events-auto flex flex-col sm:rounded-sm rounded-t-sm overflow-hidden shadow-2xl max-h-[90vh] overscroll-contain"
+              className="w-full max-w-lg bg-[#ffffff] pointer-events-auto flex flex-col sm:rounded-2xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[90vh] overscroll-contain"
             >
               {/* Image Header */}
               <div className="relative w-full aspect-[3/2] max-h-[30vh] sm:max-h-[40vh] bg-[#f5f5f4]">
                 <button
                   onClick={handleClose}
                   aria-label="Close modal"
-                  className="absolute top-4 right-4 z-10 w-9 h-9 bg-[#ffffff] flex items-center justify-center text-[#1c1917] hover:bg-[#f5f5f4] transition-colors focus-visible:outline-none rounded-sm border border-[#e7e5e4]"
+                  className="absolute top-4 right-4 z-10 w-9 h-9 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
                 <ImageWithFallback
                   src={item.image}
@@ -98,15 +98,15 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
 
                   <div className="flex gap-4 mb-8">
                     {item.prepTime && (
-                      <div className="flex bg-[#f5f5f4] py-1.5 px-3 rounded-sm border border-[#e7e5e4]">
-                        <span className="text-[9px] font-bold text-[#1c1917] uppercase tracking-[0.1em]">
+                      <div className="flex bg-[#f5f5f4] py-2 px-4 rounded-full">
+                        <span className="text-[10px] font-bold text-[#574b3f] uppercase tracking-wider">
                           Prep: {item.prepTime}
                         </span>
                       </div>
                     )}
                     {item.spiceLevel && item.spiceLevel !== 'None' && (
-                      <div className="flex py-1.5 px-3 rounded-sm border border-[#e7e5e4]" style={{ backgroundColor: item.spiceLevel === 'Hot' ? '#fef2f2' : '#fffbeb', borderColor: item.spiceLevel === 'Hot' ? '#fca5a5' : '#fcd34d' }}>
-                        <span className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ color: item.spiceLevel === 'Hot' ? '#b91c1c' : '#d97706' }}>
+                      <div className="flex bg-[#f5f5f4] py-2 px-4 rounded-full">
+                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: item.spiceLevel === 'Hot' ? '#b91c1c' : '#d97706' }}>
                           Spice: {item.spiceLevel}
                         </span>
                       </div>
@@ -115,26 +115,26 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
 
                   {/* Note Input */}
                   <div className="mb-6">
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-[#1c1917] mb-2">
+                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1c1917] mb-3">
                       {t.specialInstructions}
                     </label>
                     <textarea
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       placeholder={t.placeholderNote}
-                      className="w-full bg-[#fdfbf9] border border-[#e7e5e4] rounded-sm p-4 text-[0.95rem] font-medium focus:outline-none focus:border-[#1c1917] resize-none h-24 placeholder-[#a8a29e] transition-colors"
+                      className="w-full bg-[#fdfbf9] border border-[#e7e5e4] rounded-lg p-4 text-[0.95rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 resize-none h-24 placeholder-[#a8a29e]"
                     />
                   </div>
 
                   {/* Allergens dropdown */}
                   {item.allergens && item.allergens.length > 0 && (
-                    <div className="bg-[#f5f5f4] rounded-sm overflow-hidden">
+                    <div className="border border-[#e7e5e4] rounded-lg overflow-hidden">
                       <button
                         onClick={() => setShowAllergens(!showAllergens)}
-                        className="w-full flex items-center justify-between p-4 text-[10px] uppercase tracking-widest font-bold text-[#1c1917] focus-visible:outline-none"
+                        className="w-full flex items-center justify-between p-4 bg-[#fdfbf9] text-[11px] uppercase tracking-widest font-bold text-[#1c1917] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
                       >
                         <div className="flex items-center gap-2">
-                          <AlertTriangle className="w-3.5 h-3.5 text-[#1c1917]" />
+                          <AlertTriangle className="w-4 h-4 text-[#a08850]" />
                           <span>Show Allergens</span>
                         </div>
                         <ChevronDown className={`w-4 h-4 transition-transform ${showAllergens ? 'rotate-180' : ''}`} />
@@ -145,11 +145,11 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                             initial={{ height: 0 }}
                             animate={{ height: 'auto' }}
                             exit={{ height: 0 }}
-                            className="overflow-hidden"
+                            className="overflow-hidden bg-white"
                           >
-                            <div className="p-4 pt-0 flex flex-wrap gap-2">
+                            <div className="p-4 pt-0 border-t border-[#e7e5e4] flex flex-wrap gap-2">
                               {item.allergens.map((allergen) => (
-                                <span key={allergen} className="px-2 py-1 bg-[#ffffff] border border-[#e7e5e4] text-[#1c1917] text-[9px] uppercase tracking-[0.1em] rounded-sm font-bold">
+                                <span key={allergen} className="px-3 py-1 bg-[#f5f5f4] text-[#574b3f] text-[11px] rounded-full font-medium">
                                   {allergen}
                                 </span>
                               ))}
@@ -165,11 +165,11 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
               {/* Footer Controls */}
               <div className="p-6 bg-[#ffffff] border-t border-[#e7e5e4] grid grid-cols-[100px_1fr] gap-4">
                 {/* Quantity */}
-                <div className="flex items-center justify-between bg-[#f5f5f4] rounded-sm px-1 h-14">
+                <div className="flex items-center justify-between bg-[#f5f5f4] rounded-full px-2 h-14">
                   <button
                     onClick={() => setQty(Math.max(1, qty - 1))}
                     aria-label="Decrease quantity"
-                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] disabled:opacity-30 rounded-sm hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none"
+                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] disabled:opacity-30 rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
                     disabled={qty <= 1}
                   >
                     <Minus className="w-4 h-4" />
@@ -178,7 +178,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                   <button
                     onClick={() => setQty(qty + 1)}
                     aria-label="Increase quantity"
-                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] rounded-sm hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none"
+                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -187,10 +187,10 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                 {/* Add to Cart CTA */}
                 <button
                   onClick={handleAdd}
-                  className="h-14 bg-[#1c1917] text-[#ffffff] rounded-sm flex items-center justify-between px-6 focus-visible:outline-none hover:bg-[#2d2d2d] transition-colors active:scale-[0.98]"
+                  className="h-14 bg-[#1c1917] text-[#ffffff] rounded-full flex items-center justify-between px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50 hover:bg-[#2d2d2d] transition-colors active:scale-[0.98]"
                 >
                   <span className="text-[12px] font-bold uppercase tracking-widest">{t.addToCart}</span>
-                  <span className="text-[14px] font-bold">{formatCurrency(totalPrice)}</span>
+                  <span className="text-[14px] font-bold text-[#a08850]">{formatCurrency(totalPrice)}</span>
                 </button>
               </div>
             </motion.div>

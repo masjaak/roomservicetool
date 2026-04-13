@@ -44,7 +44,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     {t.cart}
                   </h2>
                 </div>
-                <button aria-label="Close cart" onClick={onClose} className="p-2 text-[#1c1917] bg-[#ffffff] border border-[#e7e5e4] rounded-sm hover:bg-[#f5f5f4] transition-colors focus-visible:outline-none">
+                <button aria-label="Close cart" onClick={onClose} className="p-2 text-[#1c1917] bg-[#f5f5f4] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -53,8 +53,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                 {cart.length === 0 ? (
                   <div className="py-24 flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 bg-[#ffffff] border border-[#e7e5e4] flex items-center justify-center mb-6">
-                      <ShoppingBag className="w-6 h-6 text-[#1c1917]" />
+                    <div className="w-16 h-16 rounded-full bg-[#f5f5f4] flex items-center justify-center mb-6">
+                      <ShoppingBag className="w-6 h-6 text-[#a8a29e]" />
                     </div>
                     <p className="text-[1.2rem] font-bold text-[#1c1917] font-serif mb-2">{t.emptyCart}</p>
                     <p className="text-[0.95rem] text-[#78716c]">Your selected items will appear here.</p>
@@ -62,14 +62,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 ) : (
                   cart.map((item, index) => (
                     <div key={`${item.id}-${item.note}`} className="flex flex-row gap-5 pb-6 border-b border-[#e7e5e4] last:border-b-0">
-                      <div className="w-24 h-24 flex-shrink-0 bg-[#f5f5f4] rounded-sm overflow-hidden border border-[#e7e5e4]">
+                      <div className="w-24 h-24 flex-shrink-0 bg-[#f5f5f4] rounded-lg overflow-hidden">
                         <ImageWithFallback src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start gap-3">
                             <h4 className="text-[1.1rem] font-bold leading-snug flex-1 pr-1" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>{item.name}</h4>
-                            <button aria-label="Remove item" onClick={() => onRemove(index)} className="p-2 -mr-2 -mt-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none rounded-sm">
+                            <button aria-label="Remove item" onClick={() => onRemove(index)} className="p-2 -mr-2 -mt-1 text-[#a8a29e] hover:text-[#b91c1c] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-sm">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -83,7 +83,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         <div className="flex items-center justify-between mt-3">
                           <span className="text-[0.95rem] font-bold text-[#44403c]">{formatCurrency(item.price * item.qty)}</span>
                           <div className="flex items-center gap-2">
-                            <span className="rounded-sm border border-[#e7e5e4] bg-[#fdfbf9] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#1c1917]">
+                            <span className="rounded-full border border-[#e7e5e4] bg-[#fdfbf9] px-3 py-1 text-[0.78rem] font-bold uppercase tracking-[0.18em] text-[#78716c]">
                               Qty {item.qty}
                             </span>
 
@@ -119,7 +119,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       onClose();
                       setTimeout(onCheckout, 300);
                     }}
-                    className="w-full h-14 flex items-center justify-center bg-[#1c1917] text-white hover:bg-[#2d2d2d] active:scale-[0.98] transition-transform duration-200 rounded-sm focus-visible:outline-none"
+                    className="w-full h-14 flex items-center justify-center bg-[#1c1917] text-white hover:bg-[#2d2d2d] active:scale-[0.98] transition-transform duration-200 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50"
                   >
                     <span className="text-[12px] uppercase tracking-widest font-bold">
                       {t.checkout}

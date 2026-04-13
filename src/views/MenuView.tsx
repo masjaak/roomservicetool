@@ -87,10 +87,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
               placeholder={t.search}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-10 py-3 bg-[#ffffff] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus-visible:outline-none focus:ring-1 focus:ring-[#1c1917]/20 transition-all border border-[#e7e5e4] rounded-sm"
+              className="w-full pl-14 pr-10 py-3.5 rounded-xl bg-[#f5f5f4] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/20 transition-shadow border-none"
             />
             {searchQuery && (
-              <button aria-label="Clear search" onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#a8a29e] hover:text-[#1c1917] transition-colors focus-visible:outline-none">
+              <button aria-label="Clear search" onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#a8a29e] hover:text-[#1c1917] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-full">
                 <XCircle className="w-4 h-4" />
               </button>
             )}
@@ -99,16 +99,16 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
         {/* Sticky Category Navigation */}
         {!searchQuery && (
-          <div className="sticky top-0 z-30 bg-[#fdfbf9]/95 backdrop-blur-md px-6 pt-2 pb-0">
-            <div className="flex overflow-x-auto hide-scrollbar gap-8 border-b border-[#e7e5e4]">
+          <div className="sticky top-0 z-30 bg-[#fdfbf9]/90 backdrop-blur-md border-b border-[#e7e5e4] px-4">
+            <div className="flex overflow-x-auto hide-scrollbar gap-2 py-3">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap pb-3 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors shrink-0 focus-visible:outline-none border-b-2 ${
+                  className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-all shadow-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 ${
                     selectedCategory === cat
-                      ? 'border-[#1c1917] text-[#1c1917]'
-                      : 'border-transparent text-[#a8a29e] hover:text-[#1c1917]'
+                      ? 'bg-[#1c1917] border-[#1c1917] text-[#ffffff]'
+                      : 'bg-[#ffffff] border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30 hover:text-[#1c1917]'
                   }`}
                 >
                   {cat}
@@ -119,20 +119,20 @@ export const MenuView: React.FC<MenuViewProps> = ({
         )}
 
         {/* List Header */}
-        <div className="px-6 sm:px-8 mt-8 mb-6">
-          <h3 className="text-[1.5rem] font-bold" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
+        <div className="px-6 sm:px-8 mt-6 mb-4">
+          <h3 className="text-[1.2rem] font-bold" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
             {searchQuery ? t.search : selectedCategory}
           </h3>
         </div>
 
         {/* Item List */}
-        <div className="px-6 sm:px-8 flex flex-col gap-6">
+        <div className="px-6 sm:px-8 flex flex-col">
           {filteredItems.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center text-center px-4">
-              <div className="w-16 h-16 bg-[#ffffff] border border-[#e7e5e4] flex items-center justify-center mb-6">
-                <SearchX className="w-6 h-6 text-[#1c1917]" />
+              <div className="w-16 h-16 rounded-full bg-[#f5f5f4] flex items-center justify-center mb-4">
+                <SearchX className="w-6 h-6 text-[#a8a29e]" />
               </div>
-              <h3 className="text-[1.3rem] font-bold text-[#1c1917] mb-2 font-serif">
+              <h3 className="text-[1.25rem] font-bold text-[#1c1917] mb-2 font-serif">
                 {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
               </h3>
               <p className="text-[0.95rem] text-[#78716c] max-w-xs leading-relaxed">
@@ -168,18 +168,18 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <button
                 onClick={onOpenCart}
                 aria-label="Open cart"
-                className="w-full max-w-md h-16 flex items-center justify-between px-6 shadow-xl pointer-events-auto transition-transform active:scale-[0.98] bg-[#1c1917] text-white focus-visible:outline-none"
+                className="w-full max-w-md h-16 flex items-center justify-between px-6 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] pointer-events-auto transition-transform active:scale-[0.98] bg-[#1c1917] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50"
               >
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <ShoppingBag className="w-5 h-5 text-white" />
-                    <div className="absolute -top-2 -right-3 w-5 h-5 bg-[#ffffff] flex items-center justify-center text-[10px] font-bold text-[#1c1917] border border-[#1c1917]">
+                    <div className="absolute -top-2 -right-3 w-5 h-5 bg-[#a08850] rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm border border-[#1c1917]">
                       {totalQty}
                     </div>
                   </div>
                   <span className="text-[12px] font-bold tracking-widest uppercase ml-2">{t.cart}</span>
                 </div>
-                <span className="text-[14px] font-bold">{formatCurrency(grandTotal)}</span>
+                <span className="text-[14px] font-bold text-[#a08850]">{formatCurrency(grandTotal)}</span>
               </button>
             </motion.div>
           )}
