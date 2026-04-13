@@ -24,12 +24,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, 
             {/* Tagging / Badge */}
             <div className="flex flex-wrap items-center gap-2 mb-2">
               {item.tag && (
-                <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-[0.1em] text-[#78716c] bg-[#f5f5f4] rounded-sm">
+                <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-[0.1em] text-[#78716c] border border-[#e7e5e4] rounded-sm">
                   {item.tag}
                 </span>
               )}
               {item.serviceTag && (
-                <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-[0.1em] text-white bg-[#2d2d2d] rounded-sm">
+                <span className="text-[9px] px-1.5 py-0.5 font-bold uppercase tracking-[0.1em] text-white bg-[#1c1917] rounded-sm">
                   {item.serviceTag}
                 </span>
               )}
@@ -66,7 +66,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, 
 
         {/* Right: Image & Action */}
         <div className="flex flex-col items-center shrink-0 w-24 sm:w-28 pl-1">
-          <div className="relative w-full aspect-square bg-[#f5f5f4] rounded-lg overflow-hidden shrink-0 mb-3 border border-[#e7e5e4]/50">
+          <div className="relative w-full aspect-square bg-[#f5f5f4] rounded-sm overflow-hidden shrink-0 mb-3 border border-[#e7e5e4]">
             <ImageWithFallback
               src={item.image}
               alt={item.name}
@@ -80,7 +80,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, 
               onClick={(e) => { e.stopPropagation(); onAdd(e); }}
               style={{ touchAction: 'manipulation' }}
               aria-label={`Add ${item.name} to cart`}
-              className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 bg-white border border-[#e7e5e4] shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-[#1c1917] hover:border-[#1c1917] hover:bg-[#1c1917] hover:text-[#ffffff] rounded-full transition-colors font-bold text-[10px] uppercase tracking-widest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
+              className="inline-flex items-center justify-center gap-1.5 py-1.5 px-3 bg-[#ffffff] border border-[#1c1917] text-[#1c1917] hover:bg-[#1c1917] hover:text-[#ffffff] rounded-sm transition-colors font-bold text-[10px] uppercase tracking-widest focus-visible:outline-none focus:ring-1 focus:ring-[#1c1917]"
             >
               <Plus className="w-3 h-3 transition-transform group-hover/add:scale-110" aria-hidden="true" />
               <span>Add</span>

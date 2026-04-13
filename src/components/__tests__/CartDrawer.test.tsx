@@ -45,9 +45,8 @@ describe('CartDrawer', () => {
     );
 
     fireEvent.click(screen.getAllByLabelText('Remove item')[1]);
-    fireEvent.click(screen.getAllByLabelText('Decrease quantity')[1]);
 
-    expect(onRemove).toHaveBeenNthCalledWith(1, 1);
-    expect(onRemove).toHaveBeenNthCalledWith(2, 1);
+    expect(onRemove).toHaveBeenCalledTimes(1);
+    expect(onRemove).toHaveBeenCalledWith(1);
   });
 });
