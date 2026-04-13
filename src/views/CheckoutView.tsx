@@ -65,58 +65,53 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen pb-32 bg-[#fdfbf9]"
+      className="min-h-screen pb-32 bg-[#fcfbf9]"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="w-full max-w-5xl mx-auto min-h-screen relative">
-        <div className="sticky top-0 z-30 px-6 sm:px-8 py-6 bg-[#fdfbf9]/90 backdrop-blur-md border-b border-[#e7e5e4]">
+        <div className="sticky top-0 z-30 px-6 sm:px-12 py-6 bg-[#fcfbf9]/95 backdrop-blur-md border-b border-[#e7e5e4]">
           <button
             onClick={onBack}
             aria-label="Back to Menu"
-            className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-[#1c1917] hover:text-[#a08850] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-md px-2 py-1 -ml-2"
+            className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#1c1917] hover:text-[#a08850] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-md py-1 -ml-2"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             <span>{t.backToMenu}</span>
           </button>
         </div>
 
-        <div className="px-6 sm:px-8 pt-10 pb-16">
-          <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="px-6 sm:px-12 pt-12 pb-24">
+          <div className="mb-14 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[#a08850]">
-                {lang === 'ID' ? 'Tinjau Sebelum Bayar' : 'Review Before Payment'}
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#a08850]">
+                {lang === 'ID' ? 'Tinjau & Bayar' : 'Review & Payment'}
               </p>
-              <h2 className="text-[2.5rem] leading-none" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
+              <h2 className="text-[3rem] leading-none text-[#1c1917]" style={{ fontFamily: "'DM Serif Display', serif" }}>
                 Checkout
               </h2>
-              <p className="mt-3 max-w-2xl text-[0.98rem] leading-relaxed text-[#57534e]">
+              <p className="mt-4 max-w-xl text-[1rem] leading-relaxed text-[#57534e] font-light">
                 {lang === 'ID'
-                  ? 'Pastikan metode pembayaran, detail transfer, dan item pesanan sudah benar sebelum mengirim pesanan.'
-                  : 'Confirm your payment method, transfer details, and line items before sending the order to the kitchen.'}
+                  ? 'Pastikan metode pembayaran dan pesanan Anda sudah sesuai. Tagihan akhir dapat ditambahkan ke riwayat folio kamar.'
+                  : 'Select your preferred billing method and review the order folio below before sending to the kitchen.'}
               </p>
-            </div>
-            <div className="inline-flex items-center gap-3 self-start rounded-full border border-[#e7e5e4] bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#1c1917]">
-              <span>{itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
-              <span className="h-1 w-1 rounded-full bg-[#a08850]" />
-              <span>{formatCurrency(grandTotal)}</span>
             </div>
           </div>
           
-          <div className="grid lg:grid-cols-[1fr_380px] gap-12">
+          <div className="grid lg:grid-cols-[1fr_400px] gap-16">
             <div className="space-y-10">
               <section>
-                <div className="flex items-center gap-3 mb-6 pb-3 border-b border-[#e7e5e4]">
+                <div className="flex items-center gap-3 mb-8 pb-4 border-b border-[#e7e5e4]">
                   <Receipt className="w-4 h-4 text-[#a08850]" />
-                  <h3 className="text-[12px] tracking-widest uppercase font-bold text-[#1c1917]">
+                  <h3 className="text-[11px] tracking-[0.2em] uppercase font-bold text-[#1c1917]">
                     Billing Method
                   </h3>
                 </div>
                 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-4">
                   {[
-                    { id: 'room', label: lang === 'ID' ? 'Tagih ke Kamar' : 'Charge to Room', desc: lang === 'ID' ? 'Akan ditambahkan ke tagihan akhir' : 'Will be added to your final folio', icon: Receipt },
-                    { id: 'qris', label: 'QRIS', desc: lang === 'ID' ? 'Pembayaran instan dompet digital' : 'Instant digital wallet payment', icon: QrCode },
-                    { id: 'bank', label: lang === 'ID' ? 'Transfer Bank' : 'Bank Transfer', desc: lang === 'ID' ? 'Nomor rekening akan ditampilkan' : 'Account details will be provided', icon: Building2 }
+                    { id: 'room', label: lang === 'ID' ? 'Tagih ke Kamar' : 'Charge to Room', desc: lang === 'ID' ? 'Ditambahkan ke tagihan akhir' : 'Added to your final folio', icon: Receipt },
+                    { id: 'qris', label: 'QRIS', desc: lang === 'ID' ? 'Pembayaran instan e-wallet' : 'Instant digital wallet', icon: QrCode },
+                    { id: 'bank', label: lang === 'ID' ? 'Transfer Bank' : 'Bank Transfer', desc: lang === 'ID' ? 'Nomor rekening manual' : 'Manual account transfer', icon: Building2 }
                   ].map(method => {
                     const active = paymentMethod === method.id;
                     const Icon = method.icon;
@@ -125,20 +120,22 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         key={method.id}
                         onClick={() => handlePaymentMethodChange(method.id as PaymentMethod)}
                         aria-pressed={active}
-                        className={`relative flex items-center text-left p-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50 rounded-lg border ${
+                        className={`relative flex items-center text-left p-6 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a08850]/50 border ${
                           active 
-                            ? 'bg-stone-900 border-stone-900 text-white shadow-md' 
-                            : 'bg-white text-stone-900 hover:bg-stone-50 border-[#e7e5e4]'
+                            ? 'bg-[#fcfbf9] border-[#a08850] shadow-[inset_4px_0_0_0_#a08850]' 
+                            : 'bg-white border-[#e7e5e4] hover:border-[#d6d3d1]'
                         }`}
                       >
-                        <div className="flex-1 flex items-center gap-4">
-                          <Icon className={`w-5 h-5 ${active ? 'text-[#a08850]' : 'text-stone-500'}`} />
+                        <div className="flex-1 flex items-center gap-5">
+                          <Icon className={`w-5 h-5 ${active ? 'text-[#a08850]' : 'text-[#a8a29e]'}`} />
                           <div>
-                            <h4 className={`text-[1rem] font-bold ${active ? 'text-white' : 'text-stone-900'}`}>{method.label}</h4>
-                            <p className={`text-[0.85rem] mt-0.5 ${active ? 'text-stone-300' : 'text-stone-500'}`}>{method.desc}</p>
+                            <h4 className="text-[1.05rem] font-medium text-[#1c1917] tracking-wide">{method.label}</h4>
+                            <p className="text-[0.9rem] mt-1 text-[#78716c] font-light">{method.desc}</p>
                           </div>
                         </div>
-                        {active && <CheckCircle2 className="w-5 h-5 text-[#a08850]" />}
+                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${active ? 'border-[#a08850] bg-[#a08850]' : 'border-[#d6d3d1] bg-transparent'}`}>
+                          {active && <CheckCircle2 className="w-3 h-3 text-white stroke-[3]" />}
+                        </div>
                       </button>
                     );
                   })}
@@ -148,47 +145,47 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 <AnimatePresence>
                   {paymentMethod === 'bank' && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-4">
-                      <div className="p-6 bg-[#f5f5f4] rounded-lg">
-                        <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Select Destination Bank</label>
-                        <div className="grid grid-cols-2 gap-3 mb-6">
+                      <div className="p-8 bg-white border border-[#e7e5e4] border-t-0 mt-[-2px]">
+                        <label className="block text-[10px] uppercase tracking-[0.2em] font-bold mb-5 text-[#1c1917]">Select Destination Bank</label>
+                        <div className="grid grid-cols-2 gap-4 mb-8">
                           {BANKS.map((bank) => (
                             <button
                               key={bank.id}
                               onClick={() => setSelectedBank(bank.id)}
                               aria-pressed={selectedBank === bank.id}
-                              className={`p-4 text-center border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-md bg-white ${selectedBank === bank.id ? 'border-[#1c1917] text-[#1c1917] font-bold' : 'border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30'}`}
+                              className={`p-5 text-center border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a08850]/50 bg-white ${selectedBank === bank.id ? 'border-[#a08850] text-[#a08850] font-bold shadow-[inset_2px_0_0_0_#a08850]' : 'border-[#e7e5e4] text-[#78716c] hover:border-[#d6d3d1]'}`}
                             >
-                              <div className="text-[1rem]">{bank.name}</div>
+                              <div className="text-[1rem] tracking-wide">{bank.name}</div>
                             </button>
                           ))}
                         </div>
                         {selectedBankDetails && (
-                          <div className="mb-6 rounded-xl border border-[#e7e5e4] bg-white p-4">
+                          <div className="mb-8 border border-[#e7e5e4] bg-[#fcfbf9] p-5">
                             <div className="flex items-start justify-between gap-4">
                               <div>
-                                <p className="text-[0.8rem] text-[#78716c] uppercase tracking-widest mb-1 font-bold">Transfer to</p>
-                                <p className="text-[1.2rem] font-medium text-[#1c1917] tracking-wider mb-1">{selectedBankDetails.code}</p>
-                                <p className="text-[0.95rem] text-[#1c1917]">Atelier Meridian · {selectedBankDetails.name}</p>
+                                <p className="text-[0.8rem] text-[#78716c] uppercase tracking-[0.15em] mb-1.5 font-bold">Transfer to</p>
+                                <p className="text-[1.3rem] font-medium text-[#1c1917] tracking-wider mb-1.5">{selectedBankDetails.code}</p>
+                                <p className="text-[0.95rem] text-[#78716c] font-light">Atelier Meridian · {selectedBankDetails.name}</p>
                               </div>
-                              <span className="rounded-full bg-[#f5f5f4] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#78716c]">
+                              <span className="bg-white border border-[#e7e5e4] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-[#1c1917]">
                                 {lang === 'ID' ? 'Kode VA' : 'VA Code'}
                               </span>
                             </div>
                           </div>
                         )}
                         {!selectedBankDetails && (
-                          <p className="mb-6 text-[0.9rem] leading-relaxed text-[#78716c]">
+                          <p className="mb-8 text-[0.95rem] leading-relaxed text-[#78716c] font-light">
                             {lang === 'ID'
                               ? 'Pilih bank tujuan terlebih dahulu agar nomor virtual account muncul.'
                               : 'Select a destination bank first so the virtual account code appears.'}
                           </p>
                         )}
-                        <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
+                        <label className="block text-[10px] uppercase tracking-[0.2em] font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
                           <input type="file" aria-label="Upload transfer proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
-                            <Upload className="w-5 h-5" />
-                            <span className="font-medium text-[0.95rem] truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
+                          <div className={`flex items-center justify-center gap-3 p-5 border border-dashed ${transferProof ? 'bg-[#fcfbf9] border-[#a08850] text-[#a08850]' : 'border-[#d6d3d1] text-[#78716c] hover:bg-[#fcfbf9] transition-colors'}`}>
+                            <Upload className="w-4 h-4" />
+                            <span className="font-medium text-[0.95rem] tracking-wide truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
                           </div>
                         </div>
                       </div>
@@ -197,21 +194,22 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
 
                   {paymentMethod === 'qris' && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-4">
-                      <div className="p-6 bg-[#f5f5f4] rounded-lg">
-                        <div className="flex justify-center mb-6">
-                            <div className="w-48 h-48 bg-white border border-[#e7e5e4] flex flex-col items-center justify-center rounded-md px-5 text-center text-[#a8a29e] shadow-sm">
-                                <span className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#78716c]">QRIS</span>
-                                <span className="text-[0.92rem] leading-relaxed">
-                                  {lang === 'ID' ? 'Scan kode di meja layanan lalu unggah bukti pembayaran.' : 'Scan the code at the service desk, then upload your payment proof.'}
+                      <div className="p-8 bg-white border border-[#e7e5e4] border-t-0 mt-[-2px]">
+                        <div className="flex justify-center mb-8">
+                            <div className="w-48 h-48 bg-[#fcfbf9] border border-[#e7e5e4] flex flex-col items-center justify-center p-6 text-center shadow-sm">
+                                <QrCode className="w-8 h-8 text-[#a8a29e] mb-4" />
+                                <span className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#a08850]">QRIS</span>
+                                <span className="text-[0.85rem] leading-relaxed text-[#78716c] font-light">
+                                  {lang === 'ID' ? 'Pindai kode di meja layanan.' : 'Scan the code at the service desk.'}
                                 </span>
                             </div>
                         </div>
-                        <label className="block text-[11px] uppercase tracking-widest font-bold mb-4 text-[#1c1917]">Upload Proof</label>
+                        <label className="block text-[10px] uppercase tracking-[0.2em] font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
                           <input type="file" aria-label="Upload QRIS proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                          <div className={`flex items-center justify-center gap-3 p-4 border border-dashed rounded-md ${transferProof ? 'bg-white border-[#1c1917] text-[#1c1917]' : 'border-[#a8a29e] text-[#78716c] bg-white hover:bg-[#fdfbf9]'}`}>
-                            <Upload className="w-5 h-5" />
-                            <span className="font-medium text-[0.95rem] truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
+                          <div className={`flex items-center justify-center gap-3 p-5 border border-dashed ${transferProof ? 'bg-[#fcfbf9] border-[#a08850] text-[#a08850]' : 'border-[#d6d3d1] text-[#78716c] hover:bg-[#fcfbf9] transition-colors'}`}>
+                            <Upload className="w-4 h-4" />
+                            <span className="font-medium text-[0.95rem] tracking-wide truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
                           </div>
                         </div>
                       </div>
@@ -223,26 +221,22 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
 
             {/* Order Summary Side */}
             <div>
-              <div className="bg-[#ffffff] border border-[#e7e5e4] p-6 lg:p-8 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] sticky top-32">
-                <div className="mb-6 flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-[1.2rem] font-bold" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>Order Summary</h3>
-                    <p className="mt-2 text-[0.9rem] leading-relaxed text-[#78716c]">
-                      {lang === 'ID' ? 'Periksa item, catatan, dan total akhir sebelum mengirim pesanan.' : 'Review line items, notes, and the final total before placing the order.'}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-[#f5f5f4] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#78716c]">
-                    {itemCount} {itemCount === 1 ? 'item' : 'items'}
-                  </span>
+              <div className="bg-[#ffffff] border border-[#e7e5e4] p-8 lg:p-10 sticky top-32">
+                <div className="mb-8 flex flex-col gap-2">
+                  <h3 className="text-[1.5rem] leading-none text-[#1c1917]" style={{ fontFamily: "'DM Serif Display', serif" }}>Folio Summary</h3>
+                  <p className="text-[0.95rem] font-light text-[#78716c]">
+                    {lang === 'ID' ? 'Periksa rincian sebelum pesanan dikirim.' : 'Review your items before dispatch.'}
+                  </p>
                 </div>
-                <div className="space-y-0 mb-6">
+                
+                <div className="space-y-0 mb-8">
                   {cart.map((item, i) => (
-                    <div key={`${item.id}-${item.note}`} className={`flex justify-between items-start text-[0.95rem] gap-4 py-3 ${i !== cart.length - 1 ? 'border-b border-[#f5f5f4]' : ''}`}>
+                    <div key={`${item.id}-${item.note}-${i}`} className={`flex justify-between items-start text-[0.95rem] gap-4 py-4 ${i !== cart.length - 1 ? 'border-b border-[#f5f5f4]' : ''}`}>
                       <div className="text-[#44403c] flex-1 pr-2 leading-relaxed">
-                        <span className="text-[#a08850] mr-3 font-bold">{item.qty}x</span> 
-                        <span className="font-medium text-[#1c1917]">{item.name}</span>
+                        <span className="text-[#a08850] mr-4 font-bold">{item.qty}x</span> 
+                        <span className="font-medium text-[#1c1917] tracking-wide">{item.name}</span>
                         {item.note && (
-                           <p className="text-[0.8rem] text-[#a8a29e] mt-1 ml-7">{item.note}</p>
+                           <p className="text-[0.85rem] text-[#a8a29e] mt-1.5 ml-8 italic">{item.note}</p>
                         )}
                       </div>
                       <span className="text-[#1c1917] font-medium whitespace-nowrap pt-0.5">{formatCurrency(item.price * item.qty)}</span>
@@ -250,31 +244,31 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                   ))}
                 </div>
                 
-                <div className="h-px bg-[#e7e5e4] mb-6" />
+                <div className="h-[1px] bg-[#e7e5e4] my-6" />
                 
-                <div className="space-y-3 mb-6 font-medium">
+                <div className="space-y-4 mb-8 font-medium">
                   <div className="flex justify-between text-[#78716c] text-[0.95rem]">
                     <span>{t.subtotal}</span>
-                    <span>{formatCurrency(subtotal)}</span>
+                    <span className="text-[#1c1917]">{formatCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-[#78716c] text-[0.95rem]">
                     <span>{t.serviceTax || (lang === 'ID' ? 'Service & Pajak' : 'Service & Tax')}</span>
-                    <span>{formatCurrency(taxService)}</span>
+                    <span className="text-[#1c1917]">{formatCurrency(taxService)}</span>
                   </div>
-                  <div className="flex justify-between text-[#1c1917] text-[1.2rem] font-bold mt-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                  <div className="flex justify-between text-[#1c1917] text-[1.4rem] font-bold mt-6 pt-6 border-t border-[#e7e5e4]" style={{ fontFamily: "'DM Serif Display', serif" }}>
                     <span>{t.total}</span>
                     <span>{formatCurrency(grandTotal)}</span>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="mb-6 p-4 bg-[#fef2f2] text-[#b91c1c] text-[0.85rem] rounded-md font-medium">
+                  <div className="mb-6 p-4 bg-[#fef2f2] border border-[#fecaca] text-[#b91c1c] text-[0.85rem] font-medium">
                     {error}
                   </div>
                 )}
 
                 {!canSubmit && (
-                  <div className="mb-6 rounded-xl border border-[#e7e5e4] bg-[#f5f5f4] px-4 py-3 text-[0.9rem] leading-relaxed text-[#57534e]">
+                  <div className="mb-8 border border-[#e7e5e4] bg-[#fcfbf9] px-5 py-4 text-[0.9rem] leading-relaxed text-[#57534e]">
                     {paymentMethod === 'bank'
                       ? (lang === 'ID'
                         ? 'Pilih bank tujuan dan unggah bukti transfer agar pesanan dapat diproses.'
@@ -290,9 +284,9 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 <button
                   onClick={() => onPlaceOrder(paymentMethod, selectedBank, transferProof)}
                   disabled={!canSubmit || loading}
-                  className="w-full h-14 flex items-center justify-center gap-2 bg-[#1c1917] text-white disabled:bg-[#e7e5e4] disabled:text-[#a8a29e] hover:bg-[#2d2d2d] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50 rounded-full"
+                  className="w-full h-16 flex items-center justify-center gap-3 bg-[#1c1917] text-white disabled:bg-[#e7e5e4] disabled:text-[#a8a29e] hover:bg-[#2d2d2d] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50"
                 >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span className="text-[12px] uppercase tracking-widest font-bold">{t.placeOrder}</span>}
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span className="text-[11px] uppercase tracking-[0.2em] font-bold">{t.placeOrder}</span>}
                 </button>
               </div>
             </div>

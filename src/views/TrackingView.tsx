@@ -77,103 +77,93 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   const progressValue = ((orderStatus + 1) / steps.length) * 100;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32 bg-[#fdfbf9]" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <div className="w-full max-w-3xl mx-auto px-6 sm:px-12 pt-16">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32 bg-[#fcfbf9]" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="w-full max-w-2xl mx-auto px-6 sm:px-12 pt-16">
         
-        <div className="mb-10 pb-8 border-b border-[#e7e5e4]">
-          <p className="text-[10px] uppercase tracking-widest font-bold mb-4 text-[#a08850]">
-            Room {roomNumber}
-          </p>
-          <h2 className="text-[2.5rem] leading-tight mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
+        {/* Header */}
+        <div className="mb-12 pb-10 border-b border-[#e7e5e4]">
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#a08850]">
+              Guest Room {roomNumber}
+            </p>
+            <div className="inline-flex items-center px-3 py-1 bg-[#f5f5f4] rounded-sm text-[9px] uppercase font-bold tracking-[0.2em] text-[#78716c]">
+              No. {orderId?.slice(-6).toUpperCase() || 'PND'}
+            </div>
+          </div>
+          <h2 className="text-[2.75rem] leading-none mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
             {t.trackTitle}
           </h2>
-          <p className="mb-6 max-w-2xl text-[0.98rem] leading-relaxed text-[#57534e]">
+          <p className="max-w-xl text-[1rem] leading-relaxed text-[#57534e] font-light">
             {lang === 'ID'
               ? 'Pantau progres pesanan secara real-time dari konfirmasi dapur hingga pengantaran ke kamar Anda.'
               : 'Follow your order in real time from kitchen confirmation through delivery to your room.'}
           </p>
-          <div className="inline-flex items-center px-3 py-1.5 border border-[#e7e5e4] bg-white rounded-md text-[10px] uppercase font-bold tracking-widest text-[#1c1917]">
-            Order #{orderId?.slice(-6).toUpperCase() || 'UNKNOWN'}
-          </div>
         </div>
 
         {blockedWaUrl && (
-          <div className="mb-12 p-6 rounded-lg border border-[#e7e5e4] bg-white">
-            <p className="text-[11px] font-bold uppercase tracking-widest mb-4 text-[#1c1917]">
-              WhatsApp message blocked by browser
-            </p>
+          <div className="mb-12 p-6 border border-[#e7e5e4] bg-[#ffffff] flex flex-col items-start gap-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1c1917] mb-1">
+                Notice
+              </p>
+              <p className="text-[0.9rem] text-[#78716c]">WhatsApp message blocked by browser.</p>
+            </div>
             <a 
               href={blockedWaUrl} target="_blank" rel="noopener noreferrer" 
-              className="inline-flex h-12 px-6 items-center justify-center rounded-full text-[11px] uppercase font-bold tracking-widest bg-[#1c1917] text-white hover:bg-[#2d2d2d]"
+              className="inline-flex h-10 px-5 items-center justify-center bg-[#1c1917] text-white hover:bg-[#2d2d2d] transition-colors text-[10px] uppercase font-bold tracking-[0.2em]"
             >
               Open Manual Chat
             </a>
           </div>
         )}
 
-        <div className="mb-10 rounded-2xl border border-[#e7e5e4] bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)]">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#a08850]">
-                Current Status
-              </p>
-              <h3 className="mt-3 text-[1.8rem] leading-tight text-[#1c1917]" style={{ fontFamily: "'DM Serif Display', serif" }}>
-                {currentStep.label}
-              </h3>
-              <p className="mt-3 max-w-xl text-[0.98rem] leading-relaxed text-[#57534e]">
-                {currentStep.sub}
-              </p>
-            </div>
-            <span className="self-start rounded-full bg-[#f5f5f4] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#78716c]">
-              Step {orderStatus + 1} of {steps.length}
-            </span>
-          </div>
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#f5f5f4]">
-            <div
-              className="h-full rounded-full bg-[#a08850] transition-all duration-500"
-              style={{ width: `${progressValue}%` }}
-            />
+        {/* Current Status Highlight */}
+        <div className="mb-14">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#a8a29e] mb-4">
+            Current Status
+          </p>
+          <div className="flex flex-col gap-2">
+            <h3 className="text-[2rem] leading-none text-[#1c1917]" style={{ fontFamily: "'DM Serif Display', serif" }}>
+              {currentStep.label}
+            </h3>
+            <p className="text-[1rem] text-[#78716c] font-light">
+              {currentStep.sub}
+            </p>
           </div>
         </div>
 
-        <div className="pb-16 mt-6">
-          <div className="space-y-0">
+        {/* Timeline */}
+        <div className="relative pl-4">
+          {/* Progress hairline track */}
+          <div className="absolute left-[27px] top-4 bottom-8 w-[1px] bg-[#e7e5e4]" />
+          
+          <div className="space-y-10 relative">
             {steps.map((step, index) => {
               const isActive = index === orderStatus;
               const isPast = index < orderStatus;
-              const isLast = index === steps.length - 1;
               
               return (
-                <div key={index} className="flex gap-6 sm:gap-8 group min-h-[100px]" aria-current={isActive ? 'step' : undefined}>
-                  {/* Timeline Node Column */}
-                  <div className="flex flex-col items-center">
-                    <div className={`w-12 h-12 flex items-center justify-center shrink-0 border-[2px] rounded-full transition-all duration-500 bg-white z-10 ${
+                <div key={index} className="flex gap-8 group relative" aria-current={isActive ? 'step' : undefined}>
+                  <div className="flex flex-col items-center z-10 pt-1">
+                    <div className={`w-3 h-3 flex items-center justify-center rounded-full transition-all duration-700 bg-[#fcfbf9] ${
                       isActive 
-                        ? 'border-[#a08850] text-[#a08850] scale-110 shadow-[0_4px_20px_rgba(160,136,80,0.15)] bg-[#fdfbf9]'
+                        ? 'border-[2px] border-[#a08850] scale-[1.3] shadow-[0_0_15px_rgba(160,136,80,0.3)]'
                         : isPast
-                          ? 'border-[#1c1917] bg-[#1c1917] text-white'
-                          : 'border-[#e7e5e4] text-[#a8a29e]'
-                    }`}>
-                      {isActive ? (
-                        <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
-                          {step.icon}
-                        </motion.div>
-                      ) : (
-                        step.icon
-                      )}
-                    </div>
-                    {/* Connecting Line (drawn dynamically via flex) */}
-                    {!isLast && (
-                      <div className={`w-px flex-1 my-2 transition-colors duration-500 ${isPast ? 'bg-[#1c1917]' : 'bg-[#e7e5e4]'}`} />
-                    )}
+                          ? 'border-[2px] border-[#1c1917] bg-[#1c1917]'
+                          : 'border-[2px] border-[#d6d3d1]'
+                    }`} />
                   </div>
                   
-                  {/* Content Column */}
-                  <div className={`pt-2 flex-1 pb-10 transition duration-300 ${isActive ? 'opacity-100 translate-x-1' : isPast ? 'opacity-90' : 'opacity-40'}`}>
-                    <h3 className="text-[1.3rem] font-bold mb-1.5" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
-                      {step.label}
-                    </h3>
-                    <p className={`text-[0.95rem] leading-relaxed ${isActive ? 'text-[#a08850] font-medium' : 'text-[#78716c]'}`}>
+                  <div className={`flex-1 transition-all duration-500 pb-2 ${isActive ? 'opacity-100' : isPast ? 'opacity-70' : 'opacity-30'}`}>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`p-1.5 rounded-sm ${isActive ? 'bg-[#f5f5f4] text-[#a08850]' : isPast ? 'text-[#1c1917]' : 'text-[#a8a29e]'}`}>
+                         {React.cloneElement(step.icon as React.ReactElement, { className: 'w-4 h-4' })}
+                      </div>
+                      <h3 className="text-[1.1rem] font-medium tracking-wide" style={{ color: '#1c1917' }}>
+                        {step.label}
+                      </h3>
+                    </div>
+                    <p className="text-[0.95rem] leading-relaxed text-[#78716c] font-light pl-11">
                       {step.sub}
                     </p>
                   </div>

@@ -32,7 +32,7 @@ describe('CheckoutView', () => {
     );
 
     expect(screen.getByText('Checkout')).toBeTruthy();
-    expect(screen.getByText('Order Summary')).toBeTruthy();
+    expect(screen.getByText('Folio Summary')).toBeTruthy();
     expect(screen.getByText('Billing Method')).toBeTruthy();
   });
 
@@ -54,5 +54,24 @@ describe('CheckoutView', () => {
 
     expect(screen.getByText('88010')).toBeTruthy();
     expect(screen.queryByText('undefined')).toBeNull();
+  });
+
+  it('disables checkout submission if the cart is empty', () => {
+    render(
+      <CheckoutView
+        cart={[]} // empty cart
+        onBack={() => {}}
+        onPlaceOrder={() => {}}
+        loading={false}
+        error={null}
+        phoneNumber="81234567890"
+        lang="EN"
+      />
+    );
+
+    const submitBtn = screen.getByRole('button', { name: /place order/i });
+    if (submitBtn) {
+      expect((submitBtn as HTMLButtonElement).disabled).toBe(true);
+    }
   });
 });
