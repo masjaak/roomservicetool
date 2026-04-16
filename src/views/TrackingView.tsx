@@ -77,7 +77,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   const progressValue = ((orderStatus + 1) / steps.length) * 100;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32 bg-[#fcfbf9]" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="w-full max-w-2xl mx-auto px-6 sm:px-12 pt-16">
         
         {/* Header */}
@@ -145,7 +145,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
               return (
                 <div key={index} className="flex gap-8 group relative" aria-current={isActive ? 'step' : undefined}>
                   <div className="flex flex-col items-center z-10 pt-1">
-                    <div className={`w-3 h-3 flex items-center justify-center rounded-full transition-all duration-700 bg-[#fcfbf9] ${
+                    <div className={`w-3 h-3 flex items-center justify-center rounded-full transition-all duration-700 bg-[#f7f1e8] ${
                       isActive 
                         ? 'border-[2px] border-[#a08850] scale-[1.3] shadow-[0_0_15px_rgba(160,136,80,0.3)]'
                         : isPast

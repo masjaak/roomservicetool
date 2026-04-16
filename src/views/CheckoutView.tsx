@@ -65,11 +65,11 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen pb-32 bg-[#fcfbf9]"
+      className="min-h-screen pb-32"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="w-full max-w-5xl mx-auto min-h-screen relative">
-        <div className="sticky top-0 z-30 px-6 sm:px-12 py-6 bg-[#fcfbf9]/95 backdrop-blur-md border-b border-[#e7e5e4]">
+        <div className="sticky top-0 z-30 px-6 sm:px-12 py-6 backdrop-blur-md border-b border-[#e7e5e4]" style={{ backgroundColor: 'rgba(247, 241, 232, 0.92)' }}>
           <button
             onClick={onBack}
             aria-label="Back to Menu"
@@ -122,7 +122,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         aria-pressed={active}
                         className={`relative flex items-center text-left p-6 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a08850]/50 border ${
                           active 
-                            ? 'bg-[#fcfbf9] border-[#a08850] shadow-[inset_4px_0_0_0_#a08850]' 
+                            ? 'bg-[#f5efe5] border-[#a08850] shadow-[inset_4px_0_0_0_#a08850]' 
                             : 'bg-white border-[#e7e5e4] hover:border-[#d6d3d1]'
                         }`}
                       >
@@ -160,7 +160,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                           ))}
                         </div>
                         {selectedBankDetails && (
-                          <div className="mb-8 border border-[#e7e5e4] bg-[#fcfbf9] p-5">
+                          <div className="mb-8 border border-[#e7e5e4] bg-[#f5efe5] p-5">
                             <div className="flex items-start justify-between gap-4">
                               <div>
                                 <p className="text-[0.8rem] text-[#78716c] uppercase tracking-[0.15em] mb-1.5 font-bold">Transfer to</p>
@@ -183,7 +183,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         <label className="block text-[10px] uppercase tracking-[0.2em] font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
                           <input type="file" aria-label="Upload transfer proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                          <div className={`flex items-center justify-center gap-3 p-5 border border-dashed ${transferProof ? 'bg-[#fcfbf9] border-[#a08850] text-[#a08850]' : 'border-[#d6d3d1] text-[#78716c] hover:bg-[#fcfbf9] transition-colors'}`}>
+                          <div className={`flex items-center justify-center gap-3 p-5 border border-dashed ${transferProof ? 'bg-[#f5efe5] border-[#a08850] text-[#a08850]' : 'border-[#d6d3d1] text-[#78716c] hover:bg-[#f5efe5] transition-colors'}`}>
                             <Upload className="w-4 h-4" />
                             <span className="font-medium text-[0.95rem] tracking-wide truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
                           </div>
@@ -196,7 +196,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-4">
                       <div className="p-8 bg-white border border-[#e7e5e4] border-t-0 mt-[-2px]">
                         <div className="flex justify-center mb-8">
-                            <div className="w-48 h-48 bg-[#fcfbf9] border border-[#e7e5e4] flex flex-col items-center justify-center p-6 text-center shadow-sm">
+                            <div className="w-48 h-48 bg-[#f5efe5] border border-[#e7e5e4] flex flex-col items-center justify-center p-6 text-center shadow-sm">
                                 <QrCode className="w-8 h-8 text-[#a8a29e] mb-4" />
                                 <span className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#a08850]">QRIS</span>
                                 <span className="text-[0.85rem] leading-relaxed text-[#78716c] font-light">
@@ -207,7 +207,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                         <label className="block text-[10px] uppercase tracking-[0.2em] font-bold mb-4 text-[#1c1917]">Upload Proof</label>
                         <div className="relative">
                           <input type="file" aria-label="Upload QRIS proof" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                          <div className={`flex items-center justify-center gap-3 p-5 border border-dashed ${transferProof ? 'bg-[#fcfbf9] border-[#a08850] text-[#a08850]' : 'border-[#d6d3d1] text-[#78716c] hover:bg-[#fcfbf9] transition-colors'}`}>
+                          <div className={`flex items-center justify-center gap-3 p-5 border border-dashed ${transferProof ? 'bg-[#f5efe5] border-[#a08850] text-[#a08850]' : 'border-[#d6d3d1] text-[#78716c] hover:bg-[#f5efe5] transition-colors'}`}>
                             <Upload className="w-4 h-4" />
                             <span className="font-medium text-[0.95rem] tracking-wide truncate max-w-[200px] sm:max-w-xs">{transferProof ? transferProof.name : 'Tap to upload receipt'}</span>
                           </div>
@@ -268,7 +268,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                 )}
 
                 {!canSubmit && (
-                  <div className="mb-8 border border-[#e7e5e4] bg-[#fcfbf9] px-5 py-4 text-[0.9rem] leading-relaxed text-[#57534e]">
+                  <div className="mb-8 border border-[#e7e5e4] bg-[#f5efe5] px-5 py-4 text-[0.9rem] leading-relaxed text-[#57534e]">
                     {paymentMethod === 'bank'
                       ? (lang === 'ID'
                         ? 'Pilih bank tujuan dan unggah bukti transfer agar pesanan dapat diproses.'

@@ -34,11 +34,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="w-full md:w-[480px] h-full flex flex-col bg-[#fcfbf9] pointer-events-auto border-l border-[#e7e5e4] shadow-2xl overscroll-contain"
+              className="w-full md:w-[480px] h-full flex flex-col bg-[#f7f1e8] pointer-events-auto border-l border-[#e7e5e4] shadow-2xl overscroll-contain"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-8 py-8 border-b border-[#e7e5e4] bg-[#fcfbf9]">
+              <div className="flex items-center justify-between px-8 py-8 border-b border-[#e7e5e4] bg-[#f7f1e8]">
                 <div>
                   <h2 className="text-[2.2rem] leading-none text-[#1c1917]" style={{ fontFamily: "'DM Serif Display', serif" }}>
                     Folio
@@ -96,7 +96,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
               {/* Receipt Footer */}
               {cart.length > 0 && (
-                <div className="p-8 bg-[#fcfbf9] shrink-0 border-t border-[#e7e5e4]">
+                <div className="p-8 bg-[#f7f1e8] shrink-0 border-t border-[#e7e5e4]">
                   <div className="space-y-4 mb-8">
                     <div className="flex justify-between text-[0.95rem] font-light text-[#78716c]">
                       <span>{t.subtotal}</span>

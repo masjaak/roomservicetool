@@ -56,7 +56,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen pb-36 bg-[#fdfbf9]"
+      className="min-h-screen pb-36"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="w-full max-w-4xl mx-auto min-h-screen relative">
@@ -99,7 +99,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
         {/* Sticky Category Navigation */}
         {!searchQuery && (
-          <div className="sticky top-0 z-30 bg-[#fdfbf9]/90 backdrop-blur-md border-b border-[#e7e5e4] px-4">
+          <div className="sticky top-0 z-30 backdrop-blur-md border-b border-[#e7e5e4] px-4" style={{ backgroundColor: 'rgba(247, 241, 232, 0.88)' }}>
             <div className="flex overflow-x-auto hide-scrollbar gap-2 py-3">
               {CATEGORIES.map((cat) => (
                 <button
