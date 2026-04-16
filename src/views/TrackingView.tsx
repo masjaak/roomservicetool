@@ -77,40 +77,60 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   const progressValue = ((orderStatus + 1) / steps.length) * 100;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pb-32" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <div className="w-full max-w-2xl mx-auto px-6 sm:px-12 pt-16">
-        
-        {/* Header */}
-        <div className="mb-12 pb-10 border-b border-[#e7e5e4]">
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#a08850]">
+    <div className="min-h-screen w-full flex flex-col items-center py-10 px-4 sm:px-6 overflow-y-auto relative z-10">
+      {/* Background image with dark wash — matching LoginView */}
+      <div className="fixed inset-0 z-0 bg-[#2d2d2d]" style={{ backgroundColor: '#2d2d2d' }}>
+        <img
+          src="/assets/hero.jpg"
+          className="w-full h-full object-cover opacity-30"
+          alt=""
+        />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 w-full max-w-lg mx-auto flex flex-col my-auto"
+      >
+        {/* Header Card */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="px-6 py-6 rounded-2xl w-full mb-4"
+          style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[10px] uppercase tracking-[0.2em] font-bold" style={{ color: '#a08850' }}>
               Guest Room {roomNumber}
             </p>
-            <div className="inline-flex items-center px-3 py-1 bg-[#f5f5f4] rounded-sm text-[9px] uppercase font-bold tracking-[0.2em] text-[#78716c]">
+            <div className="inline-flex items-center px-3 py-1 rounded-full text-[9px] uppercase font-bold tracking-[0.2em]" style={{ backgroundColor: 'rgba(250,248,245,0.08)', color: 'rgba(250,248,245,0.6)' }}>
               No. {orderId?.slice(-6).toUpperCase() || 'PND'}
             </div>
           </div>
-          <h2 className="text-[2.75rem] leading-none mb-6" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
+          <h2 className="text-[2rem] sm:text-[2.5rem] leading-none mb-3" style={{ fontFamily: "'DM Serif Display', serif", color: '#faf8f5' }}>
             {t.trackTitle}
           </h2>
-          <p className="max-w-xl text-[1rem] leading-relaxed text-[#57534e] font-light">
+          <p className="text-[0.9rem] leading-relaxed font-light" style={{ color: 'rgba(250,248,245,0.55)' }}>
             {lang === 'ID'
               ? 'Pantau progres pesanan secara real-time dari konfirmasi dapur hingga pengantaran ke kamar Anda.'
               : 'Follow your order in real time from kitchen confirmation through delivery to your room.'}
           </p>
-        </div>
+        </motion.div>
 
         {blockedWaUrl && (
-          <div className="mb-12 p-6 border border-[#e7e5e4] bg-[#ffffff] flex flex-col items-start gap-4">
+          <div className="mb-4 px-6 py-5 rounded-2xl flex flex-col items-start gap-3" style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1c1917] mb-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: '#faf8f5' }}>
                 Notice
               </p>
-              <p className="text-[0.9rem] text-[#78716c]">WhatsApp message blocked by browser.</p>
+              <p className="text-[0.85rem]" style={{ color: 'rgba(250,248,245,0.5)' }}>WhatsApp message blocked by browser.</p>
             </div>
             <a 
               href={blockedWaUrl} target="_blank" rel="noopener noreferrer" 
-              className="inline-flex h-10 px-5 items-center justify-center bg-[#1c1917] text-white hover:bg-[#2d2d2d] transition-colors text-[10px] uppercase font-bold tracking-[0.2em]"
+              className="inline-flex h-10 px-5 items-center justify-center rounded-xl text-[10px] uppercase font-bold tracking-[0.2em] transition-colors"
+              style={{ backgroundColor: '#faf8f5', color: '#2d2d2d' }}
             >
               Open Manual Chat
             </a>
@@ -118,62 +138,86 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
         )}
 
         {/* Current Status Highlight */}
-        <div className="mb-14">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#a8a29e] mb-4">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.35 }}
+          className="px-6 py-6 rounded-2xl w-full mb-4"
+          style={{ backgroundColor: 'rgba(160,136,80,0.15)', border: '1px solid rgba(160,136,80,0.25)' }}
+        >
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: 'rgba(250,248,245,0.4)' }}>
             Current Status
           </p>
-          <div className="flex flex-col gap-2">
-            <h3 className="text-[2rem] leading-none text-[#1c1917]" style={{ fontFamily: "'DM Serif Display', serif" }}>
-              {currentStep.label}
-            </h3>
-            <p className="text-[1rem] text-[#78716c] font-light">
-              {currentStep.sub}
-            </p>
+          <h3 className="text-[1.6rem] sm:text-[2rem] leading-none mb-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#faf8f5' }}>
+            {currentStep.label}
+          </h3>
+          <p className="text-[0.9rem] font-light" style={{ color: 'rgba(250,248,245,0.5)' }}>
+            {currentStep.sub}
+          </p>
+          {/* Progress bar */}
+          <div className="mt-5 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(250,248,245,0.1)' }}>
+            <motion.div
+              className="h-full rounded-full"
+              style={{ backgroundColor: '#a08850' }}
+              initial={{ width: 0 }}
+              animate={{ width: `${progressValue}%` }}
+              transition={{ duration: 1, ease: 'easeOut' }}
+            />
           </div>
-        </div>
+        </motion.div>
 
-        {/* Timeline */}
-        <div className="relative pl-4">
-          {/* Progress hairline track */}
-          <div className="absolute left-[27px] top-4 bottom-8 w-[1px] bg-[#e7e5e4]" />
-          
-          <div className="space-y-10 relative">
-            {steps.map((step, index) => {
-              const isActive = index === orderStatus;
-              const isPast = index < orderStatus;
-              
-              return (
-                <div key={index} className="flex gap-8 group relative" aria-current={isActive ? 'step' : undefined}>
-                  <div className="flex flex-col items-center z-10 pt-1">
-                    <div className={`w-3 h-3 flex items-center justify-center rounded-full transition-all duration-700 bg-[#f7f1e8] ${
-                      isActive 
-                        ? 'border-[2px] border-[#a08850] scale-[1.3] shadow-[0_0_15px_rgba(160,136,80,0.3)]'
-                        : isPast
-                          ? 'border-[2px] border-[#1c1917] bg-[#1c1917]'
-                          : 'border-[2px] border-[#d6d3d1]'
-                    }`} />
-                  </div>
-                  
-                  <div className={`flex-1 transition-all duration-500 pb-2 ${isActive ? 'opacity-100' : isPast ? 'opacity-70' : 'opacity-30'}`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`p-1.5 rounded-sm ${isActive ? 'bg-[#f5f5f4] text-[#a08850]' : isPast ? 'text-[#1c1917]' : 'text-[#a8a29e]'}`}>
-                         {React.cloneElement(step.icon as React.ReactElement, { className: 'w-4 h-4' })}
-                      </div>
-                      <h3 className="text-[1.1rem] font-medium tracking-wide" style={{ color: '#1c1917' }}>
-                        {step.label}
-                      </h3>
+        {/* Timeline Card */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="px-6 py-6 rounded-2xl w-full"
+          style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}
+        >
+          <div className="relative pl-2">
+            {/* Timeline track */}
+            <div className="absolute left-[17px] top-3 bottom-3 w-[1px]" style={{ backgroundColor: 'rgba(250,248,245,0.1)' }} />
+            
+            <div className="space-y-6 relative">
+              {steps.map((step, index) => {
+                const isActive = index === orderStatus;
+                const isPast = index < orderStatus;
+                
+                return (
+                  <div key={index} className="flex gap-5 group relative" aria-current={isActive ? 'step' : undefined}>
+                    <div className="flex flex-col items-center z-10 pt-0.5">
+                      <div
+                        className="w-3 h-3 rounded-full transition-all duration-700"
+                        style={{
+                          backgroundColor: isActive ? '#a08850' : isPast ? '#faf8f5' : 'transparent',
+                          border: isActive ? '2px solid #a08850' : isPast ? '2px solid rgba(250,248,245,0.6)' : '2px solid rgba(250,248,245,0.15)',
+                          boxShadow: isActive ? '0 0 12px rgba(160,136,80,0.5)' : 'none',
+                          transform: isActive ? 'scale(1.4)' : 'scale(1)',
+                        }}
+                      />
                     </div>
-                    <p className="text-[0.95rem] leading-relaxed text-[#78716c] font-light pl-11">
-                      {step.sub}
-                    </p>
+                    
+                    <div className={`flex-1 transition-all duration-500 pb-1 ${isActive ? 'opacity-100' : isPast ? 'opacity-60' : 'opacity-25'}`}>
+                      <div className="flex items-center gap-3 mb-1">
+                        <div style={{ color: isActive ? '#a08850' : isPast ? 'rgba(250,248,245,0.7)' : 'rgba(250,248,245,0.3)' }}>
+                           {React.cloneElement(step.icon as React.ReactElement, { className: 'w-4 h-4' })}
+                        </div>
+                        <h3 className="text-[0.95rem] font-medium tracking-wide" style={{ color: '#faf8f5' }}>
+                          {step.label}
+                        </h3>
+                      </div>
+                      <p className="text-[0.85rem] leading-relaxed font-light pl-7" style={{ color: 'rgba(250,248,245,0.45)' }}>
+                        {step.sub}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </motion.div>
 
-      </div>
+      </motion.div>
 
       <RatingModal
         isOpen={showRating}
@@ -181,6 +225,6 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
         onRate={handleSubmitFeedback}
         lang={lang}
       />
-    </motion.div>
+    </div>
   );
 };
