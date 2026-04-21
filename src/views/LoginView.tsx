@@ -76,12 +76,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
         </div>
 
         <header className="relative z-10 px-8 pt-28 text-center lg:flex lg:min-h-screen lg:flex-col lg:items-center lg:justify-center lg:px-12 lg:pt-0">
-          <p className="mb-5 text-[11px] uppercase tracking-[0.38em] text-white/80 lg:mb-6 lg:text-white/75">
-            {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
-          </p>
-          <h1 className="font-headline text-[4rem] italic tracking-[0.06em] text-white [text-shadow:0_8px_24px_rgba(0,0,0,0.16)] lg:max-w-[8ch] lg:text-[5.8rem] lg:leading-[0.96]">
-            Atelier Meridian
-          </h1>
+          <div className="mx-auto inline-flex max-w-full flex-col items-center justify-center rounded-[1.75rem] bg-white/8 px-7 py-6 text-center backdrop-blur-[22px] shadow-[0_16px_48px_rgba(0,0,0,0.12)] ring-1 ring-white/12 lg:max-w-[34rem] lg:px-10 lg:py-9">
+            <p className="mb-5 text-center text-[11px] uppercase tracking-[0.38em] text-white/80 lg:mb-6 lg:text-white/75">
+              {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
+            </p>
+            <h1 className="font-headline text-center text-[4rem] italic tracking-[0.06em] text-white [text-shadow:0_8px_24px_rgba(0,0,0,0.16)] lg:text-[5.8rem] lg:leading-[0.96]">
+              Atelier Meridian
+            </h1>
+          </div>
         </header>
 
         <div className="flex min-h-screen flex-col lg:min-h-0 lg:bg-[var(--hcs-surface-soft)] lg:px-8 lg:py-8">
@@ -93,9 +95,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
             transition={{ duration: 0.55 }}
             className={`relative z-10 rounded-t-[3.25rem] ${guestTheme.bg.surface} px-8 pb-12 pt-12 shadow-[0_-20px_40px_rgba(26,28,27,0.1)] lg:my-auto lg:rounded-[2rem] lg:px-10 lg:pb-10 lg:pt-10 lg:shadow-[0_18px_60px_rgba(26,28,27,0.08)]`}
           >
-          <div className="mb-10 lg:mb-9">
+          <div className="mb-10 text-center lg:mb-9">
             <h2 className={`font-headline text-[3.05rem] leading-[1.02] ${guestTheme.text.base} lg:text-[2.75rem]`}>{t.loginTitle}</h2>
-            <p className={`mt-4 max-w-[19rem] text-[1.08rem] leading-[1.6] ${guestTheme.text.muted} lg:max-w-none lg:text-[1rem]`}>
+            <p className={`mx-auto mt-4 max-w-[19rem] text-[1.08rem] leading-[1.6] ${guestTheme.text.muted} lg:max-w-[24rem] lg:text-[1rem]`}>
               {t.loginBody}
             </p>
           </div>
