@@ -6,6 +6,8 @@ describe('LoginView', () => {
   it('renders the stitch-style guest access hierarchy', () => {
     render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
+    expect(screen.getByTestId('login-hero-glass')).toBeTruthy();
+    expect(screen.getByText('Welcome to')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Atelier Meridian' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Room Service' })).toBeTruthy();
     expect(screen.getByRole('button', { name: /access in-room dining/i })).toBeTruthy();
