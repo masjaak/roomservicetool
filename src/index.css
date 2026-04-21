@@ -2941,6 +2941,18 @@ body {
   min-height: 100dvh;
 }
 
+.hcs-mobile-canvas {
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .hcs-mobile-canvas {
+    max-width: 28rem;
+  }
+}
+
 .hcs-safe-top {
   padding-top: max(env(safe-area-inset-top), 0px);
 }

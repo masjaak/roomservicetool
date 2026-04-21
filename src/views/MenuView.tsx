@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DoorOpen, Search, SearchX, ShoppingBag } from 'lucide-react';
+import { Menu as MenuIcon, SearchX, ShoppingBag } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartItem, Language, MenuItem } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
@@ -53,20 +53,22 @@ export const MenuView: React.FC<MenuViewProps> = ({
     : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-36`}>
-      <header className={`hcs-safe-top fixed top-0 z-50 w-full ${guestTheme.bg.canvas}/80 backdrop-blur-xl shadow-[0_20px_40px_rgba(26,28,27,0.06)]`}>
-        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-52`}>
+      <header className={`hcs-safe-top fixed top-0 z-50 w-full ${guestTheme.bg.canvas}/82 backdrop-blur-xl shadow-[0_20px_40px_rgba(26,28,27,0.06)]`}>
+        <div className="hcs-mobile-canvas flex h-16 w-full items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <button
               onClick={onLogout}
               className={`rounded-full p-2 ${guestTheme.text.primary} transition-colors hover:bg-[var(--hcs-surface-muted)]`}
               aria-label="Exit room"
             >
-              <DoorOpen className="h-5 w-5" />
+              <MenuIcon className="h-5 w-5" />
             </button>
             <div>
-              <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.primary}`}>{getGreeting()}</p>
-              <h1 className={`font-headline text-lg font-medium tracking-tight ${guestTheme.text.base}`}>Room {roomNumber}</h1>
+              <h1 className={`font-headline text-[2rem] leading-none ${guestTheme.text.base}`}>
+                {getGreeting()} Guest
+              </h1>
+              <p className={`mt-1 text-[10px] uppercase tracking-[0.18em] ${guestTheme.text.primary}`}>Room {roomNumber}</p>
             </div>
           </div>
           <button
@@ -82,7 +84,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         </div>
       </header>
 
-      <div className="mx-auto min-h-screen w-full max-w-5xl pt-16">
+      <div className="hcs-mobile-canvas min-h-screen w-full pt-16">
         {!searchQuery && (
           <nav className={`sticky top-16 z-40 overflow-hidden ${guestTheme.bg.canvas}/90 px-6 py-4 backdrop-blur-md`}>
             <div className="hide-scrollbar flex gap-3 overflow-x-auto">
@@ -104,28 +106,17 @@ export const MenuView: React.FC<MenuViewProps> = ({
         )}
 
         <main>
-          <section className="px-6 py-8">
-            <div className="max-w-2xl">
+          <section className="px-6 py-10">
+            <div>
               <p className={`mb-2 text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.primary}`}>Atelier Meridian</p>
-              <h2 className={`font-headline mb-4 text-4xl font-medium tracking-tight ${guestTheme.text.base}`}>
+              <h2 className={`font-headline mb-5 text-[4.2rem] leading-[0.92] tracking-tight ${guestTheme.text.base}`}>
                 {searchQuery ? t.search : t.dinnerMenu}
               </h2>
-              <p className={`max-w-2xl text-sm leading-relaxed ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
-            </div>
-
-            <div className="relative mt-6">
-              <Search className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 ${guestTheme.text.muted}/60`} />
-              <input
-                type="text"
-                placeholder={t.search}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`h-12 w-full rounded-full border ${guestTheme.border.strong} ${guestTheme.bg.surface} pl-11 pr-4 text-sm ${guestTheme.text.base} outline-none transition focus:border-[var(--hcs-primary)]`}
-              />
+              <p className={`text-[1.1rem] leading-[1.65] ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
             </div>
           </section>
 
-          <section className="space-y-6 px-6">
+          <section className="space-y-8 px-6">
             {filteredItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
                 <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full ${guestTheme.bg.surfaceMuted}`}>
@@ -156,13 +147,13 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
           {!searchQuery && (
             <section className="px-6 py-8">
-              <div className={`relative flex h-48 items-center overflow-hidden rounded-xl ${guestTheme.bg.inverse} p-8`}>
+              <div className={`relative flex h-60 items-end overflow-hidden ${guestTheme.bg.inverse} p-8`}>
                 <div className="absolute inset-0 opacity-40">
                   <img src="/assets/hero.jpg" alt="" className="h-full w-full object-cover" />
                 </div>
                 <div className="relative z-10">
-                  <h4 className={`font-headline mb-2 text-2xl ${guestTheme.text.inverse}`}>{t.perfectWithMeal}</h4>
-                  <p className={`text-xs uppercase tracking-widest ${guestTheme.text.inverse}/70`}>Curated pairings and late-night favorites</p>
+                  <h4 className={`font-headline mb-2 text-[3rem] leading-[0.98] ${guestTheme.text.inverse}`}>{t.perfectWithMeal}</h4>
+                  <p className={`text-sm uppercase tracking-[0.14em] ${guestTheme.text.inverse}/70`}>Explore our sommelier&apos;s selection</p>
                 </div>
               </div>
             </section>
@@ -176,7 +167,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               animate={{ y: 0 }}
               exit={{ y: 150 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="hcs-safe-bottom-space pointer-events-none fixed bottom-6 left-1/2 z-40 w-[calc(100%-3rem)] max-w-lg -translate-x-1/2"
+              className="hcs-safe-bottom-space pointer-events-none fixed bottom-6 left-1/2 z-40 hcs-mobile-canvas w-[calc(100%-3rem)] -translate-x-1/2 px-6"
             >
               <button
                 onClick={onOpenCart}
@@ -196,6 +187,20 @@ export const MenuView: React.FC<MenuViewProps> = ({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {!searchQuery && (
+          <nav className={`fixed bottom-0 left-0 z-20 h-20 w-full ${guestTheme.bg.surface}/70 backdrop-blur-2xl`}>
+            <div className="hcs-mobile-canvas flex h-full items-center justify-around px-8">
+              <div className={`relative flex flex-col items-center justify-center ${guestTheme.text.primary}`}>
+                <span className="text-lg">•</span>
+                <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em]">Menu</span>
+              </div>
+              <div className={`${guestTheme.text.muted}/45 text-[10px] font-bold uppercase tracking-[0.12em]`}>Orders</div>
+              <div className={`${guestTheme.text.muted}/45 text-[10px] font-bold uppercase tracking-[0.12em]`}>Suite</div>
+              <div className={`${guestTheme.text.muted}/45 text-[10px] font-bold uppercase tracking-[0.12em]`}>Inquiry</div>
+            </div>
+          </nav>
+        )}
 
         <ItemDetailModal
           item={selectedItem}

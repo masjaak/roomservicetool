@@ -3,6 +3,16 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { LoginView } from '../LoginView';
 
 describe('LoginView', () => {
+  it('renders the stitch-style guest access hierarchy', () => {
+    render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
+
+    expect(screen.getByRole('heading', { name: 'Atelier Meridian' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Room Service' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /access in-room dining/i })).toBeTruthy();
+    expect(screen.getByText('24/7 Assistance')).toBeTruthy();
+    expect(screen.getByText('Contact Front Desk')).toBeTruthy();
+  });
+
   it('moves focus forward on Enter across the mobile login fields', () => {
     render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
