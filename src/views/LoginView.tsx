@@ -57,7 +57,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
 
   return (
     <div className={`min-h-screen ${guestTheme.bg.canvas}`}>
-      <div className="relative min-h-screen lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(27rem,33rem)] lg:bg-[var(--hcs-background)]">
+      <div className="relative min-h-screen lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(29rem,34rem)] lg:bg-[var(--hcs-background)]">
         <div className="absolute inset-0 lg:relative lg:min-h-screen">
           <img src="/assets/hero.jpg" className="h-full w-full object-cover" alt="" />
           <div className="absolute inset-0 bg-gradient-to-b from-[color:rgba(35,30,24,0.52)] via-[color:rgba(35,30,24,0.14)] to-[color:rgba(26,28,27,0.76)] lg:bg-gradient-to-r lg:from-[color:rgba(26,28,27,0.36)] lg:via-[color:rgba(26,28,27,0.08)] lg:to-[color:rgba(26,28,27,0.46)]" />
@@ -78,14 +78,25 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
         <header className="relative z-10 px-8 pt-28 text-center lg:flex lg:min-h-screen lg:flex-col lg:items-center lg:justify-center lg:px-14 lg:pt-0">
           <div
             data-testid="login-hero-glass"
-            className="mx-auto inline-flex max-w-full flex-col items-center justify-center rounded-[2rem] bg-white/10 px-7 py-6 text-center backdrop-blur-[26px] shadow-[0_20px_56px_rgba(0,0,0,0.14)] ring-1 ring-white/16 lg:max-w-[38rem] lg:px-12 lg:py-10"
+            className="relative mx-auto inline-flex w-full max-w-[22rem] flex-col items-center justify-center overflow-hidden rounded-[2.75rem] bg-white/[0.24] px-8 py-7 text-center backdrop-blur-[32px] shadow-[0_26px_80px_rgba(0,0,0,0.18)] ring-1 ring-white/38 lg:max-w-[35rem] lg:px-14 lg:py-11"
           >
-            <p className="mb-5 text-center text-[11px] uppercase tracking-[0.42em] text-white/82 lg:mb-6 lg:text-[12px] lg:text-white/75">
+            <div
+              data-testid="login-hero-glass-sheen"
+              aria-hidden="true"
+              className="absolute inset-[1px] rounded-[calc(2.75rem-1px)] bg-[linear-gradient(135deg,rgba(255,255,255,0.34),rgba(255,255,255,0.08))]"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-[12%] top-0 h-24 rounded-b-[100%] bg-white/24 blur-2xl lg:inset-x-[18%] lg:h-28"
+            />
+            <div className="relative z-10 flex flex-col items-center text-center">
+            <p className="mb-5 text-center text-[11px] uppercase tracking-[0.42em] text-white/88 lg:mb-6 lg:text-[12px] lg:text-white/78">
               {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
             </p>
-            <h1 className="font-headline text-center text-[3.9rem] font-light italic tracking-[0.08em] text-white [text-shadow:0_10px_28px_rgba(0,0,0,0.16)] lg:text-[5.8rem] lg:leading-[0.96]">
+            <h1 className="font-headline text-center text-[3.65rem] font-medium italic tracking-[0.06em] text-white [text-shadow:0_10px_28px_rgba(0,0,0,0.14)] lg:text-[5.4rem] lg:leading-[0.94]">
               Atelier Meridian
             </h1>
+            </div>
           </div>
         </header>
 
@@ -96,11 +107,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
             initial={{ y: 32, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.55 }}
-            className={`relative z-10 rounded-t-[3.25rem] ${guestTheme.bg.surface} px-8 pb-12 pt-12 shadow-[0_-20px_40px_rgba(26,28,27,0.1)] lg:my-auto lg:rounded-[2.25rem] lg:px-10 lg:pb-10 lg:pt-10 lg:shadow-[0_18px_60px_rgba(26,28,27,0.08)]`}
+            className={`relative z-10 rounded-t-[3.25rem] ${guestTheme.bg.surface} px-8 pb-12 pt-12 shadow-[0_-20px_40px_rgba(26,28,27,0.1)] lg:my-auto lg:rounded-[2.5rem] lg:px-10 lg:pb-10 lg:pt-10 lg:shadow-[0_18px_60px_rgba(26,28,27,0.08)]`}
           >
           <div className="mb-10 text-center lg:mb-9">
-            <h2 className={`font-headline text-[2.95rem] leading-[1.03] ${guestTheme.text.base} lg:text-[2.8rem]`}>{t.loginTitle}</h2>
-            <p className={`mx-auto mt-3 max-w-[20rem] text-[1.05rem] leading-[1.62] ${guestTheme.text.muted} lg:max-w-[24rem] lg:text-[1rem]`}>
+            <h2 className={`font-headline text-[2.85rem] leading-[1.02] ${guestTheme.text.base} lg:text-[2.75rem]`}>{t.loginTitle}</h2>
+            <p className={`mx-auto mt-3 max-w-[20rem] text-[1.02rem] leading-[1.62] ${guestTheme.text.muted} lg:max-w-[24rem] lg:text-[1rem]`}>
               {t.loginBody}
             </p>
           </div>
@@ -200,7 +211,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
             </div>
           </form>
 
-          <div className={`mt-9 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] ${guestTheme.text.muted}/70`}>
+          <div className={`mt-9 flex flex-col items-center justify-center gap-2 text-center text-[10px] uppercase tracking-[0.18em] ${guestTheme.text.muted}/70 lg:flex-row lg:justify-between lg:text-left`}>
             <span>{t.assistance}</span>
             <span>{t.frontDesk}</span>
           </div>
