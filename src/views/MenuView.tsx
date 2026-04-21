@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { LogOut, Search, XCircle, SearchX, ShoppingBag } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MenuItem, CartItem, Language } from '../types';
+import { DoorOpen, Search, SearchX, ShoppingBag } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CartItem, Language, MenuItem } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
+import { guestTheme } from '../styles/guestTheme';
 import { formatCurrency } from '../utils/format';
-import { ProductCard } from '../components/ProductCard';
-import { ItemDetailModal } from '../components/ItemDetailModal';
 import { CartDrawer } from '../components/CartDrawer';
+import { ItemDetailModal } from '../components/ItemDetailModal';
+import { ProductCard } from '../components/ProductCard';
 
 interface MenuViewProps {
   roomNumber: string;
@@ -35,8 +36,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const t = TRANSLATIONS[lang];
   const [searchQuery, setSearchQuery] = useState('');
+  const t = TRANSLATIONS[lang];
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -47,115 +48,127 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
   const grandTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
-
   const filteredItems = searchQuery.length > 0
     ? MENU_ITEMS.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen pb-36"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      <div className="w-full max-w-4xl mx-auto min-h-screen relative">
-        {/* Top Header */}
-        <div className="px-6 sm:px-8 pt-10 pb-6">
-          <div className="flex flex-row items-start justify-between mb-6">
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#a08850] mb-2">
-                {getGreeting()}
-              </p>
-              <h2 className="text-[2.5rem] leading-none" style={{ fontFamily: "'DM Serif Display', serif", color: '#1c1917' }}>
-                Room {roomNumber}
-              </h2>
-            </div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-36`}>
+      <header className={`hcs-safe-top fixed top-0 z-50 w-full ${guestTheme.bg.canvas}/80 backdrop-blur-xl shadow-[0_20px_40px_rgba(26,28,27,0.06)]`}>
+        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
+          <div className="flex items-center gap-3">
             <button
               onClick={onLogout}
-              className="px-4 py-2 flex items-center justify-center gap-2 border border-[#e7e5e4] text-[10px] font-bold uppercase tracking-widest text-[#1c1917] hover:bg-[#1c1917] hover:text-white transition-colors rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
+              className={`rounded-full p-2 ${guestTheme.text.primary} transition-colors hover:bg-[var(--hcs-surface-muted)]`}
+              aria-label="Exit room"
             >
-              <span className="hidden sm:inline">{lang === 'ID' ? 'Keluar' : 'Exit'}</span>
-              <LogOut className="w-3.5 h-3.5" />
+              <DoorOpen className="h-5 w-5" />
             </button>
+            <div>
+              <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.primary}`}>{getGreeting()}</p>
+              <h1 className={`font-headline text-lg font-medium tracking-tight ${guestTheme.text.base}`}>Room {roomNumber}</h1>
+            </div>
           </div>
-
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a8a29e]" />
-            <input
-              type="text"
-              placeholder={t.search}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-14 pr-10 py-3.5 rounded-xl bg-[#f5f5f4] text-[0.95rem] font-medium text-[#1c1917] placeholder-[#a8a29e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/20 transition-shadow border-none"
-            />
-            {searchQuery && (
-              <button aria-label="Clear search" onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#a8a29e] hover:text-[#1c1917] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 rounded-full">
-                <XCircle className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+          <button
+            onClick={onOpenCart}
+            className={`relative flex items-center justify-center rounded-full p-2 transition-colors hover:bg-[var(--hcs-surface-muted)]`}
+            aria-label="Open cart"
+          >
+            <ShoppingBag className={`h-6 w-6 ${guestTheme.text.base}`} />
+            <span className={`absolute right-1 top-1.5 flex h-4 w-4 items-center justify-center rounded-full ${guestTheme.bg.primary} text-[10px] font-bold ${guestTheme.text.onPrimary}`}>
+              {totalQty}
+            </span>
+          </button>
         </div>
+      </header>
 
-        {/* Sticky Category Navigation */}
+      <div className="mx-auto min-h-screen w-full max-w-5xl pt-16">
         {!searchQuery && (
-          <div className="sticky top-0 z-30 backdrop-blur-md border-b border-[#e7e5e4] px-4" style={{ backgroundColor: 'rgba(247, 241, 232, 0.88)' }}>
-            <div className="flex overflow-x-auto hide-scrollbar gap-2 py-3">
+          <nav className={`sticky top-16 z-40 overflow-hidden ${guestTheme.bg.canvas}/90 px-6 py-4 backdrop-blur-md`}>
+            <div className="hide-scrollbar flex gap-3 overflow-x-auto">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-all shadow-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 ${
+                  className={`whitespace-nowrap rounded-full px-6 py-2 text-xs uppercase tracking-widest transition-all ${
                     selectedCategory === cat
-                      ? 'bg-[#1c1917] border-[#1c1917] text-[#ffffff]'
-                      : 'bg-[#ffffff] border-[#e7e5e4] text-[#78716c] hover:border-[#1c1917]/30 hover:text-[#1c1917]'
+                      ? `${guestTheme.bg.inverse} ${guestTheme.text.inverse} shadow-md`
+                      : `border ${guestTheme.border.base} ${guestTheme.text.muted} hover:bg-[var(--hcs-surface-muted)]`
                   }`}
                 >
                   {cat}
                 </button>
               ))}
             </div>
-          </div>
+          </nav>
         )}
 
-        {/* List Header */}
-        <div className="px-6 sm:px-8 mt-6 mb-4">
-          <h3 className="text-[1.2rem] font-bold" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
-            {searchQuery ? t.search : selectedCategory}
-          </h3>
-        </div>
-
-        {/* Item List */}
-        <div className="px-6 sm:px-8 flex flex-col">
-          {filteredItems.length === 0 ? (
-            <div className="py-20 flex flex-col items-center justify-center text-center px-4">
-              <div className="w-16 h-16 rounded-full bg-[#f5f5f4] flex items-center justify-center mb-4">
-                <SearchX className="w-6 h-6 text-[#a8a29e]" />
-              </div>
-              <h3 className="text-[1.25rem] font-bold text-[#1c1917] mb-2 font-serif">
-                {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
-              </h3>
-              <p className="text-[0.95rem] text-[#78716c] max-w-xs leading-relaxed">
-                {searchQuery ? t.searchEmpty : t.emptyMenuDesc}
-              </p>
+        <main>
+          <section className="px-6 py-8">
+            <div className="max-w-2xl">
+              <p className={`mb-2 text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.primary}`}>Atelier Meridian</p>
+              <h2 className={`font-headline mb-4 text-4xl font-medium tracking-tight ${guestTheme.text.base}`}>
+                {searchQuery ? t.search : t.dinnerMenu}
+              </h2>
+              <p className={`max-w-2xl text-sm leading-relaxed ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
             </div>
-          ) : (
-            filteredItems.map((item) => (
-              <ProductCard
-                key={item.id}
-                item={item}
-                onClick={() => setSelectedItem(item)}
-                onAdd={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  addToCart(item, 1, '');
-                }}
-                freeLabel={t.free}
-              />
-            ))
-          )}
-        </div>
 
-        {/* Floating Cart CTA */}
+            <div className="relative mt-6">
+              <Search className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 ${guestTheme.text.muted}/60`} />
+              <input
+                type="text"
+                placeholder={t.search}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`h-12 w-full rounded-full border ${guestTheme.border.strong} ${guestTheme.bg.surface} pl-11 pr-4 text-sm ${guestTheme.text.base} outline-none transition focus:border-[var(--hcs-primary)]`}
+              />
+            </div>
+          </section>
+
+          <section className="space-y-6 px-6">
+            {filteredItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
+                <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full ${guestTheme.bg.surfaceMuted}`}>
+                  <SearchX className={`h-6 w-6 ${guestTheme.text.primary}/50`} />
+                </div>
+                <h3 className={`font-headline text-2xl ${guestTheme.text.base}`}>
+                  {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
+                </h3>
+                <p className={`mt-2 max-w-sm text-sm leading-relaxed ${guestTheme.text.muted}`}>
+                  {searchQuery ? t.searchEmpty : t.emptyMenuDesc}
+                </p>
+              </div>
+            ) : (
+              filteredItems.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  item={item}
+                  onClick={() => setSelectedItem(item)}
+                  onAdd={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    addToCart(item, 1, '');
+                  }}
+                  freeLabel={t.free}
+                />
+              ))
+            )}
+          </section>
+
+          {!searchQuery && (
+            <section className="px-6 py-8">
+              <div className={`relative flex h-48 items-center overflow-hidden rounded-xl ${guestTheme.bg.inverse} p-8`}>
+                <div className="absolute inset-0 opacity-40">
+                  <img src="/assets/hero.jpg" alt="" className="h-full w-full object-cover" />
+                </div>
+                <div className="relative z-10">
+                  <h4 className={`font-headline mb-2 text-2xl ${guestTheme.text.inverse}`}>{t.perfectWithMeal}</h4>
+                  <p className={`text-xs uppercase tracking-widest ${guestTheme.text.inverse}/70`}>Curated pairings and late-night favorites</p>
+                </div>
+              </div>
+            </section>
+          )}
+        </main>
+
         <AnimatePresence>
           {totalQty > 0 && (
             <motion.div
@@ -163,29 +176,27 @@ export const MenuView: React.FC<MenuViewProps> = ({
               animate={{ y: 0 }}
               exit={{ y: 150 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-6 left-0 right-0 px-6 z-40 flex justify-center pointer-events-none"
+              className="hcs-safe-bottom-space pointer-events-none fixed bottom-6 left-1/2 z-40 w-[calc(100%-3rem)] max-w-lg -translate-x-1/2"
             >
               <button
                 onClick={onOpenCart}
                 aria-label="Open cart"
-                className="w-full max-w-md h-16 flex items-center justify-between px-6 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] pointer-events-auto transition-transform active:scale-[0.98] bg-[#1c1917] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50"
+                className={`pointer-events-auto flex h-16 w-full items-center justify-between rounded-full ${guestTheme.bg.inverse} ${guestTheme.text.inverse} px-2 shadow-[0_20px_40px_rgba(0,0,0,0.3)] backdrop-blur-md`}
               >
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <ShoppingBag className="w-5 h-5 text-white" />
-                    <div className="absolute -top-2 -right-3 w-5 h-5 bg-[#a08850] rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm border border-[#1c1917]">
-                      {totalQty}
-                    </div>
-                  </div>
-                  <span className="text-[12px] font-bold tracking-widest uppercase ml-2">{t.cart}</span>
+                <div className="pl-6 text-left">
+                  <p className={`text-[10px] uppercase tracking-[0.2em] ${guestTheme.text.inverse}/60`}>
+                    {t.cart}: {totalQty} {totalQty > 1 ? 'Items' : 'Item'}
+                  </p>
+                  <p className="font-headline text-lg leading-none">{formatCurrency(grandTotal)}</p>
                 </div>
-                <span className="text-[14px] font-bold text-[#a08850]">{formatCurrency(grandTotal)}</span>
+                <span className={`rounded-full ${guestTheme.bg.primary} px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] ${guestTheme.text.onPrimary}`}>
+                  {t.viewOrder}
+                </span>
               </button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Overlays */}
         <ItemDetailModal
           item={selectedItem}
           isOpen={!!selectedItem}

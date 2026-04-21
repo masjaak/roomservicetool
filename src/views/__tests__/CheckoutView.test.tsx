@@ -74,4 +74,38 @@ describe('CheckoutView', () => {
       expect((submitBtn as HTMLButtonElement).disabled).toBe(true);
     }
   });
+
+  it('shows a mobile network notice while the order is being submitted', () => {
+    render(
+      <CheckoutView
+        cart={cart}
+        onBack={() => {}}
+        onPlaceOrder={() => {}}
+        loading
+        error={null}
+        phoneNumber="81234567890"
+        lang="EN"
+      />
+    );
+
+    expect(screen.getByRole('status').textContent).toContain('Processing...');
+    expect(screen.getByText('Please keep this screen open while we connect your order.')).toBeTruthy();
+  });
+
+  it('shows recovery guidance when the network request fails', () => {
+    render(
+      <CheckoutView
+        cart={cart}
+        onBack={() => {}}
+        onPlaceOrder={() => {}}
+        loading={false}
+        error="Connection timeout. Please try again."
+        phoneNumber="81234567890"
+        lang="EN"
+      />
+    );
+
+    expect(screen.getByRole('alert').textContent).toContain('Connection timeout. Please try again.');
+    expect(screen.getByText('Hotel Wi-Fi can be unstable. Review your signal, then retry.')).toBeTruthy();
+  });
 });

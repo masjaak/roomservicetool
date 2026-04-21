@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../data/constants';
+import { guestTheme } from '../styles/guestTheme';
+import { validateGuestAccess } from './loginValidation';
 
 interface LoginViewProps {
   lang: Language;
@@ -10,6 +12,9 @@ interface LoginViewProps {
 }
 
 export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) => {
+  const roomInputRef = useRef<HTMLInputElement | null>(null);
+  const lastNameInputRef = useRef<HTMLInputElement | null>(null);
+  const phoneInputRef = useRef<HTMLInputElement | null>(null);
   const [roomNumber, setRoomNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [lastName, setLastName] = useState('');
@@ -18,25 +23,15 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
   const t = TRANSLATIONS[lang];
 
   useEffect(() => {
-    const isRoomValid = roomNumber.length > 0;
-    const isNameValid = lastName.trim().length > 0;
+    const validation = validateGuestAccess({
+      roomNumber,
+      lastName,
+      phoneNumber,
+      lang,
+    });
 
-    const digits = phoneNumber.replace(/\D/g, '');
-    const isPhoneLengthValid = digits.length >= 10 && digits.length <= 14;
-    const isPhonePrefixValid = digits.startsWith('08') || digits.startsWith('628');
-    const isPhoneValid = isPhoneLengthValid && isPhonePrefixValid;
-
-    setIsValid(isRoomValid && isNameValid && isPhoneValid);
-
-    if (phoneNumber && !isPhoneValid) {
-      if (!isPhonePrefixValid) {
-        setError(lang === 'ID' ? 'Nomor harus diawali 08 atau 628' : 'Number must start with 08 or 628');
-      } else if (!isPhoneLengthValid) {
-        setError(lang === 'ID' ? 'Nomor HP tidak valid (Min. 10 digit)' : 'Invalid phone number (min. 10 digits)');
-      }
-    } else {
-      setError('');
-    }
+    setIsValid(validation.isValid);
+    setError(validation.error);
   }, [roomNumber, phoneNumber, lastName, lang]);
 
   const handleSubmit = () => {
@@ -45,148 +40,162 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
     }
   };
 
-  return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center py-10 px-6 overflow-y-auto relative z-10">
-      {/* Background image with dark wash */}
-      <div className="fixed inset-0 z-0 bg-[#2d2d2d]" style={{ backgroundColor: '#2d2d2d' }}>
-        <img
-          src="/assets/hero.jpg"
-          className="w-full h-full object-cover opacity-30"
-          alt=""
-        />
-      </div>
+  const moveFocusToNextField = (event: React.KeyboardEvent<HTMLInputElement>, nextField?: HTMLInputElement | null) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 w-full max-w-md mx-auto flex flex-col my-auto"
-      >
-        {/* Language toggle */}
-        <div className="absolute -top-10 right-0 sm:top-0">
-          <div className="px-3 py-1 rounded-full flex gap-3 text-[10px] font-medium cursor-pointer" style={{ backgroundColor: 'rgba(45,45,45,0.6)', border: '1px solid rgba(250,248,245,0.15)', color: '#faf8f5' }}>
-            <button onClick={() => setLang('ID')} className={lang === 'ID' ? 'font-bold opacity-100' : 'opacity-50'}>ID</button>
-            <span style={{ opacity: 0.2 }}>|</span>
-            <button onClick={() => setLang('EN')} className={lang === 'EN' ? 'font-bold opacity-100' : 'opacity-50'}>EN</button>
+    event.preventDefault();
+
+    if (nextField) {
+      nextField.focus();
+      return;
+    }
+
+    handleSubmit();
+  };
+
+  return (
+    <div className={`min-h-screen ${guestTheme.bg.canvas}`}>
+      <div className={`hcs-grain relative mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden ${guestTheme.bg.surface} shadow-xl`}>
+        <div className="absolute inset-0 z-0">
+          <img src="/assets/hero.jpg" className="h-full w-full object-cover" alt="" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[color:rgba(26,28,27,0.6)] via-[color:rgba(26,28,27,0.2)] to-[color:rgba(26,28,27,0.9)]" />
+        </div>
+
+        <div className="absolute right-6 top-6 z-20">
+          <div className="rounded-full border border-white/20 bg-black/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-white backdrop-blur-md">
+            <button onClick={() => setLang('ID')} className={lang === 'ID' ? 'opacity-100' : 'opacity-50'}>
+              ID
+            </button>
+            <span className="mx-2 opacity-40">/</span>
+            <button onClick={() => setLang('EN')} className={lang === 'EN' ? 'opacity-100' : 'opacity-50'}>
+              EN
+            </button>
           </div>
         </div>
 
-        {/* Brand */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="w-16 h-16 mx-auto mb-5 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: '#faf8f5' }}
-          >
-            <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: '24px', color: '#2d2d2d', fontWeight: 'bold' }}>AM</span>
-          </motion.div>
-          <h1 className="text-2xl mb-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#faf8f5', letterSpacing: '0.02em' }}>
-            Atelier Meridian
-          </h1>
-          <p className="text-xs mt-1" style={{ color: 'rgba(250,248,245,0.6)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-            {t.subtitle}
+        <header className="relative z-10 px-8 pt-16 text-center">
+          <p className="mb-2 text-[10px] uppercase tracking-[0.3em] text-white/80">
+            {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
           </p>
-        </div>
+          <h1 className="font-headline text-3xl italic tracking-widest text-white">Atelier Meridian</h1>
+        </header>
 
-        {/* Form card — solid background, no glassmorphism */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
+        <div className="flex-1" />
+
+        <motion.section
+          initial={{ y: 32, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="px-6 py-6 rounded-2xl w-full"
-          style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}
+          transition={{ duration: 0.55 }}
+          className={`relative z-10 rounded-t-[2rem] ${guestTheme.bg.surface} px-8 pb-12 pt-10 shadow-[0_-20px_40px_rgba(26,28,27,0.12)]`}
         >
-          <div className="space-y-4">
-            {/* Room Number */}
-            <div>
-              <label className="text-[10px] font-semibold tracking-widest uppercase mb-2 block ml-1" style={{ color: 'rgba(250,248,245,0.6)' }}>
-                {t.room}
-              </label>
+          <div className="mb-8">
+            <h2 className={`font-headline text-2xl ${guestTheme.text.base}`}>{t.loginTitle}</h2>
+            <p className={`mt-2 text-sm leading-relaxed ${guestTheme.text.muted}`}>{t.loginBody}</p>
+          </div>
+
+          <form
+            className="space-y-8"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleSubmit();
+            }}
+          >
+            <div className={`relative border-b ${guestTheme.border.base}/50 transition-colors focus-within:border-[var(--hcs-primary)]`}>
               <input
+                id="room_number"
+                ref={roomInputRef}
                 type="text"
                 inputMode="numeric"
-                placeholder="1024"
+                autoComplete="off"
+                enterKeyHint="next"
                 value={roomNumber}
+                placeholder=" "
+                onKeyDown={(event) => moveFocusToNextField(event, lastNameInputRef.current)}
                 onChange={(e) => {
                   if (/^\d{0,4}$/.test(e.target.value)) setRoomNumber(e.target.value);
                 }}
-                className="block w-full px-4 py-3 rounded-xl text-base text-center font-medium tracking-widest focus:outline-none transition-all"
-                style={{ backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid rgba(250,248,245,0.1)', color: '#faf8f5', '--placeholder-color': 'rgba(250,248,245,0.3)' } as React.CSSProperties}
+                className={`peer block h-[44px] w-full border-none bg-transparent px-0 py-3 text-base font-medium ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
               />
+              <label
+                htmlFor="room_number"
+                className={`pointer-events-none absolute left-0 font-label text-sm uppercase tracking-wider transition-all duration-200 ${
+                  roomNumber ? `-top-4 scale-[0.85] ${guestTheme.text.primary}` : `top-3 ${guestTheme.text.muted}`
+                } peer-focus:-top-4 peer-focus:scale-[0.85] ${guestTheme.text.primary}`}
+              >
+                {t.room}
+              </label>
             </div>
 
-            {/* Last Name */}
-            <div>
-              <label className="text-[10px] font-semibold tracking-widest uppercase mb-2 block ml-1" style={{ color: 'rgba(250,248,245,0.6)' }}>
-                {lang === 'ID' ? 'Nama Belakang (Sesuai Reservasi)' : 'Last Name (As per Reservation)'}
-              </label>
+            <div className={`relative border-b ${guestTheme.border.base}/50 transition-colors focus-within:border-[var(--hcs-primary)]`}>
               <input
+                id="last_name"
+                ref={lastNameInputRef}
                 type="text"
-                placeholder={lang === 'ID' ? 'Contoh: Santoso' : 'Ex: Smith'}
+                autoComplete="family-name"
+                enterKeyHint="next"
                 value={lastName}
+                placeholder=" "
+                onKeyDown={(event) => moveFocusToNextField(event, phoneInputRef.current)}
                 onChange={(e) => setLastName(e.target.value)}
-                className="block w-full px-4 py-3 rounded-xl text-base text-center font-medium tracking-widest capitalize focus:outline-none transition-all"
-                style={{ backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid rgba(250,248,245,0.1)', color: '#faf8f5' }}
+                className={`peer block h-[44px] w-full border-none bg-transparent px-0 py-3 text-base font-medium ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
               />
+              <label
+                htmlFor="last_name"
+                className={`pointer-events-none absolute left-0 font-label text-sm uppercase tracking-wider transition-all duration-200 ${
+                  lastName ? `-top-4 scale-[0.85] ${guestTheme.text.primary}` : `top-3 ${guestTheme.text.muted}`
+                } peer-focus:-top-4 peer-focus:scale-[0.85] ${guestTheme.text.primary}`}
+              >
+                {t.lastName}
+              </label>
             </div>
 
-            {/* Phone Number */}
-            <div>
-              <label className="text-[10px] font-semibold tracking-widest uppercase mb-2 block ml-1" style={{ color: 'rgba(250,248,245,0.6)' }}>
-                {t.phone}
-              </label>
+            <div className={`relative border-b transition-colors focus-within:border-[var(--hcs-primary)] ${error ? `${guestTheme.border.error}/50` : `${guestTheme.border.base}/50`}`}>
               <input
+                id="phone_number"
+                ref={phoneInputRef}
                 type="tel"
-                placeholder="081..."
+                inputMode="tel"
+                autoComplete="tel-national"
+                enterKeyHint="done"
                 value={phoneNumber}
+                placeholder=" "
+                onKeyDown={(event) => moveFocusToNextField(event)}
                 onChange={(e) => {
                   if (/^\d{0,14}$/.test(e.target.value)) setPhoneNumber(e.target.value);
                 }}
-                className="block w-full px-4 py-3 rounded-xl text-base text-center font-medium tracking-widest focus:outline-none transition-all"
-                style={{
-                  backgroundColor: error ? 'rgba(180,60,60,0.15)' : 'rgba(0,0,0,0.3)',
-                  border: `1px solid ${error ? 'rgba(180,60,60,0.4)' : 'rgba(250,248,245,0.1)'}`,
-                  color: '#faf8f5',
-                }}
+                className={`peer block h-[44px] w-full border-none bg-transparent px-0 py-3 text-base font-medium ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
               />
+              <label
+                htmlFor="phone_number"
+                className={`pointer-events-none absolute left-0 font-label text-sm uppercase tracking-wider transition-all duration-200 ${
+                  phoneNumber ? `-top-4 scale-[0.85] ${guestTheme.text.primary}` : `top-3 ${guestTheme.text.muted}`
+                } peer-focus:-top-4 peer-focus:scale-[0.85] ${guestTheme.text.primary}`}
+              >
+                {t.phone}
+              </label>
             </div>
 
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="text-xs text-center font-semibold py-2 rounded-lg"
-                style={{ color: '#e8a0a0', backgroundColor: 'rgba(180,60,60,0.2)', border: '1px solid rgba(180,60,60,0.2)' }}
-              >
-                {error}
-              </motion.p>
-            )}
+            {error && <p className={`rounded-lg ${guestTheme.bg.errorSoft} px-4 py-3 text-sm ${guestTheme.text.error}`}>{error}</p>}
 
             <div className="pt-2">
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={!isValid}
-                className="w-full py-4 rounded-xl font-semibold text-sm tracking-widest uppercase transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ backgroundColor: '#faf8f5', color: '#2d2d2d' }}
+                className={`flex h-14 w-full items-center justify-center rounded-lg ${guestTheme.bg.primary} px-6 text-xs font-bold uppercase tracking-[0.2em] ${guestTheme.text.onPrimary} shadow-lg transition-all duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40`}
               >
-                {t.start}
+                {t.accessDining}
               </button>
-
-              <p className="text-center text-[10px] mt-3 leading-relaxed px-4" style={{ color: 'rgba(250,248,245,0.45)' }}>
-                {lang === 'ID'
-                  ? 'Demi keamanan, pesanan akan diverifikasi dengan data tamu di resepsionis.'
-                  : 'For security, orders will be verified against guest records at reception.'}
-              </p>
             </div>
+          </form>
 
-            <p className="text-center text-[10px] mt-1 cursor-pointer hover:underline transition-all" style={{ color: 'rgba(250,248,245,0.4)' }}>
-              {t.help}
-            </p>
+          <div className={`mt-8 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] ${guestTheme.text.muted}/70`}>
+            <span>{t.assistance}</span>
+            <span>{t.frontDesk}</span>
           </div>
-        </motion.div>
-      </motion.div>
+        </motion.section>
+      </div>
     </div>
   );
 };

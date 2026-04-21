@@ -38,6 +38,9 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
   if (!item) return null;
 
   const totalPrice = item.price * qty;
+  const allergens = typeof item.allergens === 'string'
+    ? item.allergens.split(',').map((value) => value.trim()).filter(Boolean)
+    : [];
 
   return (
     <AnimatePresence>
@@ -127,7 +130,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                   </div>
 
                   {/* Allergens dropdown */}
-                  {item.allergens && item.allergens.length > 0 && (
+                  {allergens.length > 0 && (
                     <div className="border border-[#e7e5e4] rounded-lg overflow-hidden">
                       <button
                         onClick={() => setShowAllergens(!showAllergens)}
@@ -148,7 +151,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                             className="overflow-hidden bg-white"
                           >
                             <div className="p-4 pt-0 border-t border-[#e7e5e4] flex flex-wrap gap-2">
-                              {item.allergens.map((allergen) => (
+                              {allergens.map((allergen) => (
                                 <span key={allergen} className="px-3 py-1 bg-[#f5f5f4] text-[#574b3f] text-[11px] rounded-full font-medium">
                                   {allergen}
                                 </span>

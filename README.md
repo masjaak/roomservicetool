@@ -1,53 +1,97 @@
-# Atelier Meridian · Room Service
+# HCS Room Service
 
-A premium, bilingual (EN / ID) web application designed for luxury hotel in-room dining. This service blends digital simplicity with high-end customer experience, providing a responsive and fluid journey from menu browsing to live order tracking.
+Room service web app for hotel guests and operations staff. The guest flow is:
 
-## Core Features
-- **Dynamic Bilingual Support:** Seamlessly toggle between English and Indonesian across all interactions and product descriptions.
-- **Robust State Machine:** Application flow (Login → Menu → Checkout → Tracking) is strictly governed by a pure reducer, guarding against invalid transitions and minimizing undefined UI states.
-- **WhatsApp Integration:** Fallback-safe WhatsApp dynamic linking to seamlessly connect guests with the kitchen staff upon order confirmation.
-- **Live Order Tracking:** Integrated with Firebase (Firestore) to listen to real-time status updates reflecting kitchen and delivery progress.
-- **Premium UI / Responsive Design:** Clean, editorial design localized for both mobile scrolling and structured desktop layouts using dynamic Tailwind constraints. No unnecessary gradients or artificial layouts.
+`Login -> Menu -> Checkout -> Tracking -> Feedback`
 
-## Tech Stack
-- **Framework:** React 18 / Vite
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS v4, Framer Motion
-- **Backend/Database:** Firebase (Firestore)
-- **Testing:** Vitest
+The current codebase already keeps that flow in a reducer-driven state machine, so the UI can be replaced page by page without rewriting the ordering logic.
 
-## Getting Started
+## Current Scope
 
-### Prerequisites
-Make sure you have Node.js and a package manager installed (`npm` or `yarn` / `bun`).
+- Guest app for login, menu browsing, cart, checkout, live tracking, and feedback
+- Admin dashboard at `/#admin` for order monitoring and status updates
+- Firebase Firestore integration for order creation and real-time tracking
+- EN / ID copy support
+- Vitest coverage for reducer, helpers, and main UI flows
 
-### Installation
-Clone the repository, then install bindings:
+## Stack
+
+- React 18
+- TypeScript
+- Vite
+- Framer Motion
+- Firebase / Firestore
+- Vitest + Testing Library
+
+## Project Structure
+
+```text
+src/
+  components/       shared UI blocks and guest interactions
+  data/             menu data, banks, translations
+  lib/              Firebase setup
+  machine/          reducer, guards, effects, state types
+  utils/            formatting and mapping helpers
+  views/            Login, Menu, Checkout, Tracking, AdminDashboard
+```
+
+## Local Development
+
+### 1. Install dependencies
+
 ```bash
 npm install
 ```
 
-### Environmental Config
-For Firebase functionality, ensure your configuration details (e.g., inside `src/lib/firebase.ts`) match your target project settings before deployment. 
+### 2. Configure Firebase
 
-### Running Locally
-To run the development server locally:
+Update the Firebase client config in `src/lib/firebase.ts` to match the target project.
+
+### 3. Start the app
+
 ```bash
 npm run dev
 ```
 
-### Running Tests
-The project features an extensive suite of integration and unit tests validating explicit State Machine guards and UI rendering conditions.
-```bash
-npm run test
-```
+Guest app runs on the root route. Admin dashboard is available via `/#admin`.
 
-### Building for Production
+## Scripts
+
 ```bash
+npm run dev
 npm run build
+npm run test
+npm run test:watch
 ```
 
-## Architectural Highlights
-- **State Integrity (`src/machine/`):** View context, Cart operations, and specific form validations are pure implementations. Handlers explicitly fire immutable payload actions (`SubmitOrder`, `ResetFlow`) rather than mutating UI states loosely.
-- **Decoupled Side-Effects:** Firebase synchronization and WhatsApp integrations execute explicitly via `App.tsx` outside of the state reducer natively to capture explicit `OrderSubmitSucceeded` vs `OrderSubmitFailed` paths, ensuring graceful error handling. 
-- **Offline & Connectivity Support:** If network conditions fail Firebase handovers, time-out bounds specifically notify the guest. Fallback GUI structures gracefully bridge blocked `window.open` intents to ensure users always establish contact.
+## UI Migration Notes
+
+This repo is in a good position for a full visual redesign because the flow logic is already separate from the page markup.
+
+Recommended approach for integrating Google Stitch HTML:
+
+1. Keep the reducer, effects, and Firebase wiring as-is.
+2. Replace page markup inside:
+   - `src/views/LoginView.tsx`
+   - `src/views/MenuView.tsx`
+   - `src/views/CheckoutView.tsx`
+   - `src/views/TrackingView.tsx`
+   - `src/components/RatingModal.tsx`
+3. Map new HTML to the existing props and event handlers instead of reimplementing business logic.
+4. Keep tests running after each page migration to avoid regressions.
+
+## Current Cleanup Notes
+
+- Dev server no longer auto-opens a browser window.
+- Repo ignore rules now cover `.DS_Store`, `build`, and `coverage`.
+- Feedback skip flow now exits cleanly instead of leaving the guest stuck on tracking.
+
+## Known Technical Debt
+
+- `src/index.css` is generated/compiled-looking CSS and is not a clean styling source yet.
+- There are many generated UI dependencies and aliases that should be reduced after the final UI migration settles.
+- `src/App.tsx` still owns too much orchestration logic and can be split further once the new page implementations land.
+
+## Next Step For The Redesign
+
+If you already have the Google Stitch HTML for each page, the fastest path is to drop those files into the repo and convert them page-by-page into React markup while preserving the existing handlers and props.

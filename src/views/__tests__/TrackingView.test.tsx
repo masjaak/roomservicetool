@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { TrackingView } from '../TrackingView';
 import { ErrorBoundary, TrackingFallback } from '../../components/ErrorBoundary';
 import { onSnapshot } from 'firebase/firestore';
@@ -78,5 +78,40 @@ describe('TrackingView', () => {
     expect(screen.getByText('Current Status')).toBeTruthy();
     expect(screen.getAllByText('On The Way').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Staff is en route to Room 101.').length).toBeGreaterThan(0);
+  });
+
+  it('finishes the flow when feedback is skipped after delivery', async () => {
+    vi.useFakeTimers();
+    const onFinish = vi.fn();
+
+    vi.mocked(onSnapshot).mockImplementation((_ref, callback: (snapshot: any) => void) => {
+      callback({
+        exists: () => true,
+        data: () => ({ status: 'completed' }),
+      });
+
+      return vi.fn();
+    });
+
+    render(
+      <ErrorBoundary fallback={(error, reset) => <TrackingFallback onReset={reset} lang="EN" />}>
+        <TrackingView
+          lang="EN"
+          orderId="test-order-123"
+          roomNumber="101"
+          onFinish={onFinish}
+        />
+      </ErrorBoundary>
+    );
+
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    const closeButton = screen.getByLabelText('Close rating');
+    fireEvent.click(closeButton);
+
+    expect(onFinish).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
   });
 });

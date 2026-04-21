@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { FileText, CheckCircle2, ChefHat, Search, Bell, Star } from 'lucide-react';
+import { CheckCircle2, ChefHat, Clock3, Phone, Star, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { TRANSLATIONS } from '../data/constants';
-import { Language, FeedbackPayload } from '../types';
-import { RatingModal } from '../components/RatingModal';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { TRANSLATIONS } from '../data/constants';
+import { RatingModal } from '../components/RatingModal';
 import { db } from '../lib/firebase';
+import { guestTheme } from '../styles/guestTheme';
 import { mapOrderStatusToStep } from '../utils/statusMapping';
+import { buildTrackingPresentation } from '../utils/trackingPresentation';
 import { buildLegacyFeedback } from '../utils/feedbackMapping';
+import { FeedbackPayload, Language } from '../types';
 
 interface TrackingViewProps {
   roomNumber: string;
@@ -38,190 +40,123 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
       setOrderStatus(newStep);
 
       if (statusLower === 'completed' || statusLower === 'delivered') {
-        if (ratingTimer) {
-          clearTimeout(ratingTimer);
-        }
-
+        if (ratingTimer) clearTimeout(ratingTimer);
         ratingTimer = setTimeout(() => setShowRating(true), 2000);
       }
     });
 
     return () => {
-      if (ratingTimer) {
-        clearTimeout(ratingTimer);
-      }
-
+      if (ratingTimer) clearTimeout(ratingTimer);
       unsubscribe();
     };
   }, [orderId]);
 
   const handleSubmitFeedback = async (payload: FeedbackPayload) => {
     if (orderId) {
-       await updateDoc(doc(db, 'orders', orderId), {
-         ...buildLegacyFeedback(payload),
-         feedbackSubmittedAt: new Date().toISOString(),
-       }).catch(console.error);
+      await updateDoc(doc(db, 'orders', orderId), {
+        ...buildLegacyFeedback(payload),
+        feedbackSubmittedAt: new Date().toISOString(),
+      }).catch(console.error);
     }
     onFinish();
   };
 
-  const steps = [
-    { icon: <FileText className="w-5 h-5" />, label: 'Order Confirmed', sub: 'Logged and sent to the kitchen.' },
-    { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Kitchen Acknowledged', sub: 'Your order is queued for preparation.' },
-    { icon: <ChefHat className="w-5 h-5" />, label: 'Preparing', sub: 'Your dishes are being freshly prepared.' },
-    { icon: <Search className="w-5 h-5" />, label: 'Quality Check', sub: 'Final inspection holding standard.' },
-    { icon: <Bell className="w-5 h-5" />, label: 'On The Way', sub: `Staff is en route to Room ${roomNumber}.` },
-    { icon: <Star className="w-5 h-5" />, label: 'Delivered', sub: 'Enjoy your experience.' },
-  ];
-  const currentStep = steps[orderStatus] ?? steps[0];
-  const progressValue = ((orderStatus + 1) / steps.length) * 100;
+  const presentation = buildTrackingPresentation({
+    statusStep: orderStatus,
+    roomNumber,
+    lang,
+  });
+  const currentStep = presentation.currentStep;
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center py-10 px-4 sm:px-6 overflow-y-auto relative z-10">
-      {/* Background image with dark wash — matching LoginView */}
-      <div className="fixed inset-0 z-0 bg-[#2d2d2d]" style={{ backgroundColor: '#2d2d2d' }}>
-        <img
-          src="/assets/hero.jpg"
-          className="w-full h-full object-cover opacity-30"
-          alt=""
-        />
-      </div>
+    <div className={`min-h-screen ${guestTheme.bg.canvas}`}>
+      <div className={`mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden ${guestTheme.bg.canvas} shadow-2xl`}>
+        <header className={`hcs-safe-top sticky top-0 z-10 flex items-center justify-between ${guestTheme.bg.surfaceSoft} px-6 py-4`}>
+          <div className="flex-1" />
+          <h1 className={`font-headline text-xl tracking-tight ${guestTheme.text.base}`}>Atelier Dining</h1>
+          <div className="flex flex-1 justify-end">
+            <Clock3 className={`h-5 w-5 ${guestTheme.text.base}/60`} />
+          </div>
+        </header>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 w-full max-w-lg mx-auto flex flex-col my-auto"
-      >
-        {/* Header Card */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="px-6 py-6 rounded-2xl w-full mb-4"
-          style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-bold" style={{ color: '#a08850' }}>
-              Guest Room {roomNumber}
+        <main className="flex flex-1 flex-col overflow-y-auto px-8 py-10">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-12 text-center">
+            <h2 className={`font-headline text-3xl ${guestTheme.text.base}`}>{currentStep.label}</h2>
+            <span className="sr-only">Order Status</span>
+            <p className={`mt-2 text-sm font-medium uppercase tracking-[0.1em] ${guestTheme.text.primary}`}>
+              {t.trackTitle} #{orderId?.slice(-6).toUpperCase() || 'PND'}
             </p>
-            <div className="inline-flex items-center px-3 py-1 rounded-full text-[9px] uppercase font-bold tracking-[0.2em]" style={{ backgroundColor: 'rgba(250,248,245,0.08)', color: 'rgba(250,248,245,0.6)' }}>
-              No. {orderId?.slice(-6).toUpperCase() || 'PND'}
+          </motion.div>
+
+          <div className={`relative mb-12 overflow-hidden rounded-xl ${guestTheme.bg.surface} p-8`}>
+            <div className="absolute inset-0 bg-gradient-to-br from-[color:rgba(119,90,25,0.1)] to-transparent opacity-80" />
+            <div className="relative z-10 flex flex-col items-center">
+              <Clock3 className={`mb-3 h-8 w-8 ${guestTheme.text.primary}`} />
+              <p className={`mb-1 text-sm uppercase tracking-wider ${guestTheme.text.muted}`}>{t.estimatedDelivery}</p>
+              <p className={`font-headline text-2xl ${guestTheme.text.base}`}>{presentation.estimatedDeliveryLabel}</p>
             </div>
           </div>
-          <h2 className="text-[2rem] sm:text-[2.5rem] leading-none mb-3" style={{ fontFamily: "'DM Serif Display', serif", color: '#faf8f5' }}>
-            {t.trackTitle}
-          </h2>
-          <p className="text-[0.9rem] leading-relaxed font-light" style={{ color: 'rgba(250,248,245,0.55)' }}>
-            {lang === 'ID'
-              ? 'Pantau progres pesanan secara real-time dari konfirmasi dapur hingga pengantaran ke kamar Anda.'
-              : 'Follow your order in real time from kitchen confirmation through delivery to your room.'}
-          </p>
-        </motion.div>
 
-        {blockedWaUrl && (
-          <div className="mb-4 px-6 py-5 rounded-2xl flex flex-col items-start gap-3" style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: '#faf8f5' }}>
-                Notice
-              </p>
-              <p className="text-[0.85rem]" style={{ color: 'rgba(250,248,245,0.5)' }}>WhatsApp message blocked by browser.</p>
-            </div>
-            <a 
-              href={blockedWaUrl} target="_blank" rel="noopener noreferrer" 
-              className="inline-flex h-10 px-5 items-center justify-center rounded-xl text-[10px] uppercase font-bold tracking-[0.2em] transition-colors"
-              style={{ backgroundColor: '#faf8f5', color: '#2d2d2d' }}
+          {blockedWaUrl && (
+            <a
+              href={blockedWaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mb-6 inline-flex items-center justify-center rounded-lg border ${guestTheme.border.base} px-4 py-3 text-sm font-semibold ${guestTheme.text.primary}`}
             >
               Open Manual Chat
             </a>
-          </div>
-        )}
+          )}
 
-        {/* Current Status Highlight */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.35 }}
-          className="px-6 py-6 rounded-2xl w-full mb-4"
-          style={{ backgroundColor: 'rgba(160,136,80,0.15)', border: '1px solid rgba(160,136,80,0.25)' }}
-        >
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: 'rgba(250,248,245,0.4)' }}>
-            Current Status
-          </p>
-          <h3 className="text-[1.6rem] sm:text-[2rem] leading-none mb-2" style={{ fontFamily: "'DM Serif Display', serif", color: '#faf8f5' }}>
-            {currentStep.label}
-          </h3>
-          <p className="text-[0.9rem] font-light" style={{ color: 'rgba(250,248,245,0.5)' }}>
-            {currentStep.sub}
-          </p>
-          {/* Progress bar */}
-          <div className="mt-5 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(250,248,245,0.1)' }}>
-            <motion.div
-              className="h-full rounded-full"
-              style={{ backgroundColor: '#a08850' }}
-              initial={{ width: 0 }}
-              animate={{ width: `${progressValue}%` }}
-              transition={{ duration: 1, ease: 'easeOut' }}
-            />
-          </div>
-        </motion.div>
+          <div className="mb-12 px-4">
+            <p className={`mb-4 text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.muted}`}>Current Status</p>
+            <div className="relative">
+              <div className={`absolute bottom-4 left-[11px] top-4 w-[2px] ${guestTheme.bg.surfaceMuted}`} />
+              {presentation.steps.map((step, index) => {
+                const active = index === presentation.activeStepIndex;
+                const completed = index < presentation.activeStepIndex;
 
-        {/* Timeline Card */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="px-6 py-6 rounded-2xl w-full"
-          style={{ backgroundColor: 'rgba(45,45,45,0.85)', border: '1px solid rgba(250,248,245,0.1)' }}
-        >
-          <div className="relative pl-2">
-            {/* Timeline track */}
-            <div className="absolute left-[17px] top-3 bottom-3 w-[1px]" style={{ backgroundColor: 'rgba(250,248,245,0.1)' }} />
-            
-            <div className="space-y-6 relative">
-              {steps.map((step, index) => {
-                const isActive = index === orderStatus;
-                const isPast = index < orderStatus;
-                
                 return (
-                  <div key={index} className="flex gap-5 group relative" aria-current={isActive ? 'step' : undefined}>
-                    <div className="flex flex-col items-center z-10 pt-0.5">
-                      <div
-                        className="w-3 h-3 rounded-full transition-all duration-700"
-                        style={{
-                          backgroundColor: isActive ? '#a08850' : isPast ? '#faf8f5' : 'transparent',
-                          border: isActive ? '2px solid #a08850' : isPast ? '2px solid rgba(250,248,245,0.6)' : '2px solid rgba(250,248,245,0.15)',
-                          boxShadow: isActive ? '0 0 12px rgba(160,136,80,0.5)' : 'none',
-                          transform: isActive ? 'scale(1.4)' : 'scale(1)',
-                        }}
-                      />
+                  <div key={step.label} className="relative z-10 mb-8 flex items-start last:mb-0" aria-current={active ? 'step' : undefined}>
+                    <div className={`mr-6 mt-1 flex h-6 w-6 items-center justify-center rounded-full ${active ? `${guestTheme.bg.primary} shadow-[0_4px_10px_rgba(119,90,25,0.3)]` : completed ? `${guestTheme.bg.primarySoft}` : `border-2 border-[var(--hcs-background)] ${guestTheme.bg.surfaceMuted}`}`}>
+                      {active ? <div className="h-2 w-2 rounded-full bg-white" /> : null}
                     </div>
-                    
-                    <div className={`flex-1 transition-all duration-500 pb-1 ${isActive ? 'opacity-100' : isPast ? 'opacity-60' : 'opacity-25'}`}>
-                      <div className="flex items-center gap-3 mb-1">
-                        <div style={{ color: isActive ? '#a08850' : isPast ? 'rgba(250,248,245,0.7)' : 'rgba(250,248,245,0.3)' }}>
-                           {React.cloneElement(step.icon as React.ReactElement, { className: 'w-4 h-4' })}
-                        </div>
-                        <h3 className="text-[0.95rem] font-medium tracking-wide" style={{ color: '#faf8f5' }}>
-                          {step.label}
-                        </h3>
+                    <div>
+                      <div className={`flex items-center gap-2 ${active ? guestTheme.text.primary : completed ? `${guestTheme.text.primary}/75` : `${guestTheme.text.muted}/55`}`}>
+                        {step.icon}
+                        <h3 className="font-headline text-lg font-bold">{step.label}</h3>
                       </div>
-                      <p className="text-[0.85rem] leading-relaxed font-light pl-7" style={{ color: 'rgba(250,248,245,0.45)' }}>
-                        {step.sub}
-                      </p>
+                      <p className={`mt-1 text-sm ${active ? guestTheme.text.muted : `${guestTheme.text.muted}/55`}`}>{step.sub}</p>
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-        </motion.div>
 
-      </motion.div>
+          <div className="mt-auto flex flex-col gap-6">
+            <button
+              type="button"
+              onClick={() => {
+                if (blockedWaUrl) {
+                  window.open(blockedWaUrl, '_blank');
+                }
+              }}
+              className={`flex w-full items-center justify-center gap-2 rounded border ${guestTheme.border.base} bg-transparent px-6 py-4 font-medium ${guestTheme.text.primary} transition-colors hover:bg-[var(--hcs-surface-soft)]`}
+            >
+              <Phone className="h-4 w-4" />
+              {t.callRoomService}
+            </button>
+          </div>
+        </main>
+      </div>
 
       <RatingModal
         isOpen={showRating}
-        onSkip={() => setShowRating(false)}
+        onSkip={() => {
+          setShowRating(false);
+          onFinish();
+        }}
         onRate={handleSubmitFeedback}
         lang={lang}
       />

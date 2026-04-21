@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Star, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { TRANSLATIONS } from '../data/constants';
-import { Language, FeedbackPayload } from '../types';
+import { guestTheme } from '../styles/guestTheme';
+import { FeedbackPayload, Language } from '../types';
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -19,16 +20,16 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
   const [orderAccuracy, setOrderAccuracy] = useState(0);
   const [staffCourtesy, setStaffCourtesy] = useState(0);
   const [valueForMoney, setValueForMoney] = useState(0);
-  
   const [wouldOrderAgain, setWouldOrderAgain] = useState<'yes' | 'no' | undefined>();
   const [comment, setComment] = useState('');
-
   const [requestManagerFollowUp, setRequestManagerFollowUp] = useState<'yes' | 'no'>('no');
   const [issueCategory, setIssueCategory] = useState<FeedbackPayload['issueCategory']>();
   const [issueNote, setIssueNote] = useState('');
 
   const t = TRANSLATIONS[lang];
-  const accentColor = '#8a7648';
+  const accentColor = 'var(--hcs-primary)';
+  const mutedStarColor = 'var(--hcs-line)';
+  const subduedStarColor = 'var(--hcs-line-strong)';
 
   const handleSubmit = () => {
     onRate({
@@ -44,24 +45,18 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
       ...(overallRating <= 3 && {
         requestManagerFollowUp,
         issueCategory,
-        issueNote
-      })
+        issueNote,
+      }),
     });
   };
 
-  const StarRow = ({ label, value, setter }: { label: string, value: number, setter: (v: number) => void }) => (
-    <div className="flex items-center justify-between mb-3">
-      <span className="text-xs font-semibold" style={{ color: '#555' }}>{label}</span>
+  const StarRow = ({ label, value, setter }: { label: string; value: number; setter: (v: number) => void }) => (
+    <div className="flex items-center justify-between gap-4">
+      <span className={`text-sm font-medium ${guestTheme.text.muted}`}>{label}</span>
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
-          <button key={n} onClick={() => setter(n)} className="p-1">
-            <Star
-              className="w-5 h-5 transition-colors"
-              style={{
-                color: n <= value ? accentColor : '#e5e0d8',
-                fill: n <= value ? accentColor : 'transparent',
-              }}
-            />
+          <button key={n} type="button" onClick={() => setter(n)} className="p-1">
+            <Star className="h-5 w-5" style={{ color: n <= value ? accentColor : mutedStarColor, fill: n <= value ? accentColor : 'transparent' }} />
           </button>
         ))}
       </div>
@@ -71,96 +66,63 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
-          style={{ backgroundColor: 'rgba(45,45,45,0.5)' }}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`fixed inset-0 z-50 flex items-center justify-center ${guestTheme.bg.canvas}/95 p-4 sm:p-8`}>
           <motion.div
-            initial={{ scale: 0.9, y: 20 }}
+            initial={{ scale: 0.95, y: 20 }}
             animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 20 }}
-            className="w-full max-w-xl border overflow-hidden relative max-h-[90vh] flex flex-col"
-            style={{ backgroundColor: '#fcfaf7', boxShadow: '0 28px 80px rgba(0,0,0,0.22)', borderRadius: '1px', borderColor: 'rgba(26,26,26,0.1)' }}
+            exit={{ scale: 0.95, y: 20 }}
+            className={`relative flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border ${guestTheme.border.strong} ${guestTheme.bg.canvas} shadow-[0_28px_80px_rgba(0,0,0,0.12)]`}
           >
-            <div className="h-1 flex-shrink-0" style={{ backgroundColor: '#1a1a1a' }} />
-
-            <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
-              <button
-                aria-label="Close rating"
-                onClick={() => onSkip && onSkip()}
-                className="absolute top-4 right-4 p-2 rounded-full z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
-                style={{ backgroundColor: 'rgba(26,26,26,0.05)', borderRadius: '1px' }}
-              >
-                <X className="w-4 h-4" style={{ color: '#b8a898' }} />
+            <header className={`sticky top-0 z-10 flex h-16 items-center justify-between ${guestTheme.bg.canvas}/80 px-6 backdrop-blur-xl`}>
+              <button aria-label="Close rating" onClick={() => onSkip && onSkip()} className={`flex h-10 w-10 items-center justify-center rounded-full ${guestTheme.text.primary}`}>
+                <X className="h-5 w-5" />
               </button>
+              <h1 className={`font-headline absolute left-1/2 -translate-x-1/2 text-xl italic tracking-tight ${guestTheme.text.primary}`}>Atelier Meridian</h1>
+              <div className="w-10" />
+            </header>
 
-              <div className="text-center mb-6">
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] mb-3" style={{ color: '#8a7648' }}>
-                  {lang === 'ID' ? 'Penutup layanan' : 'Service close'}
-                </p>
-                <h3 className="text-[2rem] font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif", color: '#1a1a1a', fontWeight: 600 }}>
-                  {t.rateTitle}
-                </h3>
-                <p className="text-xs" style={{ color: '#b8a898' }}>
-                  {lang === 'ID' ? 'Masukan Anda membantu kami meningkatkan kualitas.' : 'Your feedback helps us improve.'}
-                </p>
+            <div className="flex-1 overflow-y-auto px-6 pb-10 pt-8">
+              <div className="flex flex-col items-center text-center">
+                <span className={`text-xs font-semibold uppercase tracking-[0.1em] ${guestTheme.text.label}`}>{t.guestExperience}</span>
+                <h2 className={`font-headline mt-4 text-4xl tracking-tight ${guestTheme.text.base}`}>{t.enjoyedMeal}</h2>
               </div>
 
-              {/* Overall Rating */}
-              <div className="flex justify-center gap-3 mb-8">
+              <div className="flex justify-center gap-4 py-8">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setOverallRating(n)}
-                    className="p-2 transition-colors hover:bg-black/5 rounded-full"
-                  >
-                    <Star
-                      className={`w-8 h-8 transition-transform ${n <= overallRating ? 'scale-110' : ''}`}
-                      style={{
-                        color: n <= overallRating ? accentColor : '#d4ccbf',
-                        fill: n <= overallRating ? accentColor : 'transparent',
-                      }}
-                    />
+                  <button key={n} type="button" onClick={() => setOverallRating(n)} className="rounded-full p-2 transition-transform duration-200 hover:scale-110">
+                    <Star className="h-9 w-9" style={{ color: n <= overallRating ? accentColor : subduedStarColor, fill: n <= overallRating ? accentColor : 'transparent' }} />
                   </button>
                 ))}
               </div>
 
               {overallRating > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="space-y-6"
-                >
-                  <div className="p-4" style={{ backgroundColor: '#fff', border: '1px solid rgba(26,26,26,0.1)', borderRadius: '1px' }}>
-                    <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4" style={{ color: '#888' }}>
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-8">
+                  <div className={`rounded-xl border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
+                    <h4 className={`mb-4 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.label}`}>
                       {lang === 'ID' ? 'Kualitas Layanan' : 'Service Quality'}
                     </h4>
-                    <StarRow label={lang === 'ID' ? 'Kualitas Makanan' : 'Food Quality'} value={foodQuality} setter={setFoodQuality} />
-                    <StarRow label={lang === 'ID' ? 'Presentasi' : 'Presentation'} value={presentation} setter={setPresentation} />
-                    <StarRow label={lang === 'ID' ? 'Kecepatan Antar' : 'Delivery Speed'} value={deliverySpeed} setter={setDeliverySpeed} />
-                    <StarRow label={lang === 'ID' ? 'Akurasi Pesanan' : 'Order Accuracy'} value={orderAccuracy} setter={setOrderAccuracy} />
-                    <StarRow label={lang === 'ID' ? 'Kesopanan Staf' : 'Staff Courtesy'} value={staffCourtesy} setter={setStaffCourtesy} />
-                    <StarRow label={lang === 'ID' ? 'Nilai Uang' : 'Value for Money'} value={valueForMoney} setter={setValueForMoney} />
+                    <div className="space-y-3">
+                      <StarRow label={lang === 'ID' ? 'Kualitas Makanan' : 'Food Quality'} value={foodQuality} setter={setFoodQuality} />
+                      <StarRow label={lang === 'ID' ? 'Presentasi' : 'Presentation'} value={presentation} setter={setPresentation} />
+                      <StarRow label={lang === 'ID' ? 'Kecepatan Antar' : 'Delivery Speed'} value={deliverySpeed} setter={setDeliverySpeed} />
+                      <StarRow label={lang === 'ID' ? 'Akurasi Pesanan' : 'Order Accuracy'} value={orderAccuracy} setter={setOrderAccuracy} />
+                      <StarRow label={lang === 'ID' ? 'Kesopanan Staf' : 'Staff Courtesy'} value={staffCourtesy} setter={setStaffCourtesy} />
+                      <StarRow label={lang === 'ID' ? 'Nilai Uang' : 'Value for Money'} value={valueForMoney} setter={setValueForMoney} />
+                    </div>
                   </div>
 
                   {overallRating <= 3 && (
-                    <div className="p-5 border bg-[#fff]" style={{ borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}>
-                      <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#c45050' }}>
+                    <div className={`rounded-xl border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
+                      <p className={`mb-4 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.error}`}>
                         {lang === 'ID' ? 'Kami Mohon Maaf' : 'We apologize'}
                       </p>
-                      
+
                       <div className="mb-4">
-                        <label className="text-[9px] font-bold uppercase tracking-widest block mb-2" style={{ color: '#888' }}>
-                          {lang === 'ID' ? 'Kategori Kendala' : 'Issue Category'}
-                        </label>
-                        <select 
-                          className="w-full p-3 text-sm bg-white border outline-none appearance-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
-                          style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}
+                        <label className={`mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] ${guestTheme.text.label}`}>{t.issueCategory}</label>
+                        <select
+                          className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
                           value={issueCategory || ''}
-                          onChange={(e) => setIssueCategory(e.target.value as any)}
+                          onChange={(e) => setIssueCategory(e.target.value as FeedbackPayload['issueCategory'])}
                         >
                           <option value="" disabled>{lang === 'ID' ? 'Pilih kategori...' : 'Select a category...'}</option>
                           <option value="Food quality">Food quality</option>
@@ -174,49 +136,48 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                       </div>
 
                       <div className="mb-4">
-                        <label className="text-[9px] font-bold uppercase tracking-widest block mb-2" style={{ color: '#888' }}>
-                          {lang === 'ID' ? 'Detail Kendala' : 'Issue Detail'}
-                        </label>
-                        <input 
-                          type="text" 
-                          placeholder="..." 
+                        <label className={`mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] ${guestTheme.text.label}`}>{t.issueDetail}</label>
+                        <input
+                          type="text"
+                          placeholder="..."
                           value={issueNote}
                           onChange={(e) => setIssueNote(e.target.value)}
-                          className="w-full p-3 text-sm bg-white border outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
-                          style={{ borderColor: 'rgba(26,26,26,0.1)', color: '#1a1a1a', borderRadius: '1px' }}
+                          className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
                         />
                       </div>
 
-                      <label className="flex items-center gap-3 mt-4 cursor-pointer">
-                        <input 
-                          type="checkbox" 
+                      <label className="mt-4 flex cursor-pointer items-center gap-3">
+                        <input
+                          type="checkbox"
                           checked={requestManagerFollowUp === 'yes'}
                           onChange={(e) => setRequestManagerFollowUp(e.target.checked ? 'yes' : 'no')}
-                          className="w-4 h-4 text-[#1a1a1a] focus:ring-[#1a1a1a]"
+                          className={`h-4 w-4 ${guestTheme.text.primary} focus:ring-[var(--hcs-primary)]`}
                         />
-                        <span className="text-xs font-semibold" style={{ color: '#1a1a1a' }}>
-                          {lang === 'ID' ? 'Minta Manajer Menghubungi Saya' : 'Request Manager Follow-up'}
-                        </span>
+                        <span className={`text-sm font-medium ${guestTheme.text.base}`}>{t.requestFollowUp}</span>
                       </label>
                     </div>
                   )}
 
-                  <div className="pt-4 border-t" style={{ borderColor: 'rgba(26,26,26,0.1)' }}>
-                    <span className="text-[10px] font-bold uppercase tracking-widest block mb-3 text-center" style={{ color: '#888' }}>
-                      {lang === 'ID' ? 'Akan pesan lagi?' : 'Would you order again?'}
+                  <div className={`border-t ${guestTheme.border.strong} pt-4`}>
+                    <span className={`mb-3 block text-center text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.label}`}>
+                      {t.wouldOrderAgain}
                     </span>
                     <div className="flex gap-2">
-                      <button 
+                      <button
+                        type="button"
                         onClick={() => setWouldOrderAgain('yes')}
-                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-colors border"
-                        style={wouldOrderAgain === 'yes' ? { backgroundColor: '#1a1a1a', color: '#fff', borderColor: '#1a1a1a', borderRadius: '1px' } : { backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}
+                        className={`flex-1 rounded-lg border py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
+                          wouldOrderAgain === 'yes' ? `${guestTheme.border.strong} ${guestTheme.bg.primary} ${guestTheme.text.onPrimary}` : `${guestTheme.border.base} ${guestTheme.text.base}`
+                        }`}
                       >
                         {lang === 'ID' ? 'YA' : 'YES'}
                       </button>
-                      <button 
+                      <button
+                        type="button"
                         onClick={() => setWouldOrderAgain('no')}
-                        className="flex-1 py-3 text-[11px] font-bold tracking-widest uppercase transition-colors border"
-                        style={wouldOrderAgain === 'no' ? { backgroundColor: '#1a1a1a', color: '#fff', borderColor: '#1a1a1a', borderRadius: '1px' } : { backgroundColor: 'transparent', color: '#1a1a1a', borderColor: 'rgba(26,26,26,0.1)', borderRadius: '1px' }}
+                        className={`flex-1 rounded-lg border py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
+                          wouldOrderAgain === 'no' ? `${guestTheme.border.strong} ${guestTheme.bg.primary} ${guestTheme.text.onPrimary}` : `${guestTheme.border.base} ${guestTheme.text.base}`
+                        }`}
                       >
                         {lang === 'ID' ? 'TIDAK' : 'NO'}
                       </button>
@@ -226,31 +187,25 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   <textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    placeholder={lang === 'ID' ? 'Komentar tambahan (opsional)...' : 'Additional comments (optional)...'}
-                    rows={2}
-                    className="w-full p-4 text-sm resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50 transition-shadow placeholder:text-gray-300 border"
-                    style={{
-                      backgroundColor: 'transparent',
-                      borderColor: 'rgba(26,26,26,0.1)',
-                      color: '#1a1a1a',
-                      borderRadius: '1px'
-                    }}
+                    placeholder={t.tellUsMore}
+                    rows={4}
+                    className={`w-full resize-none border-0 border-b ${guestTheme.border.base} bg-transparent px-0 py-4 text-lg ${guestTheme.text.base} placeholder:text-[var(--hcs-outline)]/60 focus:border-[var(--hcs-primary)] focus:ring-0`}
                   />
 
                   <div className="pt-2">
                     <button
+                      type="button"
                       onClick={handleSubmit}
-                      className="w-full py-4 font-bold text-sm tracking-widest uppercase transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1a1a1a]/50"
-                      style={{ backgroundColor: '#1a1a1a', color: '#fbfaf8', border: '1px solid transparent', borderRadius: '1px' }}
+                      className={`w-full rounded ${guestTheme.bg.primary} px-12 py-4 text-sm font-semibold uppercase tracking-[0.14em] ${guestTheme.text.onPrimary} transition-all duration-300 hover:opacity-90`}
                     >
-                      {t.submit}
+                      {t.submitFeedback}
                     </button>
                     <button
+                      type="button"
                       onClick={() => onSkip && onSkip()}
-                      className="w-full py-3 mt-2 text-[10px] font-bold tracking-widest uppercase transition-colors hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/50"
-                      style={{ color: '#888' }}
+                      className={`mt-2 w-full py-3 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.muted} transition-colors hover:text-[var(--hcs-primary)]`}
                     >
-                      {lang === 'ID' ? 'Lewati' : 'Skip'}
+                      {t.skip}
                     </button>
                   </div>
                 </motion.div>

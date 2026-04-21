@@ -2,6 +2,7 @@
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react-swc';
   import path from 'path';
+  import { resolveVendorChunk } from './src/build/vendorChunks';
 
   export default defineConfig({
     plugins: [react()],
@@ -52,9 +53,16 @@
     build: {
       target: 'esnext',
       outDir: 'build',
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            return resolveVendorChunk(id);
+          },
+        },
+      },
     },
     server: {
       port: 3000,
-      open: true,
+      open: false,
     },
   });
