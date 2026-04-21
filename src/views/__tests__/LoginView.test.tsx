@@ -8,10 +8,13 @@ describe('LoginView', () => {
 
     const heroGlass = screen.getByTestId('login-hero-glass');
     const heroGlassSheen = screen.getByTestId('login-hero-glass-sheen');
+    const heroGlassFrame = screen.getByTestId('login-hero-glass-frame');
 
     expect(heroGlass).toBeTruthy();
-    expect(heroGlass.className).toContain('bg-white/[0.24]');
-    expect(heroGlass.className).toContain('backdrop-blur-[32px]');
+    expect(heroGlass.className).toContain('max-w-[24rem]');
+    expect(heroGlass.className).toContain('bg-white/[0.34]');
+    expect(heroGlass.className).toContain('backdrop-blur-[40px]');
+    expect(heroGlassFrame.className).toContain('border-white/32');
     expect(heroGlassSheen.className).toContain('bg-[linear-gradient(135deg,rgba(255,255,255,0.34),rgba(255,255,255,0.08))]');
     expect(screen.getByText('Welcome to')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Atelier Meridian' })).toBeTruthy();

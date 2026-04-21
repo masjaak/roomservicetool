@@ -75,11 +75,16 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
           </div>
         </div>
 
-        <header className="relative z-10 px-8 pt-28 text-center lg:flex lg:min-h-screen lg:flex-col lg:items-center lg:justify-center lg:px-14 lg:pt-0">
+        <header className="relative z-10 px-8 pt-24 text-center lg:flex lg:min-h-screen lg:flex-col lg:items-center lg:justify-center lg:px-16 lg:pt-0">
           <div
             data-testid="login-hero-glass"
-            className="relative mx-auto inline-flex w-full max-w-[22rem] flex-col items-center justify-center overflow-hidden rounded-[2.75rem] bg-white/[0.24] px-8 py-7 text-center backdrop-blur-[32px] shadow-[0_26px_80px_rgba(0,0,0,0.18)] ring-1 ring-white/38 lg:max-w-[35rem] lg:px-14 lg:py-11"
+            className="relative mx-auto inline-flex w-full max-w-[24rem] flex-col items-center justify-center overflow-hidden rounded-[3rem] bg-white/[0.34] px-8 py-8 text-center backdrop-blur-[40px] shadow-[0_30px_90px_rgba(0,0,0,0.2)] ring-1 ring-white/48 lg:max-w-[39rem] lg:px-16 lg:py-13"
           >
+            <div
+              data-testid="login-hero-glass-frame"
+              aria-hidden="true"
+              className="absolute inset-[10px] rounded-[2.35rem] border border-white/32"
+            />
             <div
               data-testid="login-hero-glass-sheen"
               aria-hidden="true"
@@ -87,13 +92,17 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
             />
             <div
               aria-hidden="true"
-              className="absolute inset-x-[12%] top-0 h-24 rounded-b-[100%] bg-white/24 blur-2xl lg:inset-x-[18%] lg:h-28"
+              className="absolute inset-x-[10%] top-0 h-28 rounded-b-[100%] bg-white/34 blur-3xl lg:inset-x-[16%] lg:h-32"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute -bottom-8 left-1/2 h-24 w-[72%] -translate-x-1/2 rounded-full bg-black/10 blur-3xl"
             />
             <div className="relative z-10 flex flex-col items-center text-center">
-            <p className="mb-5 text-center text-[11px] uppercase tracking-[0.42em] text-white/88 lg:mb-6 lg:text-[12px] lg:text-white/78">
+            <p className="mb-5 text-center text-[11px] uppercase tracking-[0.42em] text-white/92 lg:mb-6 lg:text-[12px] lg:text-white/82">
               {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
             </p>
-            <h1 className="font-headline text-center text-[3.65rem] font-medium italic tracking-[0.06em] text-white [text-shadow:0_10px_28px_rgba(0,0,0,0.14)] lg:text-[5.4rem] lg:leading-[0.94]">
+            <h1 className="font-headline text-center text-[3.8rem] font-medium italic tracking-[0.05em] text-white [text-shadow:0_12px_30px_rgba(0,0,0,0.16)] lg:text-[5.9rem] lg:leading-[0.92]">
               Atelier Meridian
             </h1>
             </div>
