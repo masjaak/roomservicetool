@@ -73,7 +73,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
         </div>
       </header>
 
-      <main className="mx-auto max-w-md space-y-10 px-6 pb-40 pt-24">
+      <main className="hcs-header-content-offset mx-auto max-w-md space-y-10 px-6 pb-40">
         <h2 className="sr-only">Checkout</h2>
 
         {(loading || hasNetworkIssue) && (

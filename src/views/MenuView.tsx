@@ -84,9 +84,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
         </div>
       </header>
 
-      <div className="hcs-mobile-canvas min-h-screen w-full pt-16">
+      <div className="hcs-mobile-canvas min-h-screen w-full hcs-header-offset">
         {!searchQuery && (
-          <nav className={`sticky top-16 z-40 overflow-hidden ${guestTheme.bg.canvas}/90 px-6 py-4 backdrop-blur-md`}>
+          <nav className={`hcs-sticky-under-header sticky z-40 overflow-hidden ${guestTheme.bg.canvas}/90 px-6 py-4 backdrop-blur-md`}>
             <div className="hide-scrollbar flex gap-3 overflow-x-auto">
               {CATEGORIES.map((cat) => (
                 <button
@@ -189,7 +189,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         </AnimatePresence>
 
         {!searchQuery && (
-          <nav className={`fixed bottom-0 left-0 z-20 h-20 w-full ${guestTheme.bg.surface}/70 backdrop-blur-2xl`}>
+          <nav className={`hcs-safe-bottom-nav fixed bottom-0 left-0 z-20 w-full ${guestTheme.bg.surface}/70 backdrop-blur-2xl`}>
             <div className="hcs-mobile-canvas flex h-full items-center justify-around px-8">
               <div className={`relative flex flex-col items-center justify-center ${guestTheme.text.primary}`}>
                 <span className="text-lg">•</span>

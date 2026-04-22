@@ -1,0 +1,11 @@
+{
+	"appId": "com.ateliermeridian.roomservice",
+	"appName": "Room Service",
+	"webDir": "build",
+	"server": {
+		"androidScheme": "https",
+		"cleartext": true,
+		"url": "http://localhost:3000"
+	},
+	"packageClassList": []
+}

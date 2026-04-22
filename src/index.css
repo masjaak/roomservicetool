@@ -2935,10 +2935,33 @@ body {
   color: var(--hcs-text);
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
+body,
+#root {
+  min-height: -webkit-fill-available;
+}
+
 .hcs-mobile-shell {
   min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 .hcs-mobile-canvas {
@@ -2957,12 +2980,29 @@ body {
   padding-top: max(env(safe-area-inset-top), 0px);
 }
 
+.hcs-header-offset {
+  padding-top: calc(env(safe-area-inset-top) + 4rem);
+}
+
+.hcs-header-content-offset {
+  padding-top: calc(env(safe-area-inset-top) + 6rem);
+}
+
+.hcs-sticky-under-header {
+  top: calc(env(safe-area-inset-top) + 4rem);
+}
+
 .hcs-safe-bottom {
   padding-bottom: calc(env(safe-area-inset-bottom) + 2rem);
 }
 
 .hcs-safe-bottom-space {
   bottom: calc(env(safe-area-inset-bottom) + 1.5rem);
+}
+
+.hcs-safe-bottom-nav {
+  height: calc(env(safe-area-inset-bottom) + 5rem);
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
 }
 
 .font-headline {
