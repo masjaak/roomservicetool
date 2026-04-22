@@ -57,69 +57,61 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
 
   return (
     <div className={`min-h-screen ${guestTheme.bg.canvas}`}>
-      <div className="relative min-h-screen lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(29rem,34rem)] lg:bg-[var(--hcs-background)]">
+      <div className="relative min-h-screen overflow-hidden lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(28rem,34rem)]">
         <div className="absolute inset-0 lg:relative lg:min-h-screen">
           <img src="/assets/hero.jpg" className="h-full w-full object-cover" alt="" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[color:rgba(35,30,24,0.52)] via-[color:rgba(35,30,24,0.14)] to-[color:rgba(26,28,27,0.76)] lg:bg-gradient-to-r lg:from-[color:rgba(26,28,27,0.36)] lg:via-[color:rgba(26,28,27,0.08)] lg:to-[color:rgba(26,28,27,0.46)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(26,28,27,0.46)_0%,rgba(26,28,27,0.16)_26%,rgba(26,28,27,0.58)_100%)]" />
         </div>
 
-        <div className="absolute right-6 top-6 z-20 hcs-safe-top lg:right-10 lg:left-auto lg:top-10">
-          <div className="rounded-full border border-white/15 bg-black/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md lg:border-black/10 lg:bg-white/55 lg:text-[var(--hcs-text)]">
-            <button onClick={() => setLang('ID')} className={lang === 'ID' ? 'opacity-100' : 'opacity-50'}>
+        <div className="absolute left-0 right-0 top-0 z-20 flex items-start justify-between px-6 pb-4 pt-6 hcs-safe-top lg:left-auto lg:right-10 lg:top-10 lg:justify-end lg:px-0 lg:pb-0 lg:pt-0">
+          <div className="lg:hidden" />
+          <div className="rounded-full bg-[color:rgba(250,249,247,0.18)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/95">
+            <button onClick={() => setLang('ID')} className={lang === 'ID' ? 'opacity-100' : 'opacity-60'}>
               ID
             </button>
             <span className="mx-2 opacity-40">/</span>
-            <button onClick={() => setLang('EN')} className={lang === 'EN' ? 'opacity-100' : 'opacity-50'}>
+            <button onClick={() => setLang('EN')} className={lang === 'EN' ? 'opacity-100' : 'opacity-60'}>
               EN
             </button>
           </div>
         </div>
 
-        <header className="relative z-10 px-6 pb-6 pt-[5.5rem] hcs-safe-top text-center lg:flex lg:min-h-screen lg:flex-col lg:items-center lg:justify-center lg:px-16 lg:pb-0 lg:pt-0">
+        <header className="relative z-10 px-6 pt-20 text-center text-white lg:flex lg:min-h-screen lg:flex-col lg:items-center lg:justify-center lg:px-14 lg:pt-0">
           <div
             data-testid="login-hero-glass"
-            className="relative mx-auto inline-flex w-full max-w-[21rem] flex-col items-center justify-center overflow-hidden rounded-[2.5rem] bg-white/[0.34] px-6 py-6 text-center backdrop-blur-[40px] shadow-[0_30px_90px_rgba(0,0,0,0.2)] ring-1 ring-white/48 lg:max-w-[39rem] lg:rounded-[3rem] lg:px-16 lg:py-13"
+            className="hidden max-w-[24rem] bg-white/[0.34] backdrop-blur-[40px] lg:max-w-[39rem]"
+            aria-hidden="true"
           >
             <div
               data-testid="login-hero-glass-frame"
+              className="hidden inset-[10px] rounded-[2.35rem] border border-white/32"
               aria-hidden="true"
-              className="absolute inset-[10px] rounded-[2.1rem] border border-white/32 lg:rounded-[2.35rem]"
             />
             <div
               data-testid="login-hero-glass-sheen"
+              className="hidden bg-[linear-gradient(135deg,rgba(255,255,255,0.34),rgba(255,255,255,0.08))]"
               aria-hidden="true"
-              className="absolute inset-[1px] rounded-[calc(2.75rem-1px)] bg-[linear-gradient(135deg,rgba(255,255,255,0.34),rgba(255,255,255,0.08))]"
             />
-            <div
-              aria-hidden="true"
-              className="absolute inset-x-[10%] top-0 h-28 rounded-b-[100%] bg-white/34 blur-3xl lg:inset-x-[16%] lg:h-32"
-            />
-            <div
-              aria-hidden="true"
-              className="absolute -bottom-8 left-1/2 h-24 w-[72%] -translate-x-1/2 rounded-full bg-black/10 blur-3xl"
-            />
-            <div className="relative z-10 flex flex-col items-center text-center">
-            <p className="mb-4 text-center text-[10px] uppercase tracking-[0.34em] text-white/92 lg:mb-6 lg:text-[12px] lg:text-white/82">
-              {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
-            </p>
-            <h1 className="font-headline text-center text-[3rem] font-medium italic tracking-[0.04em] text-white [text-shadow:0_12px_30px_rgba(0,0,0,0.16)] lg:text-[5.9rem] lg:leading-[0.92]">
-              Atelier Meridian
-            </h1>
-            </div>
           </div>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/78 lg:text-[11px]">
+            {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
+          </p>
+          <h1 className="mt-5 font-headline text-[3.7rem] italic leading-none tracking-[0.03em] text-white lg:text-[5.8rem]">
+            Atelier Meridian
+          </h1>
         </header>
 
-        <div className="relative z-10 flex min-h-0 flex-col justify-end lg:min-h-0 lg:bg-[var(--hcs-surface-soft)] lg:px-8 lg:py-8">
+        <div className="relative z-10 flex min-h-screen flex-col justify-end lg:min-h-0 lg:bg-[var(--hcs-background)] lg:px-8 lg:py-8">
 
           <motion.section
             initial={{ y: 32, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.55 }}
-            className={`relative z-10 rounded-t-[3.25rem] ${guestTheme.bg.surface} px-6 pb-10 pt-8 shadow-[0_-20px_40px_rgba(26,28,27,0.1)] lg:my-auto lg:rounded-[2.5rem] lg:px-10 lg:pb-10 lg:pt-10 lg:shadow-[0_18px_60px_rgba(26,28,27,0.08)]`}
+            className={`relative z-10 rounded-t-[2.8rem] ${guestTheme.bg.surface} px-8 pb-10 pt-10 shadow-[0_-18px_40px_rgba(26,28,27,0.1)] lg:my-auto lg:rounded-[2rem] lg:px-10 lg:pb-10 lg:pt-10 lg:shadow-[0_18px_60px_rgba(26,28,27,0.08)]`}
           >
-          <div className="mb-8 text-center lg:mb-9">
-            <h2 className={`font-headline text-[2.4rem] leading-[1.02] ${guestTheme.text.base} lg:text-[2.75rem]`}>{t.loginTitle}</h2>
-            <p className={`mx-auto mt-3 max-w-[20rem] text-[0.98rem] leading-[1.58] ${guestTheme.text.muted} lg:max-w-[24rem] lg:text-[1rem]`}>
+          <div className="mb-8">
+            <h2 className={`font-headline text-[2.6rem] leading-[1.04] ${guestTheme.text.base} lg:text-[2.75rem]`}>{t.loginTitle}</h2>
+            <p className={`mt-4 max-w-[22rem] text-[0.98rem] leading-[1.6] ${guestTheme.text.muted} lg:max-w-[24rem] lg:text-[1rem]`}>
               {t.loginBody}
             </p>
           </div>
@@ -131,7 +123,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
               handleSubmit();
             }}
           >
-            <div className={`relative border-b ${guestTheme.border.base}/40 pb-1 transition-colors focus-within:border-[var(--hcs-primary)]`}>
+            <div className={`relative border-b ${guestTheme.border.base}/60 pb-1 transition-colors focus-within:border-[var(--hcs-primary)]`}>
               <input
                 id="room_number"
                 ref={roomInputRef}
@@ -145,7 +137,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
                 onChange={(e) => {
                   if (/^\d{0,4}$/.test(e.target.value)) setRoomNumber(e.target.value);
                 }}
-                className={`peer block h-[4rem] w-full border-none bg-transparent px-0 pb-2 pt-5 text-[1.1rem] font-medium ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
+                className={`peer block h-[4.25rem] w-full border-none bg-transparent px-0 pb-2 pt-5 text-[1.05rem] font-medium tracking-[0.01em] ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
               />
               <label
                 htmlFor="room_number"
@@ -157,7 +149,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
               </label>
             </div>
 
-            <div className={`relative border-b ${guestTheme.border.base}/40 pb-1 transition-colors focus-within:border-[var(--hcs-primary)]`}>
+            <div className={`relative border-b ${guestTheme.border.base}/60 pb-1 transition-colors focus-within:border-[var(--hcs-primary)]`}>
               <input
                 id="last_name"
                 ref={lastNameInputRef}
@@ -168,7 +160,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
                 placeholder=" "
                 onKeyDown={(event) => moveFocusToNextField(event, phoneInputRef.current)}
                 onChange={(e) => setLastName(e.target.value)}
-                className={`peer block h-[4rem] w-full border-none bg-transparent px-0 pb-2 pt-5 text-[1.1rem] font-medium ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
+                className={`peer block h-[4.25rem] w-full border-none bg-transparent px-0 pb-2 pt-5 text-[1.05rem] font-medium tracking-[0.01em] ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
               />
               <label
                 htmlFor="last_name"
@@ -180,7 +172,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
               </label>
             </div>
 
-            <div className={`relative border-b transition-colors focus-within:border-[var(--hcs-primary)] ${error ? `${guestTheme.border.error}/50` : `${guestTheme.border.base}/40`}`}>
+            <div className={`relative border-b transition-colors focus-within:border-[var(--hcs-primary)] ${error ? `${guestTheme.border.error}/50` : `${guestTheme.border.base}/60`}`}>
               <input
                 id="phone_number"
                 ref={phoneInputRef}
@@ -194,7 +186,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
                 onChange={(e) => {
                   if (/^\d{0,14}$/.test(e.target.value)) setPhoneNumber(e.target.value);
                 }}
-                className={`peer block h-[4rem] w-full border-none bg-transparent px-0 pb-2 pt-5 text-[1.1rem] font-medium ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
+                className={`peer block h-[4.25rem] w-full border-none bg-transparent px-0 pb-2 pt-5 text-[1.05rem] font-medium tracking-[0.01em] ${guestTheme.text.base} placeholder-transparent focus:ring-0`}
               />
               <label
                 htmlFor="phone_number"
@@ -212,14 +204,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
               <button
                 type="submit"
                 disabled={!isValid}
-                className={`flex h-15 w-full items-center justify-center rounded-md ${guestTheme.bg.primary} px-6 text-[0.95rem] font-semibold uppercase tracking-[0.2em] ${guestTheme.text.onPrimary} shadow-[0_14px_32px_rgba(119,90,25,0.18)] transition-all duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40`}
+                className={`flex h-16 w-full items-center justify-center rounded-md ${guestTheme.bg.primary} px-6 text-[0.98rem] font-semibold uppercase tracking-[0.16em] ${guestTheme.text.onPrimary} shadow-[0_18px_34px_rgba(119,90,25,0.18)] transition-all duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40`}
               >
                 {t.accessDining}
               </button>
             </div>
           </form>
 
-          <div className={`mt-9 flex flex-col items-center justify-center gap-2 text-center text-[10px] uppercase tracking-[0.18em] ${guestTheme.text.muted}/70 lg:flex-row lg:justify-between lg:text-left`}>
+          <div className={`mt-10 flex items-center justify-between gap-4 text-[10px] uppercase tracking-[0.16em] ${guestTheme.text.muted}/75`}>
             <span>{t.assistance}</span>
             <span>{t.frontDesk}</span>
           </div>

@@ -53,8 +53,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
     : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-52`}>
-      <header className={`hcs-safe-top fixed top-0 z-50 w-full ${guestTheme.bg.canvas}/82 backdrop-blur-xl shadow-[0_20px_40px_rgba(26,28,27,0.06)]`}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-56`}>
+      <header className={`hcs-safe-top fixed top-0 z-50 w-full ${guestTheme.bg.surface} shadow-[0_0_0_1px_rgba(227,226,224,0.85)]`}>
         <div className="hcs-mobile-canvas flex h-16 w-full items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <button
@@ -65,7 +65,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <MenuIcon className="h-5 w-5" />
             </button>
             <div>
-              <h1 className={`font-headline text-[2rem] leading-none ${guestTheme.text.base}`}>
+              <h1 className={`font-headline text-[1.95rem] leading-none ${guestTheme.text.base}`}>
                 {getGreeting()} Guest
               </h1>
               <p className={`mt-1 text-[10px] uppercase tracking-[0.18em] ${guestTheme.text.primary}`}>Room {roomNumber}</p>
@@ -86,16 +86,16 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
       <div className="hcs-mobile-canvas min-h-screen w-full hcs-header-offset">
         {!searchQuery && (
-          <nav className={`hcs-sticky-under-header sticky z-40 overflow-hidden ${guestTheme.bg.canvas}/90 px-6 py-4 backdrop-blur-md`}>
+          <nav className={`hcs-sticky-under-header sticky z-40 overflow-hidden ${guestTheme.bg.canvas} px-6 py-5`}>
             <div className="hide-scrollbar flex gap-3 overflow-x-auto">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap rounded-full px-6 py-2 text-xs uppercase tracking-widest transition-all ${
+                  className={`whitespace-nowrap rounded-full border px-6 py-3 text-xs uppercase tracking-[0.2em] transition-all ${
                     selectedCategory === cat
-                      ? `${guestTheme.bg.inverse} ${guestTheme.text.inverse} shadow-md`
-                      : `border ${guestTheme.border.base} ${guestTheme.text.muted} hover:bg-[var(--hcs-surface-muted)]`
+                      ? `${guestTheme.bg.inverse} border-[var(--hcs-inverse)] ${guestTheme.text.inverse} shadow-md`
+                      : `${guestTheme.border.base} ${guestTheme.text.muted} hover:bg-[var(--hcs-surface-muted)]`
                   }`}
                 >
                   {cat}
@@ -106,17 +106,17 @@ export const MenuView: React.FC<MenuViewProps> = ({
         )}
 
         <main>
-          <section className="px-6 py-10">
+          <section className="px-6 py-8">
             <div>
               <p className={`mb-2 text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.primary}`}>Atelier Meridian</p>
-              <h2 className={`font-headline mb-5 text-[4.2rem] leading-[0.92] tracking-tight ${guestTheme.text.base}`}>
+              <h2 className={`font-headline mb-5 text-[4rem] leading-[0.94] tracking-tight ${guestTheme.text.base}`}>
                 {searchQuery ? t.search : t.dinnerMenu}
               </h2>
-              <p className={`text-[1.1rem] leading-[1.65] ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
+              <p className={`max-w-[24rem] text-[1.08rem] leading-[1.6] ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
             </div>
           </section>
 
-          <section className="space-y-8 px-6">
+          <section className="space-y-7 px-6">
             {filteredItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
                 <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full ${guestTheme.bg.surfaceMuted}`}>
@@ -147,7 +147,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
           {!searchQuery && (
             <section className="px-6 py-8">
-              <div className={`relative flex h-60 items-end overflow-hidden ${guestTheme.bg.inverse} p-8`}>
+              <div className={`relative flex h-60 items-end overflow-hidden rounded-[1.35rem] ${guestTheme.bg.inverse} p-8`}>
                 <div className="absolute inset-0 opacity-40">
                   <img src="/assets/hero.jpg" alt="" className="h-full w-full object-cover" />
                 </div>
@@ -172,15 +172,15 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <button
                 onClick={onOpenCart}
                 aria-label="Open cart"
-                className={`pointer-events-auto flex h-16 w-full items-center justify-between rounded-full ${guestTheme.bg.inverse} ${guestTheme.text.inverse} px-2 shadow-[0_20px_40px_rgba(0,0,0,0.3)] backdrop-blur-md`}
+                className={`pointer-events-auto flex h-20 w-full items-center justify-between rounded-[1.25rem] ${guestTheme.bg.inverse} ${guestTheme.text.inverse} px-2 shadow-[0_20px_40px_rgba(0,0,0,0.3)]`}
               >
                 <div className="pl-6 text-left">
                   <p className={`text-[10px] uppercase tracking-[0.2em] ${guestTheme.text.inverse}/60`}>
                     {t.cart}: {totalQty} {totalQty > 1 ? 'Items' : 'Item'}
                   </p>
-                  <p className="font-headline text-lg leading-none">{formatCurrency(grandTotal)}</p>
+                  <p className="font-headline text-[2rem] leading-none">{formatCurrency(grandTotal)}</p>
                 </div>
-                <span className={`rounded-full ${guestTheme.bg.primary} px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] ${guestTheme.text.onPrimary}`}>
+                <span className={`rounded-[1rem] ${guestTheme.bg.primary} px-8 py-5 text-xs font-bold uppercase tracking-[0.18em] ${guestTheme.text.onPrimary}`}>
                   {t.viewOrder}
                 </span>
               </button>
@@ -189,7 +189,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         </AnimatePresence>
 
         {!searchQuery && (
-          <nav className={`hcs-safe-bottom-nav fixed bottom-0 left-0 z-20 w-full ${guestTheme.bg.surface}/70 backdrop-blur-2xl`}>
+          <nav className={`hcs-safe-bottom-nav fixed bottom-0 left-0 z-20 w-full ${guestTheme.bg.surface} shadow-[0_-1px_0_rgba(227,226,224,0.85)]`}>
             <div className="hcs-mobile-canvas flex h-full items-center justify-around px-8">
               <div className={`relative flex flex-col items-center justify-center ${guestTheme.text.primary}`}>
                 <span className="text-lg">•</span>

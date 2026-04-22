@@ -48,7 +48,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               className={`pointer-events-auto hcs-mobile-canvas flex h-full w-full flex-col ${guestTheme.bg.canvas} shadow-2xl`}
             >
-              <header className={`hcs-safe-top sticky top-0 z-10 flex items-center justify-between ${guestTheme.bg.canvas}/90 px-6 py-5 backdrop-blur-xl`}>
+              <header className={`hcs-safe-top sticky top-0 z-10 flex items-center justify-between ${guestTheme.bg.surface} px-6 py-5 shadow-[0_1px_0_rgba(227,226,224,0.8)]`}>
                 <button
                   aria-label="Close cart"
                   onClick={onClose}
@@ -56,8 +56,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </button>
-                <h2 className={`font-headline absolute left-1/2 -translate-x-1/2 text-3xl font-semibold ${guestTheme.text.base}`}>
-                  {t.cart}
+                <h2 className={`font-headline absolute left-1/2 -translate-x-1/2 text-[2.5rem] font-semibold ${guestTheme.text.base}`}>
+                  {lang === 'ID' ? 'Pesanan Anda' : 'Your Order'}
                 </h2>
                 <div className="w-9" />
               </header>
@@ -78,7 +78,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     {cart.map((item, index) => (
                       <div
                         key={`${item.id}-${item.note}-${index}`}
-                        className={`group rounded-[1.4rem] ${guestTheme.bg.surface} p-5 shadow-[0_0_0_1px_rgba(227,226,224,0.65)]`}
+                        className={`group rounded-[1.4rem] ${guestTheme.bg.surface} p-6 shadow-[0_0_0_1px_rgba(227,226,224,0.7)]`}
                       >
                         <div className="flex items-start gap-5">
                           <div className={`h-28 w-28 flex-shrink-0 overflow-hidden rounded-lg ${guestTheme.bg.surfaceMuted}`}>
@@ -90,7 +90,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                                 <h3 className={`font-headline text-[2rem] leading-[1.05] ${guestTheme.text.base}`}>
                                   {item.name}
                                 </h3>
-                                {item.note && <p className={`mt-2 max-w-[10rem] text-base ${guestTheme.text.muted}`}>{item.note}</p>}
+                                {item.note && <p className={`mt-2 max-w-[12rem] text-base ${guestTheme.text.muted}`}>{item.note}</p>}
                               </div>
                               <button
                                 aria-label="Remove item"
@@ -101,10 +101,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                               </button>
                             </div>
                             <div className="mt-5 flex items-end justify-between gap-4">
-                              <span className={`text-2xl font-semibold ${guestTheme.text.primary}`}>{formatCurrency(item.price * item.qty)}</span>
-                              <div className={`flex items-center gap-5 rounded-full ${guestTheme.bg.surface} px-4 py-2 shadow-[0_0_0_1px_rgba(227,226,224,0.75)]`}>
+                              <span className={`font-headline text-[2rem] ${guestTheme.text.primary}`}>{formatCurrency(item.price * item.qty)}</span>
+                              <div className={`flex items-center gap-5 rounded-full ${guestTheme.bg.canvas} px-5 py-3 shadow-[0_0_0_1px_rgba(227,226,224,0.9)]`}>
                                 <span className={`text-2xl ${guestTheme.text.muted}`}>−</span>
-                                <span className={`min-w-4 text-center text-xl font-semibold ${guestTheme.text.base}`}>{item.qty}</span>
+                                <span className={`min-w-5 text-center text-lg font-semibold ${guestTheme.text.base}`}>{item.qty}</span>
                                 <span className={`text-2xl ${guestTheme.text.muted}`}>+</span>
                               </div>
                             </div>
@@ -148,11 +148,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
 
               {cart.length > 0 && (
-                <div className={`hcs-safe-bottom fixed bottom-0 right-0 z-10 hcs-mobile-canvas w-full ${guestTheme.bg.canvas}/96 px-6 py-4 backdrop-blur-2xl shadow-[0_-12px_32px_rgba(26,28,27,0.06)]`}>
+                <div className={`hcs-safe-bottom fixed bottom-0 right-0 z-10 hcs-mobile-canvas w-full ${guestTheme.bg.surface} px-6 py-4 shadow-[0_-1px_0_rgba(227,226,224,0.85)]`}>
                   <div className="mb-4 flex items-end justify-between px-2">
                     <div className="flex flex-col">
                       <span className={`text-xs uppercase tracking-[0.18em] ${guestTheme.text.muted}/70`}>{t.total}</span>
-                      <span className={`font-headline text-[2.1rem] leading-none ${guestTheme.text.base}`}>{formatCurrency(total)}</span>
+                      <span className={`font-headline text-[2.8rem] leading-none ${guestTheme.text.base}`}>{formatCurrency(total)}</span>
                     </div>
                     <button type="button" className={`text-lg underline underline-offset-4 ${guestTheme.text.primary}`}>Details</button>
                   </div>

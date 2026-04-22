@@ -71,9 +71,9 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
             initial={{ scale: 0.95, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 20 }}
-            className={`relative flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border ${guestTheme.border.strong} ${guestTheme.bg.canvas} shadow-[0_28px_80px_rgba(0,0,0,0.12)]`}
+            className={`relative flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-[1.25rem] ${guestTheme.bg.canvas} shadow-[0_28px_80px_rgba(0,0,0,0.12)]`}
           >
-            <header className={`sticky top-0 z-10 flex h-16 items-center justify-between ${guestTheme.bg.canvas}/80 px-6 backdrop-blur-xl`}>
+            <header className={`sticky top-0 z-10 flex h-16 items-center justify-between ${guestTheme.bg.canvas} px-6`}>
               <button aria-label="Close rating" onClick={() => onSkip && onSkip()} className={`flex h-10 w-10 items-center justify-center rounded-full ${guestTheme.text.primary}`}>
                 <X className="h-5 w-5" />
               </button>
@@ -81,23 +81,23 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
               <div className="w-10" />
             </header>
 
-            <div className="flex-1 overflow-y-auto px-6 pb-10 pt-8">
+            <div className="flex-1 overflow-y-auto px-6 pb-10 pt-16">
               <div className="flex flex-col items-center text-center">
                 <span className={`text-xs font-semibold uppercase tracking-[0.1em] ${guestTheme.text.label}`}>{t.guestExperience}</span>
-                <h2 className={`font-headline mt-4 text-4xl tracking-tight ${guestTheme.text.base}`}>{t.enjoyedMeal}</h2>
+                <h2 className={`font-headline mt-4 text-[4.2rem] leading-[1.02] tracking-tight ${guestTheme.text.base}`}>{t.enjoyedMeal}</h2>
               </div>
 
-              <div className="flex justify-center gap-4 py-8">
+              <div className="flex justify-center gap-4 py-10">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button key={n} type="button" onClick={() => setOverallRating(n)} className="rounded-full p-2 transition-transform duration-200 hover:scale-110">
-                    <Star className="h-9 w-9" style={{ color: n <= overallRating ? accentColor : subduedStarColor, fill: n <= overallRating ? accentColor : 'transparent' }} />
+                    <Star className="h-11 w-11" style={{ color: n <= overallRating ? accentColor : subduedStarColor, fill: n <= overallRating ? accentColor : 'transparent' }} />
                   </button>
                 ))}
               </div>
 
               {overallRating > 0 && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-8">
-                  <div className={`rounded-xl border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
+                  <div className={`rounded-[1.25rem] border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
                     <h4 className={`mb-4 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.label}`}>
                       {lang === 'ID' ? 'Kualitas Layanan' : 'Service Quality'}
                     </h4>
@@ -112,7 +112,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   </div>
 
                   {overallRating <= 3 && (
-                    <div className={`rounded-xl border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
+                    <div className={`rounded-[1.25rem] border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
                       <p className={`mb-4 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.error}`}>
                         {lang === 'ID' ? 'Kami Mohon Maaf' : 'We apologize'}
                       </p>
