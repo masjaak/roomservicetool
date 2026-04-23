@@ -2933,6 +2933,8 @@ body {
   font-family: 'Manrope', sans-serif;
   background: var(--hcs-background);
   color: var(--hcs-text);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
@@ -3006,12 +3008,16 @@ body,
 }
 
 .font-headline {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Noto Serif', serif;
 }
 
 .font-body,
 .font-label {
   font-family: 'Manrope', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

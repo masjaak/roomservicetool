@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useReducer, useEffect, useCallback, useState } from 'react';
+import React, { useReducer, useEffect, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { reducer } from './machine/reducer';
 import { createInitialState, Screen, AppEvent } from './machine/types';
@@ -9,12 +9,10 @@ import { ErrorBoundary, TrackingFallback, GuestFallback } from './components/Err
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './lib/firebase';
 import { openWhatsAppOrder } from './utils/whatsAppNavigation';
-import { ScreenLoadingState } from './components/ScreenLoadingState';
-
-const LoginView = lazy(() => import('./views/LoginView').then((module) => ({ default: module.LoginView })));
-const MenuView = lazy(() => import('./views/MenuView').then((module) => ({ default: module.MenuView })));
-const CheckoutView = lazy(() => import('./views/CheckoutView').then((module) => ({ default: module.CheckoutView })));
-const TrackingView = lazy(() => import('./views/TrackingView').then((module) => ({ default: module.TrackingView })));
+import { LoginView } from './views/LoginView';
+import { MenuView } from './views/MenuView';
+import { CheckoutView } from './views/CheckoutView';
+import { TrackingView } from './views/TrackingView';
 
 export default function App() {
   const [lang, setLang] = useState<Language>('EN');
@@ -133,69 +131,67 @@ export default function App() {
   // --- Render based on state machine screen ---
   return (
     <div className="hcs-mobile-shell min-h-screen" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      <Suspense fallback={<ScreenLoadingState screen={state.screen} lang={lang} />}>
-        <AnimatePresence mode="wait">
-          {state.screen === Screen.Welcome && (
-            <LoginView
-              key="login"
+      <AnimatePresence mode="wait">
+        {state.screen === Screen.Welcome && (
+          <LoginView
+            key="login"
+            lang={lang}
+            setLang={setLang}
+            onLogin={handleLogin}
+          />
+        )}
+
+        {state.screen === Screen.Menu && (
+          <ErrorBoundary fallback={(error, reset) => <GuestFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); clearCart(); }} lang={lang} />}>
+            <MenuView
+              key="menu"
+              roomNumber={state.guest.roomNumber}
+              cart={state.cart}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              onCheckout={() => dispatch({ type: AppEvent.StartCheckout })}
+              onOpenCart={() => dispatch({ type: AppEvent.OpenCart })}
+              onCloseCart={() => dispatch({ type: AppEvent.CloseCart })}
+              onLogout={() => {
+                if (window.confirm(lang === 'ID' ? 'Ganti kamar? Pesanan akan dikosongkan.' : 'Switch rooms? Your order will be cleared.')) {
+                  dispatch({ type: AppEvent.ResetFlow });
+                  clearCart();
+                }
+              }}
+              isCartOpen={state.isCartOpen}
               lang={lang}
-              setLang={setLang}
-              onLogin={handleLogin}
             />
-          )}
+          </ErrorBoundary>
+        )}
 
-          {state.screen === Screen.Menu && (
-            <ErrorBoundary fallback={(error, reset) => <GuestFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); clearCart(); }} lang={lang} />}>
-              <MenuView
-                key="menu"
-                roomNumber={state.guest.roomNumber}
-                cart={state.cart}
-                addToCart={addToCart}
-                removeFromCart={removeFromCart}
-                onCheckout={() => dispatch({ type: AppEvent.StartCheckout })}
-                onOpenCart={() => dispatch({ type: AppEvent.OpenCart })}
-                onCloseCart={() => dispatch({ type: AppEvent.CloseCart })}
-                onLogout={() => {
-                  if (window.confirm(lang === 'ID' ? 'Ganti kamar? Pesanan akan dikosongkan.' : 'Switch rooms? Your order will be cleared.')) {
-                    dispatch({ type: AppEvent.ResetFlow });
-                    clearCart();
-                  }
-                }}
-                isCartOpen={state.isCartOpen}
-                lang={lang}
-              />
-            </ErrorBoundary>
-          )}
+        {state.screen === Screen.Checkout && (
+          <ErrorBoundary fallback={(error, reset) => <GuestFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); }} lang={lang} />}>
+            <CheckoutView
+              key="checkout"
+              cart={state.cart}
+              onBack={() => dispatch({ type: AppEvent.BackFromCheckout })}
+              onPlaceOrder={handlePlaceOrder}
+              loading={state.isProcessing}
+              error={state.checkoutError}
+              phoneNumber={state.guest.phoneNumber}
+              lang={lang}
+            />
+          </ErrorBoundary>
+        )}
 
-          {state.screen === Screen.Checkout && (
-            <ErrorBoundary fallback={(error, reset) => <GuestFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); }} lang={lang} />}>
-              <CheckoutView
-                key="checkout"
-                cart={state.cart}
-                onBack={() => dispatch({ type: AppEvent.BackFromCheckout })}
-                onPlaceOrder={handlePlaceOrder}
-                loading={state.isProcessing}
-                error={state.checkoutError}
-                phoneNumber={state.guest.phoneNumber}
-                lang={lang}
-              />
-            </ErrorBoundary>
-          )}
-
-          {state.screen === Screen.Confirmed && (
-            <ErrorBoundary fallback={(error, reset) => <TrackingFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); }} lang={lang} />}>
-              <TrackingView
-                key="tracking"
-                roomNumber={state.guest.roomNumber}
-                onFinish={handleFinishOrder}
-                lang={lang}
-                orderId={state.orderId}
-                blockedWaUrl={state.blockedWaUrl}
-              />
-            </ErrorBoundary>
-          )}
-        </AnimatePresence>
-      </Suspense>
+        {state.screen === Screen.Confirmed && (
+          <ErrorBoundary fallback={(error, reset) => <TrackingFallback onReset={() => { reset(); dispatch({ type: AppEvent.ResetFlow }); }} lang={lang} />}>
+            <TrackingView
+              key="tracking"
+              roomNumber={state.guest.roomNumber}
+              onFinish={handleFinishOrder}
+              lang={lang}
+              orderId={state.orderId}
+              blockedWaUrl={state.blockedWaUrl}
+            />
+          </ErrorBoundary>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

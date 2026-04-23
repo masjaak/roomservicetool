@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, ChefHat, Clock3, Phone, Star, Truck } from 'lucide-react';
+import { Clock3, ConciergeBell, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { TRANSLATIONS } from '../data/constants';
@@ -71,30 +71,31 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   return (
     <div className={`min-h-screen ${guestTheme.bg.canvas}`}>
       <div className={`mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden ${guestTheme.bg.canvas}`}>
-        <header className={`hcs-safe-top sticky top-0 z-10 flex items-center justify-between ${guestTheme.bg.surface} px-6 py-4 shadow-[0_1px_0_rgba(227,226,224,0.8)]`}>
+        <header className={`hcs-safe-top sticky top-0 z-10 flex items-center justify-between bg-[#f4f3f1] px-6 py-4`}>
           <div className="flex-1" />
           <h1 className={`font-headline text-xl tracking-tight ${guestTheme.text.base}`}>Atelier Dining</h1>
           <div className="flex flex-1 justify-end">
-            <Clock3 className={`h-5 w-5 ${guestTheme.text.base}/60`} />
+            <ConciergeBell className={`h-5 w-5 ${guestTheme.text.base}/60`} />
           </div>
         </header>
 
         <main className="flex flex-1 flex-col overflow-y-auto px-8 py-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-12 text-center">
-            <h2 className={`font-headline text-[3.4rem] leading-[1.02] ${guestTheme.text.base}`}>{currentStep.label}</h2>
+            <h2 className={`font-headline text-3xl leading-[1.02] ${guestTheme.text.base}`}>{currentStep.label}</h2>
             <span className="sr-only">Order Status</span>
             <p className={`mt-2 text-sm font-medium uppercase tracking-[0.1em] ${guestTheme.text.primary}`}>
-              {t.trackTitle} #{orderId?.slice(-6).toUpperCase() || 'PND'}
+              ORDER #{orderId?.slice(-6).toUpperCase() || 'AM-8921'}
             </p>
           </motion.div>
 
-          <div className={`relative mb-12 overflow-hidden rounded-[1.5rem] ${guestTheme.bg.surface} p-8 shadow-[0_0_0_1px_rgba(227,226,224,0.8)]`}>
+          <div className={`relative mb-12 overflow-hidden rounded-xl ${guestTheme.bg.surface} p-8`}>
+            <div className="absolute inset-0 opacity-10 bg-[linear-gradient(135deg,#775a19,transparent)]" />
             <div className="relative z-10 flex flex-col items-center">
               <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${guestTheme.bg.primary}`}>
                 <Clock3 className="h-6 w-6 text-white" />
               </div>
               <p className={`mb-1 text-sm uppercase tracking-wider ${guestTheme.text.muted}`}>{t.estimatedDelivery}</p>
-              <p className={`font-headline text-[3rem] ${guestTheme.text.base}`}>{presentation.estimatedDeliveryLabel}</p>
+              <p className={`font-headline text-2xl ${guestTheme.text.base}`}>{presentation.estimatedDeliveryLabel}</p>
             </div>
           </div>
 
@@ -110,7 +111,6 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
           )}
 
           <div className="mb-12 px-4">
-            <p className={`mb-4 text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.muted}`}>Current Status</p>
             <div className="relative">
               <div className={`absolute bottom-4 left-[11px] top-4 w-[2px] ${guestTheme.bg.surfaceMuted}`} />
               {presentation.steps.map((step, index) => {
@@ -123,9 +123,8 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
                       {active ? <div className="h-2 w-2 rounded-full bg-white" /> : null}
                     </div>
                     <div>
-                      <div className={`flex items-center gap-2 ${active ? guestTheme.text.primary : completed ? `${guestTheme.text.primary}/75` : `${guestTheme.text.muted}/55`}`}>
-                        {step.icon}
-                        <h3 className="font-headline text-[1.9rem] font-bold leading-none">{step.label}</h3>
+                      <div className={`${active ? guestTheme.text.primary : completed ? `${guestTheme.text.primary}/75` : `${guestTheme.text.muted}/55`}`}>
+                        <h3 className="font-headline text-lg font-bold leading-none">{step.label}</h3>
                       </div>
                       <p className={`mt-1 text-sm ${active ? guestTheme.text.muted : `${guestTheme.text.muted}/55`}`}>{step.sub}</p>
                     </div>
@@ -143,10 +142,13 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
                   window.open(blockedWaUrl, '_blank');
                 }
               }}
-              className={`flex w-full items-center justify-center gap-2 rounded-md border ${guestTheme.border.base} bg-transparent px-6 py-4 font-medium ${guestTheme.text.primary} transition-colors hover:bg-[var(--hcs-surface-soft)]`}
+              className={`flex w-full items-center justify-center gap-2 rounded-[0.125rem] border ${guestTheme.border.base} bg-transparent px-6 py-4 text-[1rem] font-medium ${guestTheme.text.primary} transition-colors hover:bg-[var(--hcs-surface-soft)]`}
             >
               <Phone className="h-4 w-4" />
               {t.callRoomService}
+            </button>
+            <button type="button" className={`text-xs uppercase tracking-[0.1em] ${guestTheme.text.muted}/60`}>
+              Simulate Delivery
             </button>
           </div>
         </main>

@@ -39,12 +39,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const t = TRANSLATIONS[lang];
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return t.morning;
-    if (hour < 18) return t.afternoon;
-    return t.evening;
-  };
+  const greeting = lang === 'ID' ? 'Selamat Malam, Tamu' : 'Good Evening, Guest';
 
   const grandTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
@@ -53,8 +48,8 @@ export const MenuView: React.FC<MenuViewProps> = ({
     : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-56`}>
-      <header className={`hcs-safe-top fixed top-0 z-50 w-full ${guestTheme.bg.surface} shadow-[0_0_0_1px_rgba(227,226,224,0.85)]`}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-36`}>
+      <header className={`hcs-safe-top fixed top-0 z-50 w-full bg-[#faf9f7]/80 backdrop-blur-xl shadow-[0_20px_40px_rgba(26,28,27,0.06)]`}>
         <div className="hcs-mobile-canvas flex h-16 w-full items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <button
@@ -65,10 +60,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <MenuIcon className="h-5 w-5" />
             </button>
             <div>
-              <h1 className={`font-headline text-[1.95rem] leading-none ${guestTheme.text.base}`}>
-                {getGreeting()} Guest
+              <h1 className={`font-headline text-lg font-medium tracking-tight ${guestTheme.text.base}`}>
+                {greeting}
               </h1>
-              <p className={`mt-1 text-[10px] uppercase tracking-[0.18em] ${guestTheme.text.primary}`}>Room {roomNumber}</p>
             </div>
           </div>
           <button
@@ -86,14 +80,14 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
       <div className="hcs-mobile-canvas min-h-screen w-full hcs-header-offset">
         {!searchQuery && (
-          <nav className={`hcs-sticky-under-header sticky z-40 overflow-hidden ${guestTheme.bg.canvas} px-6 py-5`}>
+          <nav className={`hcs-sticky-under-header sticky z-40 overflow-hidden ${guestTheme.bg.canvas}/90 px-6 py-4 backdrop-blur-md`}>
             <div className="hide-scrollbar flex gap-3 overflow-x-auto">
-              {CATEGORIES.map((cat) => (
+              {['Breakfast', 'Mains', 'Beverages', 'Snacks'].map((cat, index) => (
                 <button
                   key={cat}
-                  onClick={() => setSelectedCategory(cat)}
+                  onClick={() => setSelectedCategory(CATEGORIES[Math.min(index, CATEGORIES.length - 1)])}
                   className={`whitespace-nowrap rounded-full border px-6 py-3 text-xs uppercase tracking-[0.2em] transition-all ${
-                    selectedCategory === cat
+                    (selectedCategory === CATEGORIES[Math.min(index, CATEGORIES.length - 1)] || (index === 1 && !selectedCategory))
                       ? `${guestTheme.bg.inverse} border-[var(--hcs-inverse)] ${guestTheme.text.inverse} shadow-md`
                       : `${guestTheme.border.base} ${guestTheme.text.muted} hover:bg-[var(--hcs-surface-muted)]`
                   }`}
@@ -109,14 +103,14 @@ export const MenuView: React.FC<MenuViewProps> = ({
           <section className="px-6 py-8">
             <div>
               <p className={`mb-2 text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.primary}`}>Atelier Meridian</p>
-              <h2 className={`font-headline mb-5 text-[4rem] leading-[0.94] tracking-tight ${guestTheme.text.base}`}>
+              <h2 className={`font-headline mb-4 text-4xl font-medium tracking-tight ${guestTheme.text.base}`}>
                 {searchQuery ? t.search : t.dinnerMenu}
               </h2>
-              <p className={`max-w-[24rem] text-[1.08rem] leading-[1.6] ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
+              <p className={`max-w-[24rem] text-sm font-light leading-relaxed ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
             </div>
           </section>
 
-          <section className="space-y-7 px-6">
+          <section className="space-y-6 px-6">
             {filteredItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
                 <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full ${guestTheme.bg.surfaceMuted}`}>
@@ -145,19 +139,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
             )}
           </section>
 
-          {!searchQuery && (
-            <section className="px-6 py-8">
-              <div className={`relative flex h-60 items-end overflow-hidden rounded-[1.35rem] ${guestTheme.bg.inverse} p-8`}>
-                <div className="absolute inset-0 opacity-40">
-                  <img src="/assets/hero.jpg" alt="" className="h-full w-full object-cover" />
-                </div>
-                <div className="relative z-10">
-                  <h4 className={`font-headline mb-2 text-[3rem] leading-[0.98] ${guestTheme.text.inverse}`}>{t.perfectWithMeal}</h4>
-                  <p className={`text-sm uppercase tracking-[0.14em] ${guestTheme.text.inverse}/70`}>Explore our sommelier&apos;s selection</p>
-                </div>
-              </div>
-            </section>
-          )}
         </main>
 
         <AnimatePresence>
@@ -172,15 +153,15 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <button
                 onClick={onOpenCart}
                 aria-label="Open cart"
-                className={`pointer-events-auto flex h-20 w-full items-center justify-between rounded-[1.25rem] ${guestTheme.bg.inverse} ${guestTheme.text.inverse} px-2 shadow-[0_20px_40px_rgba(0,0,0,0.3)]`}
+                className={`pointer-events-auto flex h-16 w-full items-center justify-between rounded-[1.25rem] ${guestTheme.bg.inverse} ${guestTheme.text.inverse} px-2 shadow-[0_20px_40px_rgba(0,0,0,0.3)]`}
               >
                 <div className="pl-6 text-left">
                   <p className={`text-[10px] uppercase tracking-[0.2em] ${guestTheme.text.inverse}/60`}>
                     {t.cart}: {totalQty} {totalQty > 1 ? 'Items' : 'Item'}
                   </p>
-                  <p className="font-headline text-[2rem] leading-none">{formatCurrency(grandTotal)}</p>
+                  <p className="font-headline text-lg leading-none">{formatCurrency(grandTotal)}</p>
                 </div>
-                <span className={`rounded-[1rem] ${guestTheme.bg.primary} px-8 py-5 text-xs font-bold uppercase tracking-[0.18em] ${guestTheme.text.onPrimary}`}>
+                <span className={`rounded-[1rem] ${guestTheme.bg.primary} px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] ${guestTheme.text.onPrimary}`}>
                   {t.viewOrder}
                 </span>
               </button>

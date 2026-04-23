@@ -50,19 +50,6 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
     });
   };
 
-  const StarRow = ({ label, value, setter }: { label: string; value: number; setter: (v: number) => void }) => (
-    <div className="flex items-center justify-between gap-4">
-      <span className={`text-sm font-medium ${guestTheme.text.muted}`}>{label}</span>
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button key={n} type="button" onClick={() => setter(n)} className="p-1">
-            <Star className="h-5 w-5" style={{ color: n <= value ? accentColor : mutedStarColor, fill: n <= value ? accentColor : 'transparent' }} />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -71,7 +58,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
             initial={{ scale: 0.95, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 20 }}
-            className={`relative flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-[1.25rem] ${guestTheme.bg.canvas} shadow-[0_28px_80px_rgba(0,0,0,0.12)]`}
+            className={`relative flex min-h-[90vh] w-full max-w-lg flex-col overflow-hidden ${guestTheme.bg.canvas} shadow-[0_28px_80px_rgba(0,0,0,0.12)]`}
           >
             <header className={`sticky top-0 z-10 flex h-16 items-center justify-between ${guestTheme.bg.canvas} px-6`}>
               <button aria-label="Close rating" onClick={() => onSkip && onSkip()} className={`flex h-10 w-10 items-center justify-center rounded-full ${guestTheme.text.primary}`}>
@@ -81,10 +68,10 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
               <div className="w-10" />
             </header>
 
-            <div className="flex-1 overflow-y-auto px-6 pb-10 pt-16">
+            <div className="flex-1 overflow-y-auto px-6 pb-10 pt-28">
               <div className="flex flex-col items-center text-center">
                 <span className={`text-xs font-semibold uppercase tracking-[0.1em] ${guestTheme.text.label}`}>{t.guestExperience}</span>
-                <h2 className={`font-headline mt-4 text-[4.2rem] leading-[1.02] tracking-tight ${guestTheme.text.base}`}>{t.enjoyedMeal}</h2>
+                <h2 className={`font-headline mt-4 text-[4rem] leading-[1.02] tracking-tight ${guestTheme.text.base}`}>{t.enjoyedMeal}</h2>
               </div>
 
               <div className="flex justify-center gap-4 py-10">
@@ -94,74 +81,38 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                   </button>
                 ))}
               </div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder={t.tellUsMore}
+                  rows={4}
+                  className={`w-full resize-none border-0 border-b ${guestTheme.border.base} bg-transparent px-0 py-4 text-lg ${guestTheme.text.base} placeholder:text-[var(--hcs-outline)]/60 focus:border-[var(--hcs-primary)] focus:ring-0`}
+                />
 
-              {overallRating > 0 && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-8">
-                  <div className={`rounded-[1.25rem] border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
-                    <h4 className={`mb-4 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.label}`}>
-                      {lang === 'ID' ? 'Kualitas Layanan' : 'Service Quality'}
-                    </h4>
-                    <div className="space-y-3">
-                      <StarRow label={lang === 'ID' ? 'Kualitas Makanan' : 'Food Quality'} value={foodQuality} setter={setFoodQuality} />
-                      <StarRow label={lang === 'ID' ? 'Presentasi' : 'Presentation'} value={presentation} setter={setPresentation} />
-                      <StarRow label={lang === 'ID' ? 'Kecepatan Antar' : 'Delivery Speed'} value={deliverySpeed} setter={setDeliverySpeed} />
-                      <StarRow label={lang === 'ID' ? 'Akurasi Pesanan' : 'Order Accuracy'} value={orderAccuracy} setter={setOrderAccuracy} />
-                      <StarRow label={lang === 'ID' ? 'Kesopanan Staf' : 'Staff Courtesy'} value={staffCourtesy} setter={setStaffCourtesy} />
-                      <StarRow label={lang === 'ID' ? 'Nilai Uang' : 'Value for Money'} value={valueForMoney} setter={setValueForMoney} />
-                    </div>
-                  </div>
-
-                  {overallRating <= 3 && (
-                    <div className={`rounded-[1.25rem] border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
-                      <p className={`mb-4 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.error}`}>
-                        {lang === 'ID' ? 'Kami Mohon Maaf' : 'We apologize'}
-                      </p>
-
-                      <div className="mb-4">
-                        <label className={`mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] ${guestTheme.text.label}`}>{t.issueCategory}</label>
-                        <select
-                          className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
-                          value={issueCategory || ''}
-                          onChange={(e) => setIssueCategory(e.target.value as FeedbackPayload['issueCategory'])}
-                        >
-                          <option value="" disabled>{lang === 'ID' ? 'Pilih kategori...' : 'Select a category...'}</option>
-                          <option value="Food quality">Food quality</option>
-                          <option value="Temperature">Temperature</option>
-                          <option value="Late delivery">Late delivery</option>
-                          <option value="Wrong item">Wrong item</option>
-                          <option value="Packaging">Packaging</option>
-                          <option value="Staff service">Staff service</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-
-                      <div className="mb-4">
-                        <label className={`mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] ${guestTheme.text.label}`}>{t.issueDetail}</label>
-                        <input
-                          type="text"
-                          placeholder="..."
-                          value={issueNote}
-                          onChange={(e) => setIssueNote(e.target.value)}
-                          className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
-                        />
-                      </div>
-
-                      <label className="mt-4 flex cursor-pointer items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={requestManagerFollowUp === 'yes'}
-                          onChange={(e) => setRequestManagerFollowUp(e.target.checked ? 'yes' : 'no')}
-                          className={`h-4 w-4 ${guestTheme.text.primary} focus:ring-[var(--hcs-primary)]`}
-                        />
-                        <span className={`text-sm font-medium ${guestTheme.text.base}`}>{t.requestFollowUp}</span>
-                      </label>
-                    </div>
-                  )}
-
-                  <div className={`border-t ${guestTheme.border.strong} pt-4`}>
-                    <span className={`mb-3 block text-center text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.label}`}>
-                      {t.wouldOrderAgain}
-                    </span>
+                {overallRating > 0 && overallRating <= 3 ? (
+                  <div className={`space-y-4 rounded-[1.25rem] border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
+                    <select
+                      className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
+                      value={issueCategory || ''}
+                      onChange={(e) => setIssueCategory(e.target.value as FeedbackPayload['issueCategory'])}
+                    >
+                      <option value="" disabled>{lang === 'ID' ? 'Pilih kategori...' : 'Select a category...'}</option>
+                      <option value="Food quality">Food quality</option>
+                      <option value="Temperature">Temperature</option>
+                      <option value="Late delivery">Late delivery</option>
+                      <option value="Wrong item">Wrong item</option>
+                      <option value="Packaging">Packaging</option>
+                      <option value="Staff service">Staff service</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder={t.issueDetail}
+                      value={issueNote}
+                      onChange={(e) => setIssueNote(e.target.value)}
+                      className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
+                    />
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -183,33 +134,18 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                       </button>
                     </div>
                   </div>
+                ) : null}
 
-                  <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder={t.tellUsMore}
-                    rows={4}
-                    className={`w-full resize-none border-0 border-b ${guestTheme.border.base} bg-transparent px-0 py-4 text-lg ${guestTheme.text.base} placeholder:text-[var(--hcs-outline)]/60 focus:border-[var(--hcs-primary)] focus:ring-0`}
-                  />
-
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={handleSubmit}
-                      className={`w-full rounded ${guestTheme.bg.primary} px-12 py-4 text-sm font-semibold uppercase tracking-[0.14em] ${guestTheme.text.onPrimary} transition-all duration-300 hover:opacity-90`}
-                    >
-                      {t.submitFeedback}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onSkip && onSkip()}
-                      className={`mt-2 w-full py-3 text-[10px] font-bold uppercase tracking-[0.16em] ${guestTheme.text.muted} transition-colors hover:text-[var(--hcs-primary)]`}
-                    >
-                      {t.skip}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className={`w-full ${guestTheme.bg.primary} px-12 py-4 text-sm font-semibold uppercase tracking-[0.14em] ${guestTheme.text.onPrimary} transition-all duration-300 hover:opacity-90`}
+                  >
+                    {t.submitFeedback}
+                  </button>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </motion.div>

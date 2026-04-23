@@ -50,6 +50,10 @@ describe('guards', () => {
       expect(isGuestInfoValid({ ...valid, lastName: '   ' })).toBe(false);
     });
 
+    it('returns true when phone is omitted', () => {
+      expect(isGuestInfoValid({ ...valid, phoneNumber: '' })).toBe(true);
+    });
+
     it('returns false for phone shorter than 10 digits', () => {
       expect(isGuestInfoValid({ ...valid, phoneNumber: '0812345' })).toBe(false);
     });

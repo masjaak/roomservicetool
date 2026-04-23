@@ -73,7 +73,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
         </div>
       </header>
 
-      <main className="hcs-header-content-offset mx-auto max-w-md space-y-10 px-6 pb-40">
+      <main className="hcs-header-content-offset mx-auto max-w-md space-y-8 px-6 pb-40">
         <h2 className="sr-only">Checkout</h2>
 
         {(loading || hasNetworkIssue) && (
@@ -101,7 +101,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
           </section>
         )}
 
-        <section className={`rounded-[1.5rem] ${guestTheme.bg.surface} p-7 shadow-[0_0_0_1px_rgba(227,226,224,0.8),0_24px_40px_rgba(26,28,27,0.04)]`}>
+        <section className={`rounded-xl ${guestTheme.bg.surface} p-7 shadow-[0_20px_40px_rgba(26,28,27,0.06)]`}>
           <div className={`mb-5 flex flex-col gap-4 text-sm font-medium ${guestTheme.text.muted}`}>
             <div className="flex items-center justify-between">
               <span>{t.subtotal}</span>
@@ -114,8 +114,8 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
           </div>
           <div className={`mb-3 h-px ${guestTheme.bg.surfaceMuted}`} />
           <div className="flex items-end justify-between">
-            <span className={`text-[10px] uppercase tracking-[0.12em] ${guestTheme.text.muted}`}>{t.total}</span>
-            <span className={`font-headline text-[3.4rem] font-medium tracking-tight ${guestTheme.text.primary}`}>{formatCurrency(grandTotal)}</span>
+            <span className={`text-[10px] uppercase tracking-[0.12em] ${guestTheme.text.muted}`}>Grand Total</span>
+            <span className={`font-headline text-3xl font-medium tracking-tight ${guestTheme.text.primary}`}>{formatCurrency(grandTotal)}</span>
           </div>
         </section>
 
@@ -133,13 +133,11 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
           </div>
 
           <div>
-            <span className={`ml-1 block text-[10px] uppercase tracking-[0.12em] ${guestTheme.text.muted}`}>
-              Billing Method
-            </span>
+            <span className={`ml-1 block text-[10px] uppercase tracking-[0.12em] ${guestTheme.text.muted}`}>{t.paymentMethod}</span>
             <div className="mt-3 space-y-3">
               {[
                 { id: 'room', label: t.chargeRoom, icon: Receipt },
-                { id: 'qris', label: t.qris, icon: QrCode },
+                { id: 'qris', label: lang === 'ID' ? 'Bayar Saat Antar' : 'Pay on Delivery', icon: QrCode },
                 { id: 'bank', label: 'Bank Transfer', icon: Building2 },
               ].map((method) => {
                 const active = paymentState.method === method.id;
@@ -149,10 +147,10 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                     key={method.id}
                     type="button"
                     onClick={() => handlePaymentMethodChange(method.id as PaymentMethod)}
-                    className={`relative flex w-full items-center justify-between rounded-[1.25rem] p-5 text-left transition-all ${
+                    className={`relative flex w-full items-center justify-between rounded-[1.25rem] border p-5 text-left transition-all ${
                       active
-                        ? `${guestTheme.bg.surface} shadow-[0_0_0_1px_rgba(209,197,180,0.8),0_16px_28px_rgba(119,90,25,0.06)]`
-                        : `${guestTheme.bg.surfaceSoft} opacity-90 hover:bg-[var(--hcs-surface)]`
+                        ? `${guestTheme.bg.surface} border-[rgba(209,197,180,0.8)] shadow-[0_16px_28px_rgba(119,90,25,0.06)]`
+                        : `${guestTheme.bg.surfaceSoft} border-transparent opacity-90 hover:bg-[var(--hcs-surface)]`
                     }`}
                     aria-pressed={active}
                   >
@@ -249,15 +247,16 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
         </section>
       </main>
 
-      <div className={`hcs-safe-bottom fixed bottom-0 left-0 w-full ${guestTheme.bg.surface} px-6 pb-8 pt-5 shadow-[0_-1px_0_rgba(227,226,224,0.8)]`}>
+      <div className="hcs-safe-bottom fixed bottom-0 left-0 z-50 w-full bg-[linear-gradient(to_top,#faf9f7,rgba(250,249,247,0.92),transparent)] px-6 pb-8 pt-12">
         <div className="mx-auto max-w-md">
           <button
             onClick={() => onPlaceOrder(paymentState.method, paymentState.selectedBank, paymentState.transferProof)}
             disabled={!canSubmit || loading}
-            className={`flex h-16 w-full items-center justify-center gap-3 rounded-md ${guestTheme.bg.primary} px-8 text-sm font-semibold uppercase tracking-[0.12em] ${guestTheme.text.onPrimary} shadow-[0_10px_30px_rgba(119,90,25,0.2)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50`}
+            className={`flex h-16 w-full items-center justify-center gap-3 rounded-[0.125rem] ${guestTheme.bg.primary} px-8 text-sm font-semibold uppercase tracking-[0.1em] ${guestTheme.text.onPrimary} shadow-[0_10px_30px_rgba(119,90,25,0.2)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            <span>{loading ? t.processing : t.placeOrder}</span>
+            <span>{loading ? t.processing : (lang === 'ID' ? 'Konfirmasi & Pesan' : 'Confirm & Place Order')}</span>
+            {!loading ? <span aria-hidden="true">→</span> : null}
           </button>
         </div>
       </div>
