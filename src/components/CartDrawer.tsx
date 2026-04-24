@@ -1,9 +1,9 @@
 import React from 'react';
-import { ArrowLeft, PencilLine, ShoppingBag, Trash2 } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartItem, Language } from '../types';
 import { TRANSLATIONS } from '../data/constants';
-import { guestTheme } from '../styles/guestTheme';
+import { useTheme } from '../contexts/ThemeContext';
 import { calculateSubtotal, calculateTax, calculateTotal, formatCurrency } from '../utils/format';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
@@ -16,14 +16,8 @@ interface CartDrawerProps {
   lang: Language;
 }
 
-export const CartDrawer: React.FC<CartDrawerProps> = ({
-  cart,
-  isOpen,
-  onClose,
-  onRemove,
-  onCheckout,
-  lang,
-}) => {
+export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, onRemove, onCheckout, lang }) => {
+  const { theme } = useTheme();
   const t = TRANSLATIONS[lang];
   const subtotal = calculateSubtotal(cart);
   const tax = calculateTax(subtotal);
@@ -33,118 +27,84 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={`fixed inset-0 z-50 ${guestTheme.bg.overlay} backdrop-blur-sm`}
-            onClick={onClose}
-          />
-          <div className="pointer-events-none fixed inset-0 z-50 flex justify-end">
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
+            onClick={onClose} />
+          <div style={{ pointerEvents: 'none', position: 'fixed', inset: 0, zIndex: 50, display: 'flex', justifyContent: 'flex-end' }}>
+            <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className={`pointer-events-auto hcs-mobile-canvas flex h-full w-full flex-col ${guestTheme.bg.canvas} shadow-2xl`}
-            >
-              <header className={`hcs-safe-top sticky top-0 z-10 flex items-center justify-between ${guestTheme.bg.surface} px-6 py-4 shadow-[0_1px_0_rgba(227,226,224,0.8)]`}>
-                <button
-                  aria-label="Close cart"
-                  onClick={onClose}
-                  className={`rounded-full p-2 ${guestTheme.text.muted} transition-colors hover:bg-[var(--hcs-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/40`}
-                >
-                  <ArrowLeft className="h-5 w-5" />
+              style={{ pointerEvents: 'auto', display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: '28rem', background: theme.bgBase, boxShadow: '-20px 0 60px rgba(0,0,0,0.4)', transition: 'background 0.3s' }}>
+
+              <header style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: theme.bgBase, borderBottom: `1px solid ${theme.borderFaint}`, paddingInline: '1.5rem', paddingTop: 'calc(env(safe-area-inset-top) + 1rem)', paddingBottom: '1rem', transition: 'background 0.3s, border-color 0.3s' }}>
+                <button onClick={onClose} aria-label="Close cart" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', borderRadius: '9999px', background: theme.bgInput, border: 'none', cursor: 'pointer', color: theme.textMuted }}>
+                  <ArrowLeft size={18} />
                 </button>
-                <h2 className={`font-headline absolute left-1/2 -translate-x-1/2 text-[2rem] font-semibold ${guestTheme.text.base}`}>
+                <h2 style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontFamily: "'Noto Serif',serif", fontSize: '1.5rem', fontWeight: 400, fontStyle: 'italic', color: theme.textBase, lineHeight: 1, transition: 'color 0.3s' }}>
                   {lang === 'ID' ? 'Pesanan Anda' : 'Your Order'}
                 </h2>
-                <div className="w-9" />
+                <div style={{ width: '2.25rem' }} />
               </header>
 
-              <div className="flex-1 overflow-y-auto px-6 pb-44 pt-6">
+              <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.5rem', paddingBottom: cart.length > 0 ? '11rem' : '1.5rem', scrollbarWidth: 'none' }}>
                 {cart.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-full ${guestTheme.bg.surfaceMuted}`}>
-                      <ShoppingBag className={`h-6 w-6 ${guestTheme.text.primary}/50`} />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '6rem', textAlign: 'center' }}>
+                    <div style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '9999px', background: theme.bgMuted }}>
+                      <ShoppingBag size={22} color={theme.textMuted} />
                     </div>
-                    <p className={`font-headline text-2xl ${guestTheme.text.base}`}>{t.emptyCart}</p>
-                    <p className={`mt-3 max-w-sm text-sm ${guestTheme.text.muted}`}>
+                    <p style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.5rem', fontWeight: 400, color: theme.textBase }}>{t.emptyCart}</p>
+                    <p style={{ marginTop: '0.5rem', fontSize: '14px', color: theme.textMuted, maxWidth: '18rem', lineHeight: 1.6 }}>
                       {lang === 'ID' ? 'Item pilihan Anda akan muncul di sini.' : 'Your selected items will appear here.'}
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-8">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {cart.map((item, index) => (
-                      <div
-                        key={`${item.id}-${item.note}-${index}`}
-                        className={`group rounded-xl ${guestTheme.bg.surface} p-4 shadow-[0_0_0_1px_rgba(227,226,224,0.7)]`}
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className={`h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg ${guestTheme.bg.surfaceMuted}`}>
+                      <div key={`${item.id}-${item.note}-${index}`} style={{ borderRadius: '1rem', background: theme.bgSurface, border: `1px solid ${theme.borderFaint}`, padding: '1rem', transition: 'background 0.3s' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
+                          <div style={{ width: '5.5rem', height: '5.5rem', flexShrink: 0, overflow: 'hidden', borderRadius: '0.625rem', background: theme.bgMuted }}>
                             <ImageWithFallback src={item.image} alt={item.name} className="h-full w-full object-cover" />
                           </div>
-                          <div className="flex min-h-[6rem] flex-1 flex-col justify-between">
-                            <div className="flex items-start justify-between gap-4">
+                          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', minHeight: '5.5rem', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
                               <div>
-                                <h3 className={`font-headline text-[1.05rem] leading-[1.2] ${guestTheme.text.base}`}>
-                                  {item.name}
-                                </h3>
-                                {item.note && <p className={`mt-2 max-w-[12rem] text-[0.92rem] ${guestTheme.text.muted}`}>{item.note}</p>}
+                                <h3 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1rem', fontWeight: 400, lineHeight: 1.25, color: theme.textBase }}>{item.name}</h3>
+                                {item.note && <p style={{ marginTop: '0.2rem', fontSize: '12px', color: theme.textMuted, maxWidth: '12rem' }}>{item.note}</p>}
                               </div>
-                              <button
-                                aria-label="Remove item"
-                                onClick={() => onRemove(index)}
-                                className={`p-1 ${guestTheme.text.muted}/55 transition-colors hover:text-[var(--hcs-error)]`}
-                              >
-                                <Trash2 className="h-5 w-5" />
+                              <button onClick={() => onRemove(index)} aria-label="Remove item" style={{ padding: '0.2rem', background: 'none', border: 'none', cursor: 'pointer', color: theme.textMuted, flexShrink: 0 }}>
+                                <Trash2 size={16} />
                               </button>
                             </div>
-                            <div className="mt-4 flex items-end justify-between gap-4">
-                              <span className={`font-body text-[1.05rem] font-semibold ${guestTheme.text.primary}`}>{formatCurrency(item.price * item.qty)}</span>
-                              <div className={`flex items-center gap-6 rounded-full ${guestTheme.bg.canvas} px-5 py-2.5 shadow-[0_0_0_1px_rgba(227,226,224,0.9)]`}>
-                                <span className={`text-xl ${guestTheme.text.muted}`}>−</span>
-                                <span className={`min-w-5 text-center text-base font-semibold ${guestTheme.text.base}`}>{item.qty}</span>
-                                <span className={`text-xl ${guestTheme.text.muted}`}>+</span>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                              <span style={{ fontFamily: "'Noto Serif',serif", fontSize: '1rem', color: theme.goldBright }}>{formatCurrency(item.price * item.qty)}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderRadius: '9999px', background: theme.bgInput, padding: '0.3rem 0.875rem', border: `1px solid ${theme.borderFaint}` }}>
+                                <span style={{ fontSize: '18px', color: theme.textMuted, lineHeight: 1 }}>−</span>
+                                <span style={{ minWidth: '1.25rem', textAlign: 'center', fontSize: '15px', fontWeight: 600, color: theme.textBase }}>{item.qty}</span>
+                                <span style={{ fontSize: '18px', color: theme.textMuted, lineHeight: 1 }}>+</span>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     ))}
-                    <button
-                      type="button"
-                      className={`mt-1 inline-flex items-center gap-3 self-start text-[1rem] ${guestTheme.text.primary}`}
-                    >
-                      <PencilLine className="h-5 w-5" />
-                      <span>{lang === 'ID' ? 'Tambah catatan pesanan' : 'Add an order note'}</span>
-                    </button>
                   </div>
                 )}
               </div>
 
               {cart.length > 0 && (
-                <div className={`hcs-safe-bottom fixed bottom-0 right-0 z-10 hcs-mobile-canvas w-full ${guestTheme.bg.surface} px-6 py-4 shadow-[0_-1px_0_rgba(227,226,224,0.85)]`}>
-                  <div className="mb-4 flex items-end justify-between px-2">
-                    <div className="flex flex-col">
-                      <span className={`text-xs uppercase tracking-[0.18em] ${guestTheme.text.muted}/70`}>{t.total}</span>
-                      <span className={`font-headline text-[2.2rem] leading-none ${guestTheme.text.base}`}>{formatCurrency(total)}</span>
+                <div style={{ position: 'fixed', bottom: 0, right: 0, width: '100%', maxWidth: '28rem', zIndex: 10, background: theme.bgBase, backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: `1px solid ${theme.borderFaint}`, padding: '1.25rem 1.5rem', paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)', transition: 'background 0.3s, border-color 0.3s' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '1rem', paddingInline: '0.25rem' }}>
+                    <div>
+                      <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: theme.textMuted, display: 'block', marginBottom: '2px', fontFamily: "'Manrope',sans-serif" }}>{t.total}</span>
+                      <span style={{ fontFamily: "'Noto Serif',serif", fontSize: '2rem', fontWeight: 400, color: theme.textBase, lineHeight: 1 }}>{formatCurrency(total)}</span>
                     </div>
-                    <button type="button" className={`text-lg underline underline-offset-4 ${guestTheme.text.primary}`}>Details</button>
+                    <button type="button" style={{ fontSize: '13px', color: theme.textMuted, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Details</button>
                   </div>
-                  <button
-                    onClick={() => {
-                      onClose();
-                      setTimeout(onCheckout, 300);
-                    }}
-                    className={`flex h-16 w-full items-center justify-center gap-3 rounded-md ${guestTheme.bg.primary} text-[1.05rem] font-medium ${guestTheme.text.onPrimary} shadow-[0_8px_24px_rgba(119,90,25,0.24)] transition-all active:scale-[0.98]`}
-                  >
+                  <button onClick={() => { onClose(); setTimeout(onCheckout, 300); }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', width: '100%', height: '3.75rem', borderRadius: '1rem', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 12px 28px rgba(119,90,25,0.28)', color: '#fff', fontFamily: "'Manrope',sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: 'pointer' }}>
                     <span>{lang === 'ID' ? 'Lanjut ke Checkout' : 'Proceed to Checkout'}</span>
                     <span aria-hidden="true">→</span>
                   </button>
-                  <div className="sr-only">
-                    {t.subtotal}: {formatCurrency(subtotal)}. {t.serviceTax}: {formatCurrency(tax)}.
-                  </div>
+                  <div className="sr-only">{t.subtotal}: {formatCurrency(subtotal)}. {t.serviceTax}: {formatCurrency(tax)}.</div>
                 </div>
               )}
             </motion.div>

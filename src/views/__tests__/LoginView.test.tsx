@@ -3,28 +3,20 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { LoginView } from '../LoginView';
 
 describe('LoginView', () => {
-  it('renders the stitch-style guest access hierarchy', () => {
+  it('renders the hotel name, welcome copy, and all three input fields', () => {
     render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
-    const heroGlass = screen.getByTestId('login-hero-glass');
-    const heroGlassSheen = screen.getByTestId('login-hero-glass-sheen');
-    const heroGlassFrame = screen.getByTestId('login-hero-glass-frame');
-
-    expect(heroGlass).toBeTruthy();
-    expect(heroGlass.className).toContain('max-w-[24rem]');
-    expect(heroGlass.className).toContain('bg-white/[0.34]');
-    expect(heroGlass.className).toContain('backdrop-blur-[40px]');
-    expect(heroGlassFrame.className).toContain('border-white/32');
-    expect(heroGlassSheen.className).toContain('bg-[linear-gradient(135deg,rgba(255,255,255,0.34),rgba(255,255,255,0.08))]');
     expect(screen.getByText('Welcome to')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Atelier Meridian' })).toBeTruthy();
+    // loginTitle = 'Room Service' renders as an h2 inside the card
     expect(screen.getByRole('heading', { name: 'Room Service' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /access in-room dining/i })).toBeTruthy();
-    expect(screen.getByText('24/7 Assistance')).toBeTruthy();
-    expect(screen.getByText('Contact Front Desk')).toBeTruthy();
+    // All three fields must be present and labelled
+    expect(screen.getByLabelText('Room Number')).toBeTruthy();
+    expect(screen.getByLabelText('Guest Last Name')).toBeTruthy();
+    expect(screen.getByLabelText('Phone Number')).toBeTruthy();
   });
 
-  it('moves focus forward on Enter across the mobile login fields', () => {
+  it('moves focus from Room Number to Guest Last Name on Enter', () => {
     render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
     const roomInput = screen.getByLabelText('Room Number');
@@ -35,16 +27,31 @@ describe('LoginView', () => {
     expect(document.activeElement).toBe(lastNameInput);
   });
 
-  it('submits from the last name field on Enter once the guest payload is valid', () => {
+  it('submits when room, last name and a valid phone number are all filled', () => {
     const onLogin = vi.fn();
 
     render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} />);
 
     fireEvent.change(screen.getByLabelText('Room Number'), { target: { value: '1204' } });
     fireEvent.change(screen.getByLabelText('Guest Last Name'), { target: { value: 'Tan' } });
+    fireEvent.change(screen.getByLabelText('Phone Number'), { target: { value: '081234567890' } });
 
+    // Enter on the phone field triggers submit
+    fireEvent.keyDown(screen.getByLabelText('Phone Number'), { key: 'Enter', code: 'Enter' });
+
+    expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Tan');
+  });
+
+  it('does not submit when phone number is missing', () => {
+    const onLogin = vi.fn();
+
+    render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} />);
+
+    fireEvent.change(screen.getByLabelText('Room Number'), { target: { value: '1204' } });
+    fireEvent.change(screen.getByLabelText('Guest Last Name'), { target: { value: 'Tan' } });
+    // No phone filled in
     fireEvent.keyDown(screen.getByLabelText('Guest Last Name'), { key: 'Enter', code: 'Enter' });
 
-    expect(onLogin).toHaveBeenCalledWith('1204', '', 'Tan');
+    expect(onLogin).not.toHaveBeenCalled();
   });
 });

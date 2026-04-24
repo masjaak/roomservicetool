@@ -75,7 +75,6 @@ describe('TrackingView', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Current Status')).toBeTruthy();
     expect(screen.getAllByText('On The Way').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Staff is en route to Room 101.').length).toBeGreaterThan(0);
   });

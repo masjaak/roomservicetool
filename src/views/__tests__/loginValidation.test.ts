@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { validateGuestAccess } from '../loginValidation';
 
 describe('validateGuestAccess', () => {
-  it('accepts room and last name without requiring a phone number', () => {
+  it('is silently invalid when phone number is missing (no error shown, form cannot submit)', () => {
+    // Phone is required. When absent the form stays quiet but isValid is false.
     const result = validateGuestAccess({
       roomNumber: '1204',
       lastName: 'Santoso',
@@ -11,7 +12,7 @@ describe('validateGuestAccess', () => {
     });
 
     expect(result).toEqual({
-      isValid: true,
+      isValid: false,
       error: '',
     });
   });
@@ -40,7 +41,7 @@ describe('validateGuestAccess', () => {
 
     expect(result).toEqual({
       isValid: false,
-      error: 'Number must start with 08 or 628',
+      error: 'Number must start with 08 or +62',
     });
   });
 
@@ -54,11 +55,11 @@ describe('validateGuestAccess', () => {
 
     expect(result).toEqual({
       isValid: false,
-      error: 'Nomor HP tidak valid (Min. 10 digit)',
+      error: 'Nomor terlalu pendek (5 digit, butuh 10–14)',
     });
   });
 
-  it('stays valid and quiet when no phone number is entered', () => {
+  it('stays silent (no error) when no phone number is entered, but marks the form as invalid', () => {
     const result = validateGuestAccess({
       roomNumber: '1204',
       lastName: 'Santoso',
@@ -67,7 +68,7 @@ describe('validateGuestAccess', () => {
     });
 
     expect(result).toEqual({
-      isValid: true,
+      isValid: false,
       error: '',
     });
   });

@@ -10,9 +10,13 @@ interface LoginViewProps {
   onLogin: (room: string, phone: string, lastName: string) => void;
 }
 
+const loginHeroImage =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuAkd7RklJ7B8ol4y2KFLFG-AXLVRW0GmuiRe-f2PVr_OsOU7bli6263fxf1QuvywDKHLYtg5aiUMiIw0KBiRJNKK4cYa8a1mO2MOowmwxTRxYjIES1kCts-Ol6OI6GXr8S1dDxNmL0Vt80Yo-9t6FgE5xWtNg7bYSRQj7U_E2qyiwUW-NK9pOY6QUzapco6F0x2scioqJuSjkUjHInSIeww_wvR0GA8rOFc3RAY21FhDU-UPwzN1ZIklThbrKkcZn9KOqeq051ciw';
+
 export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) => {
   const roomInputRef = useRef<HTMLInputElement | null>(null);
   const lastNameInputRef = useRef<HTMLInputElement | null>(null);
+  const phoneInputRef = useRef<HTMLInputElement | null>(null);
   const [roomNumber, setRoomNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [lastName, setLastName] = useState('');
@@ -21,222 +25,516 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
   const t = TRANSLATIONS[lang];
 
   useEffect(() => {
-    const validation = validateGuestAccess({
-      roomNumber,
-      lastName,
-      phoneNumber,
-      lang,
-    });
-
+    const validation = validateGuestAccess({ roomNumber, lastName, phoneNumber, lang });
     setIsValid(validation.isValid);
     setError(validation.error);
   }, [roomNumber, phoneNumber, lastName, lang]);
 
   useEffect(() => {
-    try {
+    if (typeof navigator !== 'undefined' && !/jsdom/i.test(navigator.userAgent)) {
       window.scrollTo(0, 0);
-    } catch {
-      // jsdom does not implement scrollTo; ignore in tests.
     }
-    const previousOverflow = document.body.style.overflow;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
+    return () => { document.body.style.overflow = prev; };
   }, []);
 
-  const loginHeroImage =
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuAkd7RklJ7B8ol4y2KFLFG-AXLVRW0GmuiRe-f2PVr_OsOU7bli6263fxf1QuvywDKHLYtg5aiUMiIw0KBiRJNKK4cYa8a1mO2MOowmwxTRxYjIES1kCts-Ol6OI6GXr8S1dDxNmL0Vt80Yo-9t6FgE5xWtNg7bYSRQj7U_E2qyiwUW-NK9pOY6QUzapco6F0x2scioqJuSjkUjHInSIeww_wvR0GA8rOFc3RAY21FhDU-UPwzN1ZIklThbrKkcZn9KOqeq051ciw';
-
   const handleSubmit = () => {
-    if (isValid) {
-      onLogin(roomNumber, phoneNumber, lastName);
-    }
+    if (isValid) onLogin(roomNumber, phoneNumber, lastName);
   };
 
-  const moveFocusToNextField = (event: React.KeyboardEvent<HTMLInputElement>, nextField?: HTMLInputElement | null) => {
-    if (event.key !== 'Enter') {
-      return;
-    }
-
-    event.preventDefault();
-
-    if (nextField) {
-      nextField.focus();
-      return;
-    }
-
+  const moveFocus = (e: React.KeyboardEvent<HTMLInputElement>, next?: HTMLInputElement | null) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    if (next) { next.focus(); return; }
     handleSubmit();
   };
 
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden bg-[#faf9f7] font-body text-[#1a1c1b] antialiased">
-      <div className="relative mx-auto flex h-full max-w-md flex-col overflow-hidden bg-[#f4f3f1] shadow-xl">
-        <main className="relative flex h-full flex-1 flex-col overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <img
-              src={loginHeroImage}
-              className="h-full w-full object-cover"
-              alt="Atelier Meridian Suite Interior"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90" />
-          </div>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 0,
+        overflow: 'hidden',
+        background: '#0d0c0b',
+        fontFamily: "'Manrope', sans-serif",
+        WebkitFontSmoothing: 'antialiased',
+      }}
+    >
+      {/* Background image */}
+      <img
+        src={loginHeroImage}
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
+        }}
+      />
+      {/* Gradient overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 38%, rgba(0,0,0,0.88) 100%)',
+        }}
+      />
 
-          <header className="relative z-10 px-8 pt-[calc(env(safe-area-inset-top)+4.8rem)] text-center">
-            <div
-              data-testid="login-hero-glass"
-              className="hidden max-w-[24rem] bg-white/[0.34] backdrop-blur-[40px] lg:max-w-[39rem]"
-              aria-hidden="true"
-            >
-              <div
-                data-testid="login-hero-glass-frame"
-                className="hidden inset-[10px] rounded-[2.35rem] border border-white/32"
-                aria-hidden="true"
-              />
-              <div
-                data-testid="login-hero-glass-sheen"
-                className="hidden bg-[linear-gradient(135deg,rgba(255,255,255,0.34),rgba(255,255,255,0.08))]"
-                aria-hidden="true"
-              />
-            </div>
-            <p className="mb-4 font-label text-[9px] uppercase tracking-[0.34em] text-white/82">
-              {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
-            </p>
-            <h1 className="mx-auto max-w-[15rem] font-headline text-[2.5rem] font-normal italic leading-none tracking-[0.04em] text-white drop-shadow-[0_6px_24px_rgba(0,0,0,0.18)]">
-              Atelier Meridian
-            </h1>
-          </header>
-
-          <motion.section
-            initial={{ y: 32, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.55 }}
-            className="absolute inset-x-4 bottom-[calc(env(safe-area-inset-bottom)+1rem)] z-10 overflow-hidden rounded-[2rem] border border-white/20 bg-[linear-gradient(145deg,rgba(34,27,22,0.46),rgba(255,255,255,0.12))] pb-6 pt-7 shadow-[0_28px_70px_rgba(8,7,7,0.34)] backdrop-blur-[34px]"
-            style={{ minHeight: '30rem' }}
+      {/* Content layer — flex column, full height */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          maxWidth: '28rem',
+          marginInline: 'auto',
+        }}
+      >
+        {/* Header — top section, grows to push card down */}
+        <header
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            textAlign: 'center',
+            paddingTop: 'calc(env(safe-area-inset-top) + 4.8rem)',
+            paddingLeft: '2rem',
+            paddingRight: '2rem',
+          }}
+        >
+          <p
+            style={{
+              marginBottom: '0.9rem',
+              fontFamily: "'Manrope', sans-serif",
+              fontSize: '9px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.34em',
+              color: 'rgba(255,255,255,0.82)',
+            }}
           >
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.24),rgba(255,255,255,0.02)_42%,rgba(255,255,255,0.16))]" />
-            <div className="pointer-events-none absolute -right-10 top-2 h-32 w-32 rounded-full bg-white/12 blur-3xl" />
-            <div className="pointer-events-none absolute -left-8 bottom-16 h-24 w-24 rounded-full bg-white/8 blur-3xl" />
-            <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-white/40" />
-            <div className="pointer-events-none absolute inset-[1px] rounded-[calc(2rem-1px)] border border-white/8" />
-            <div className="relative">
-              <div className="mb-7">
-                <h2
-                  className="mb-2 font-headline text-[2.05rem] leading-none text-white"
-                  style={{ marginLeft: '2rem', marginRight: '2rem' }}
-                >
-                  {t.loginTitle}
-                </h2>
-                <p
-                  className="max-w-[16.8rem] text-[13px] leading-[1.68] text-white/72"
-                  style={{ marginLeft: '2rem', marginRight: '2rem' }}
-                >
-                  {t.loginBody}
-                </p>
-              </div>
+            {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
+          </p>
+          <h1
+            style={{
+              maxWidth: '15rem',
+              fontFamily: "'Noto Serif', serif",
+              fontSize: '2.5rem',
+              fontWeight: 400,
+              fontStyle: 'italic',
+              lineHeight: 1,
+              letterSpacing: '0.04em',
+              color: '#ffffff',
+              textShadow: '0 6px 24px rgba(0,0,0,0.18)',
+              margin: 0,
+            }}
+          >
+            Atelier Meridian
+          </h1>
+        </header>
 
-              <form
-                className="relative space-y-4"
-                style={{ marginLeft: '2rem', marginRight: '2rem' }}
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  handleSubmit();
+        {/* Glass card — sits at bottom, pushed by flex-1 header */}
+        <motion.section
+          initial={{ y: 32, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.55 }}
+          style={{
+            marginLeft: '1rem',
+            marginRight: '1rem',
+            marginBottom: 'calc(env(safe-area-inset-bottom) + 1rem)',
+            borderRadius: '2rem',
+            border: '1px solid rgba(255,255,255,0.2)',
+            background: 'linear-gradient(145deg, rgba(34,27,22,0.52), rgba(255,255,255,0.1))',
+            backdropFilter: 'blur(34px)',
+            WebkitBackdropFilter: 'blur(34px)',
+            boxShadow: '0 28px 70px rgba(8,7,7,0.4)',
+            paddingTop: '1.75rem',
+            paddingBottom: '1.5rem',
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          {/* Glass sheen layers */}
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.02) 42%, rgba(255,255,255,0.14) 100%)',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              right: '-2.5rem',
+              top: '0.5rem',
+              width: '8rem',
+              height: '8rem',
+              borderRadius: '9999px',
+              background: 'rgba(255,255,255,0.1)',
+              filter: 'blur(48px)',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              left: '-2rem',
+              bottom: '4rem',
+              width: '6rem',
+              height: '6rem',
+              borderRadius: '9999px',
+              background: 'rgba(255,255,255,0.07)',
+              filter: 'blur(40px)',
+            }}
+          />
+          {/* top highlight line */}
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              top: 0,
+              left: '1.25rem',
+              right: '1.25rem',
+              height: '1px',
+              background: 'rgba(255,255,255,0.4)',
+            }}
+          />
+          {/* inner border */}
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              inset: '1px',
+              borderRadius: 'calc(2rem - 1px)',
+              border: '1px solid rgba(255,255,255,0.07)',
+            }}
+          />
+
+          {/* Card content */}
+          <div style={{ position: 'relative', paddingLeft: '2rem', paddingRight: '2rem' }}>
+            {/* Title + body */}
+            <div style={{ marginBottom: '1.75rem' }}>
+              <h2
+                style={{
+                  marginBottom: '0.5rem',
+                  fontFamily: "'Noto Serif', serif",
+                  fontSize: '2.05rem',
+                  fontWeight: 400,
+                  lineHeight: 1,
+                  color: '#ffffff',
+                  margin: '0 0 0.5rem 0',
                 }}
               >
-                <div className="relative rounded-[1.1rem] border border-white/12 bg-white/8 px-4 pb-3 pt-3 transition-colors focus-within:border-white/36 focus-within:bg-white/[0.11]">
-                  <input
-                    id="room_number"
-                    ref={roomInputRef}
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="off"
-                    enterKeyHint="next"
-                    value={roomNumber}
-                    placeholder=" "
-                    onKeyDown={(event) => moveFocusToNextField(event, lastNameInputRef.current)}
-                    onChange={(e) => {
-                      if (/^\d{0,4}$/.test(e.target.value)) setRoomNumber(e.target.value);
-                    }}
-                    className="block h-[42px] w-full border-none bg-transparent px-0 pt-4 text-[15px] font-medium text-white placeholder-transparent focus:ring-0"
-                  />
-                  <label
-                    htmlFor="room_number"
-                    className={`pointer-events-none absolute left-4 top-3 font-label text-[10px] uppercase tracking-[0.18em] text-white/68 transition-all duration-200 ${
-                      roomNumber ? '-translate-y-[0.55rem] scale-[0.92] text-white/82' : ''
-                    }`}
-                  >
-                    {t.room}
-                  </label>
-                </div>
-
-                <div className="relative rounded-[1.1rem] border border-white/12 bg-white/8 px-4 pb-3 pt-3 transition-colors focus-within:border-white/36 focus-within:bg-white/[0.11]">
-                  <input
-                    id="last_name"
-                    ref={lastNameInputRef}
-                    type="text"
-                    autoComplete="family-name"
-                    enterKeyHint="done"
-                    value={lastName}
-                    placeholder=" "
-                    onKeyDown={(event) => moveFocusToNextField(event)}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="block h-[42px] w-full border-none bg-transparent px-0 pt-4 text-[15px] font-medium text-white placeholder-transparent focus:ring-0"
-                  />
-                  <label
-                    htmlFor="last_name"
-                    className={`pointer-events-none absolute left-4 top-3 font-label text-[10px] uppercase tracking-[0.18em] text-white/68 transition-all duration-200 ${
-                      lastName ? '-translate-y-[0.55rem] scale-[0.92] text-white/82' : ''
-                    }`}
-                  >
-                    {t.lastName}
-                  </label>
-                </div>
-
-                {error && <p className="rounded-lg bg-[#ffdad6] px-4 py-3 text-sm text-[#93000a]">{error}</p>}
-
-                <div className="pt-3">
-                  <button
-                    type="submit"
-                    disabled={!isValid}
-                    className="appearance-none border-none flex h-[58px] w-full items-center justify-center gap-3 rounded-[1rem] px-6 py-5 font-label text-[11px] font-bold uppercase tracking-[0.18em] text-white transition-all duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:text-white disabled:opacity-100"
-                    style={{
-                      WebkitAppearance: 'none',
-                      backgroundColor: '#9a7416',
-                      color: '#ffffff',
-                      opacity: 1,
-                      boxShadow: '0 18px 34px rgba(119, 90, 25, 0.28), inset 0 1px 0 rgba(255,255,255,0.22)',
-                    }}
-                  >
-                    <span>{t.accessDining}</span>
-                    <span
-                      aria-hidden="true"
-                      className="flex h-6 w-6 items-center justify-center rounded-full bg-white/14 text-[13px] leading-none"
-                    >
-                      →
-                    </span>
-                  </button>
-                </div>
-              </form>
-
-              <div
-                className="relative mt-7 flex items-center justify-between text-[10px] uppercase tracking-[0.1em] text-white/72"
-                style={{ marginLeft: '2rem', marginRight: '2rem' }}
+                {t.loginTitle}
+              </h2>
+              <p
+                style={{
+                  maxWidth: '16.8rem',
+                  fontSize: '13px',
+                  lineHeight: 1.68,
+                  color: 'rgba(255,255,255,0.72)',
+                  margin: 0,
+                }}
               >
-                <span className="flex items-center gap-2 font-label">
-                  <span className="material-symbols-outlined text-sm">concierge</span>
-                  {t.assistance}
-                </span>
-                <a href="#" className="transition-colors hover:text-white">
-                  {t.frontDesk}
-                </a>
-              </div>
+                {t.loginBody}
+              </p>
             </div>
-          </motion.section>
-        </main>
 
-        <div className="pointer-events-none absolute inset-0 z-[100] opacity-[0.03] mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
+            {/* Form */}
+            <form
+              style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+              onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}
+            >
+              {/* Room Number */}
+              <div
+                style={{
+                  position: 'relative',
+                  borderRadius: '1.1rem',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  background: 'rgba(255,255,255,0.08)',
+                  padding: '0.75rem 1rem 0.75rem',
+                  transition: 'border-color 0.2s, background 0.2s',
+                }}
+              >
+                <label
+                  htmlFor="room_number"
+                  style={{
+                    display: 'block',
+                    fontFamily: "'Manrope', sans-serif",
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.18em',
+                    color: 'rgba(255,255,255,0.68)',
+                    marginBottom: '0.25rem',
+                  }}
+                >
+                  {t.room}
+                </label>
+                <input
+                  id="room_number"
+                  ref={roomInputRef}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  enterKeyHint="next"
+                  value={roomNumber}
+                  onKeyDown={(e) => moveFocus(e, lastNameInputRef.current)}
+                  onChange={(e) => {
+                    if (/^\d{0,4}$/.test(e.target.value)) setRoomNumber(e.target.value);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '15px',
+                    fontWeight: 500,
+                    color: '#ffffff',
+                    padding: 0,
+                    lineHeight: 1.4,
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Last Name */}
+              <div
+                style={{
+                  position: 'relative',
+                  borderRadius: '1.1rem',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  background: 'rgba(255,255,255,0.08)',
+                  padding: '0.75rem 1rem 0.75rem',
+                  transition: 'border-color 0.2s, background 0.2s',
+                }}
+              >
+                <label
+                  htmlFor="last_name"
+                  style={{
+                    display: 'block',
+                    fontFamily: "'Manrope', sans-serif",
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.18em',
+                    color: 'rgba(255,255,255,0.68)',
+                    marginBottom: '0.25rem',
+                  }}
+                >
+                  {t.lastName}
+                </label>
+                <input
+                  id="last_name"
+                  ref={lastNameInputRef}
+                  type="text"
+                  autoComplete="family-name"
+                  enterKeyHint="next"
+                  value={lastName}
+                  onKeyDown={(e) => moveFocus(e, phoneInputRef.current)}
+                  onChange={(e) => setLastName(e.target.value)}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '15px',
+                    fontWeight: 500,
+                    color: '#ffffff',
+                    padding: 0,
+                    lineHeight: 1.4,
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div
+                style={{
+                  position: 'relative',
+                  borderRadius: '1.1rem',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  background: 'rgba(255,255,255,0.08)',
+                  padding: '0.75rem 1rem 0.75rem',
+                  transition: 'border-color 0.2s, background 0.2s',
+                }}
+              >
+                <label
+                  htmlFor="phone_number"
+                  style={{
+                    display: 'block',
+                    fontFamily: "'Manrope', sans-serif",
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.18em',
+                    color: 'rgba(255,255,255,0.68)',
+                    marginBottom: '0.25rem',
+                  }}
+                >
+                  {t.phone}
+                </label>
+                <input
+                  id="phone_number"
+                  ref={phoneInputRef}
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  enterKeyHint="done"
+                  value={phoneNumber}
+                  onKeyDown={(e) => moveFocus(e)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^\d+]/g, '');
+                    setPhoneNumber(val);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '15px',
+                    fontWeight: 500,
+                    color: '#ffffff',
+                    padding: 0,
+                    lineHeight: 1.4,
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Error */}
+              {error && (
+                <p
+                  style={{
+                    borderRadius: '0.5rem',
+                    background: '#ffdad6',
+                    padding: '0.75rem 1rem',
+                    fontSize: '14px',
+                    color: '#93000a',
+                    margin: 0,
+                  }}
+                >
+                  {error}
+                </p>
+              )}
+
+              {/* CTA Button */}
+              <div style={{ paddingTop: '0.75rem' }}>
+                <button
+                  type="submit"
+                  disabled={!isValid}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.75rem',
+                    width: '100%',
+                    height: '58px',
+                    borderRadius: '1rem',
+                    border: 'none',
+                    backgroundColor: '#9a7416',
+                    color: '#ffffff',
+                    fontFamily: "'Manrope', sans-serif",
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.18em',
+                    boxShadow: '0 18px 34px rgba(119,90,25,0.28), inset 0 1px 0 rgba(255,255,255,0.22)',
+                    cursor: isValid ? 'pointer' : 'not-allowed',
+                    opacity: 1,
+                    WebkitAppearance: 'none',
+                    appearance: 'none',
+                    transition: 'transform 0.15s',
+                  }}
+                >
+                  <span>{t.accessDining}</span>
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '1.5rem',
+                      height: '1.5rem',
+                      borderRadius: '9999px',
+                      background: 'rgba(255,255,255,0.14)',
+                      fontSize: '13px',
+                      lineHeight: 1,
+                    }}
+                  >
+                    →
+                  </span>
+                </button>
+              </div>
+            </form>
+
+            {/* Footer links */}
+            <div
+              style={{
+                marginTop: '1.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: '10px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: 'rgba(255,255,255,0.72)',
+              }}
+            >
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontFamily: "'Manrope', sans-serif",
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>concierge</span>
+                {t.assistance}
+              </span>
+              <a
+                href="#"
+                style={{
+                  color: 'rgba(255,255,255,0.72)',
+                  textDecoration: 'none',
+                  fontFamily: "'Manrope', sans-serif",
+                }}
+              >
+                {t.frontDesk}
+              </a>
+            </div>
+          </div>
+        </motion.section>
       </div>
+
+      {/* Grain texture overlay */}
+      <div
+        aria-hidden="true"
+        style={{
+          pointerEvents: 'none',
+          position: 'absolute',
+          inset: 0,
+          zIndex: 100,
+          opacity: 0.03,
+          mixBlendMode: 'overlay',
+          backgroundImage: "url('https://www.transparenttextures.com/patterns/natural-paper.png')",
+        }}
+      />
     </div>
   );
 };

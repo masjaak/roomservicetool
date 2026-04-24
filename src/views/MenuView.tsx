@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Menu as MenuIcon, SearchX, ShoppingBag } from 'lucide-react';
+import { SearchX, ShoppingBag, LogOut, Sun, Moon } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartItem, Language, MenuItem } from '../types';
 import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
-import { guestTheme } from '../styles/guestTheme';
 import { formatCurrency } from '../utils/format';
 import { CartDrawer } from '../components/CartDrawer';
 import { ItemDetailModal } from '../components/ItemDetailModal';
 import { ProductCard } from '../components/ProductCard';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface MenuViewProps {
   roomNumber: string;
@@ -22,184 +22,170 @@ interface MenuViewProps {
   lang: Language;
 }
 
+const CATEGORY_LABELS = ['Breakfast', 'Mains', 'Beverages', 'Snacks'];
+
 export const MenuView: React.FC<MenuViewProps> = ({
-  roomNumber,
-  cart,
-  addToCart,
-  removeFromCart,
-  onCheckout,
-  onOpenCart,
-  onCloseCart,
-  onLogout,
-  isCartOpen,
-  lang,
+  roomNumber, cart, addToCart, removeFromCart,
+  onCheckout, onOpenCart, onCloseCart, onLogout, isCartOpen, lang,
 }) => {
+  const { theme, toggle: toggleTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const t = TRANSLATIONS[lang];
+  const tr = TRANSLATIONS[lang];
+  const isLight = theme.mode === 'light';
 
-  const greeting = lang === 'ID' ? 'Selamat Malam, Tamu' : 'Good Evening, Guest';
-
-  const grandTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
-  const filteredItems = searchQuery.length > 0
-    ? MENU_ITEMS.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : MENU_ITEMS.filter((item) => item.category === selectedCategory);
+  const grandTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const totalQty = cart.reduce((a, i) => a + i.qty, 0);
+  const filteredItems = MENU_ITEMS.filter((i) => i.category === selectedCategory);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`min-h-screen ${guestTheme.bg.canvas} pb-36`}>
-      <header className={`hcs-safe-top fixed top-0 z-50 w-full bg-[#faf9f7]/80 backdrop-blur-xl shadow-[0_20px_40px_rgba(26,28,27,0.06)]`}>
-        <div className="hcs-mobile-canvas flex h-16 w-full items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onLogout}
-              className={`rounded-full p-2 ${guestTheme.text.primary} transition-colors hover:bg-[var(--hcs-surface-muted)]`}
-              aria-label="Exit room"
-            >
-              <MenuIcon className="h-5 w-5" />
-            </button>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      style={{
+        minHeight: '100dvh',
+        background: theme.bgBase,
+        fontFamily: "'Manrope', sans-serif",
+        WebkitFontSmoothing: 'antialiased',
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)',
+        transition: 'background 0.3s',
+      }}
+    >
+      {/* ── Header ── */}
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        background: theme.bgHeader,
+        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: `1px solid ${theme.borderFaint}`,
+        transition: 'background 0.3s, border-color 0.3s',
+      }}>
+        <div style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'env(safe-area-inset-top)' }}>
+          <div style={{ height: '3.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: '1.5rem' }}>
             <div>
-              <h1 className={`font-headline text-lg font-medium tracking-tight ${guestTheme.text.base}`}>
-                {greeting}
+              <p style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.28em', color: theme.textMuted, fontFamily: "'Manrope',sans-serif", marginBottom: '1px', transition: 'color 0.3s' }}>
+                {lang === 'ID' ? 'Kamar' : 'Room'} {roomNumber}
+              </p>
+              <h1 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.15rem', fontWeight: 400, fontStyle: 'italic', color: theme.textBase, lineHeight: 1, transition: 'color 0.3s' }}>
+                Atelier Meridian
               </h1>
             </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+              {/* Theme toggle */}
+              <button onClick={toggleTheme} aria-label="Toggle theme"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', borderRadius: '9999px', background: isLight ? 'rgba(26,23,20,0.07)' : 'rgba(255,255,255,0.07)', border: 'none', cursor: 'pointer', color: theme.goldBright, transition: 'background 0.3s, color 0.3s' }}>
+                {isLight ? <Moon size={16} /> : <Sun size={16} />}
+              </button>
+              <button onClick={onOpenCart} aria-label="Open cart"
+                style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', borderRadius: '9999px', background: isLight ? 'rgba(26,23,20,0.07)' : 'rgba(255,255,255,0.07)', border: 'none', cursor: 'pointer', color: theme.textBase, transition: 'background 0.3s' }}>
+                <ShoppingBag size={18} />
+                {totalQty > 0 && (
+                  <span style={{ position: 'absolute', top: '1px', right: '1px', minWidth: '1rem', height: '1rem', borderRadius: '9999px', background: theme.gold, color: '#fff', fontSize: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                    {totalQty}
+                  </span>
+                )}
+              </button>
+              <button onClick={onLogout} aria-label="Switch room"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', borderRadius: '9999px', background: isLight ? 'rgba(26,23,20,0.07)' : 'rgba(255,255,255,0.07)', border: 'none', cursor: 'pointer', color: theme.textMuted, transition: 'background 0.3s' }}>
+                <LogOut size={16} />
+              </button>
+            </div>
           </div>
-          <button
-            onClick={onOpenCart}
-            className={`relative flex items-center justify-center rounded-full p-2 transition-colors hover:bg-[var(--hcs-surface-muted)]`}
-            aria-label="Open cart"
-          >
-            <ShoppingBag className={`h-6 w-6 ${guestTheme.text.base}`} />
-            <span className={`absolute right-1 top-1.5 flex h-4 w-4 items-center justify-center rounded-full ${guestTheme.bg.primary} text-[10px] font-bold ${guestTheme.text.onPrimary}`}>
-              {totalQty}
-            </span>
-          </button>
         </div>
       </header>
 
-      <div className="hcs-mobile-canvas min-h-screen w-full hcs-header-offset">
-        {!searchQuery && (
-          <nav className={`hcs-sticky-under-header sticky z-40 overflow-hidden ${guestTheme.bg.canvas}/90 px-6 py-4 backdrop-blur-md`}>
-            <div className="hide-scrollbar flex gap-3 overflow-x-auto">
-              {['Breakfast', 'Mains', 'Beverages', 'Snacks'].map((cat, index) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(CATEGORIES[Math.min(index, CATEGORIES.length - 1)])}
-                  className={`whitespace-nowrap rounded-full border px-6 py-3 text-xs uppercase tracking-[0.2em] transition-all ${
-                    (selectedCategory === CATEGORIES[Math.min(index, CATEGORIES.length - 1)] || (index === 1 && !selectedCategory))
-                      ? `${guestTheme.bg.inverse} border-[var(--hcs-inverse)] ${guestTheme.text.inverse} shadow-md`
-                      : `${guestTheme.border.base} ${guestTheme.text.muted} hover:bg-[var(--hcs-surface-muted)]`
-                  }`}
-                >
-                  {cat}
+      <div style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'calc(env(safe-area-inset-top) + 3.75rem)' }}>
+        {/* Category tabs */}
+        <nav style={{ position: 'sticky', top: 'calc(env(safe-area-inset-top) + 3.75rem)', zIndex: 40, background: isLight ? 'rgba(250,249,247,0.94)' : 'rgba(13,12,11,0.94)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: `1px solid ${theme.borderFaint}`, padding: '0.75rem 1.5rem', transition: 'background 0.3s' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', scrollbarWidth: 'none' }}>
+            {CATEGORY_LABELS.map((label, i) => {
+              const cat = CATEGORIES[Math.min(i, CATEGORIES.length - 1)];
+              const active = selectedCategory === cat;
+              return (
+                <button key={label} onClick={() => setSelectedCategory(cat)}
+                  style={{ whiteSpace: 'nowrap', borderRadius: '9999px', padding: '0.45rem 1.1rem', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'Manrope',sans-serif", fontWeight: 700, flexShrink: 0, cursor: 'pointer', transition: 'all 0.2s',
+                    border: active ? `1px solid rgba(154,116,22,0.45)` : `1px solid ${theme.border}`,
+                    background: active ? 'rgba(154,116,22,0.14)' : theme.bgInput,
+                    color: active ? theme.goldBright : theme.textMuted,
+                  }}>
+                  {label}
                 </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* Section heading */}
+        <section style={{ padding: '1.75rem 1.5rem 1rem' }}>
+          <p style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.28em', color: theme.gold, fontFamily: "'Manrope',sans-serif", fontWeight: 700, marginBottom: '0.4rem', transition: 'color 0.3s' }}>
+            Atelier Meridian
+          </p>
+          <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: '2.1rem', fontWeight: 400, color: theme.textBase, lineHeight: 1.1, marginBottom: '0.625rem', transition: 'color 0.3s' }}>
+            {tr.dinnerMenu}
+          </h2>
+          <p style={{ maxWidth: '22rem', fontSize: '13px', lineHeight: 1.7, color: theme.textMuted, transition: 'color 0.3s' }}>
+            {tr.curatedMenuIntro}
+          </p>
+        </section>
+
+        {/* Menu items */}
+        <main style={{ paddingInline: '1.5rem' }}>
+          {filteredItems.length === 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 1rem', textAlign: 'center' }}>
+              <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '4rem', height: '4rem', borderRadius: '9999px', background: theme.bgMuted }}>
+                <SearchX size={24} color={theme.textMuted} />
+              </div>
+              <h3 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.5rem', color: theme.textBase, fontWeight: 400 }}>{tr.emptyMenuTitle}</h3>
+              <p style={{ marginTop: '0.5rem', fontSize: '14px', color: theme.textMuted, maxWidth: '20rem', lineHeight: 1.6 }}>{tr.emptyMenuDesc}</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {filteredItems.map((item) => (
+                <ProductCard key={item.id} item={item}
+                  onClick={() => setSelectedItem(item)}
+                  onAdd={(e) => { e.stopPropagation(); addToCart(item, 1, ''); }}
+                  freeLabel={tr.free} />
               ))}
             </div>
-          </nav>
-        )}
-
-        <main>
-          <section className="px-6 py-8">
-            <div>
-              <p className={`mb-2 text-[10px] font-bold uppercase tracking-[0.2em] ${guestTheme.text.primary}`}>Atelier Meridian</p>
-              <h2 className={`font-headline mb-4 text-4xl font-medium tracking-tight ${guestTheme.text.base}`}>
-                {searchQuery ? t.search : t.dinnerMenu}
-              </h2>
-              <p className={`max-w-[24rem] text-sm font-light leading-relaxed ${guestTheme.text.muted}`}>{t.curatedMenuIntro}</p>
-            </div>
-          </section>
-
-          <section className="space-y-6 px-6">
-            {filteredItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
-                <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-full ${guestTheme.bg.surfaceMuted}`}>
-                  <SearchX className={`h-6 w-6 ${guestTheme.text.primary}/50`} />
-                </div>
-                <h3 className={`font-headline text-2xl ${guestTheme.text.base}`}>
-                  {searchQuery ? t.emptySearchTitle : t.emptyMenuTitle}
-                </h3>
-                <p className={`mt-2 max-w-sm text-sm leading-relaxed ${guestTheme.text.muted}`}>
-                  {searchQuery ? t.searchEmpty : t.emptyMenuDesc}
-                </p>
-              </div>
-            ) : (
-              filteredItems.map((item) => (
-                <ProductCard
-                  key={item.id}
-                  item={item}
-                  onClick={() => setSelectedItem(item)}
-                  onAdd={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    addToCart(item, 1, '');
-                  }}
-                  freeLabel={t.free}
-                />
-              ))
-            )}
-          </section>
-
-        </main>
-
-        <AnimatePresence>
-          {totalQty > 0 && (
-            <motion.div
-              initial={{ y: 150 }}
-              animate={{ y: 0 }}
-              exit={{ y: 150 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="hcs-safe-bottom-space pointer-events-none fixed bottom-6 left-1/2 z-40 hcs-mobile-canvas w-[calc(100%-3rem)] -translate-x-1/2 px-6"
-            >
-              <button
-                onClick={onOpenCart}
-                aria-label="Open cart"
-                className={`pointer-events-auto flex h-16 w-full items-center justify-between rounded-[1.25rem] ${guestTheme.bg.inverse} ${guestTheme.text.inverse} px-2 shadow-[0_20px_40px_rgba(0,0,0,0.3)]`}
-              >
-                <div className="pl-6 text-left">
-                  <p className={`text-[10px] uppercase tracking-[0.2em] ${guestTheme.text.inverse}/60`}>
-                    {t.cart}: {totalQty} {totalQty > 1 ? 'Items' : 'Item'}
-                  </p>
-                  <p className="font-headline text-lg leading-none">{formatCurrency(grandTotal)}</p>
-                </div>
-                <span className={`rounded-[1rem] ${guestTheme.bg.primary} px-8 py-4 text-xs font-bold uppercase tracking-[0.18em] ${guestTheme.text.onPrimary}`}>
-                  {t.viewOrder}
-                </span>
-              </button>
-            </motion.div>
           )}
-        </AnimatePresence>
-
-        {!searchQuery && (
-          <nav className={`hcs-safe-bottom-nav fixed bottom-0 left-0 z-20 w-full ${guestTheme.bg.surface} shadow-[0_-1px_0_rgba(227,226,224,0.85)]`}>
-            <div className="hcs-mobile-canvas flex h-full items-center justify-around px-8">
-              <div className={`relative flex flex-col items-center justify-center ${guestTheme.text.primary}`}>
-                <span className="text-lg">•</span>
-                <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em]">Menu</span>
-              </div>
-              <div className={`${guestTheme.text.muted}/45 text-[10px] font-bold uppercase tracking-[0.12em]`}>Orders</div>
-              <div className={`${guestTheme.text.muted}/45 text-[10px] font-bold uppercase tracking-[0.12em]`}>Suite</div>
-              <div className={`${guestTheme.text.muted}/45 text-[10px] font-bold uppercase tracking-[0.12em]`}>Inquiry</div>
-            </div>
-          </nav>
-        )}
-
-        <ItemDetailModal
-          item={selectedItem}
-          isOpen={!!selectedItem}
-          onClose={() => setSelectedItem(null)}
-          onAdd={addToCart}
-          lang={lang}
-        />
-
-        <CartDrawer
-          cart={cart}
-          isOpen={isCartOpen}
-          onClose={onCloseCart}
-          onRemove={removeFromCart}
-          onCheckout={onCheckout}
-          lang={lang}
-        />
+        </main>
       </div>
+
+      {/* Floating cart CTA */}
+      <AnimatePresence>
+        {totalQty > 0 && (
+          <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+            style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom) + 5.5rem)', left: '50%', transform: 'translateX(-50%)', width: 'calc(min(28rem, 100%) - 3rem)', zIndex: 40 }}>
+            <button onClick={onOpenCart} aria-label="Open cart"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '3.75rem', borderRadius: '1.25rem', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 16px 40px rgba(119,90,25,0.38)', padding: '0 0.5rem 0 1.5rem', cursor: 'pointer' }}>
+              <div>
+                <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.65)', fontFamily: "'Manrope',sans-serif", fontWeight: 700 }}>
+                  {tr.cart}: {totalQty} {totalQty > 1 ? 'Items' : 'Item'}
+                </p>
+                <p style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.15rem', fontWeight: 400, color: '#fff', lineHeight: 1 }}>{formatCurrency(grandTotal)}</p>
+              </div>
+              <span style={{ borderRadius: '0.875rem', background: 'rgba(255,255,255,0.14)', padding: '0.75rem 1.25rem', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: '#fff', fontFamily: "'Manrope',sans-serif" }}>
+                {tr.viewOrder}
+              </span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bottom nav */}
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20, background: theme.bgNav, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderTop: `1px solid ${theme.borderFaint}`, paddingBottom: 'env(safe-area-inset-bottom)', transition: 'background 0.3s, border-color 0.3s' }}>
+        <div style={{ maxWidth: '28rem', marginInline: 'auto', height: '3.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-around', paddingInline: '2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', color: theme.gold }}>
+            <span style={{ fontSize: '10px', lineHeight: 1 }}>●</span>
+            <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'Manrope',sans-serif" }}>Menu</span>
+          </div>
+          {['Orders', 'Suite', 'Inquiry'].map((l) => (
+            <span key={l} style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: theme.textMuted, opacity: 0.45, fontFamily: "'Manrope',sans-serif" }}>{l}</span>
+          ))}
+        </div>
+      </nav>
+
+      <ItemDetailModal item={selectedItem} isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} onAdd={addToCart} lang={lang} />
+      <CartDrawer cart={cart} isOpen={isCartOpen} onClose={onCloseCart} onRemove={removeFromCart} onCheckout={onCheckout} lang={lang} />
     </motion.div>
   );
 };

@@ -3,6 +3,7 @@ import { X, Minus, Plus, ChevronDown, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MenuItem, Language } from '../types';
 import { TRANSLATIONS } from '../data/constants';
+import { useTheme } from '../contexts/ThemeContext';
 import { formatCurrency } from '../utils/format';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
@@ -15,147 +16,80 @@ interface ItemDetailModalProps {
 }
 
 export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, onClose, onAdd, lang }) => {
+  const { theme } = useTheme();
   const t = TRANSLATIONS[lang];
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState('');
   const [showAllergens, setShowAllergens] = useState(false);
 
   const handleAdd = () => {
-    if (item) {
-      onAdd(item, qty, note);
-      setQty(1);
-      setNote('');
-      onClose();
-    }
+    if (item) { onAdd(item, qty, note); setQty(1); setNote(''); onClose(); }
   };
-
-  const handleClose = () => {
-    setQty(1);
-    setNote('');
-    onClose();
-  };
-
+  const handleClose = () => { setQty(1); setNote(''); onClose(); };
   if (!item) return null;
 
   const totalPrice = item.price * qty;
   const allergens = typeof item.allergens === 'string'
-    ? item.allergens.split(',').map((value) => value.trim()).filter(Boolean)
-    : [];
+    ? item.allergens.split(',').map(v => v.trim()).filter(Boolean) : [];
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleClose}
-            className="fixed inset-0 z-50 bg-[#000000]/50 backdrop-blur-sm"
-          />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleClose}
+            style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }} />
+          <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pointerEvents: 'none' }}>
+            <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              style={{ pointerEvents: 'auto', width: '100%', maxWidth: '28rem', background: theme.bgSurface, borderTopLeftRadius: '1.75rem', borderTopRightRadius: '1.75rem', overflow: 'hidden', maxHeight: '92vh', display: 'flex', flexDirection: 'column', boxShadow: '0 -20px 60px rgba(0,0,0,0.5)', transition: 'background 0.3s' }}>
 
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none sm:p-6">
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="w-full max-w-lg bg-[#ffffff] pointer-events-auto flex flex-col sm:rounded-2xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[90vh] overscroll-contain"
-            >
-              {/* Image Header */}
-              <div className="relative w-full aspect-[3/2] max-h-[30vh] sm:max-h-[40vh] bg-[#f5f5f4]">
-                <button
-                  onClick={handleClose}
-                  aria-label="Close modal"
-                  className="absolute top-4 right-4 z-10 w-9 h-9 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
-                >
-                  <X className="w-5 h-5" />
+              {/* Image */}
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '3/2', maxHeight: '32vh', background: theme.bgMuted, flexShrink: 0 }}>
+                <button onClick={handleClose} aria-label="Close" style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10, width: '2.25rem', height: '2.25rem', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderRadius: '9999px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer' }}>
+                  <X size={18} />
                 </button>
-                <ImageWithFallback
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
+                <ImageWithFallback src={item.image} alt={item.name} className="w-full h-full object-cover" />
               </div>
 
-              {/* Content Body */}
-              <div className="flex-1 overflow-y-auto hide-scrollbar">
-                <div className="px-6 py-8">
-                  {/* Title & Badge */}
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <h2 className="text-[2rem] leading-tight font-bold" style={{ color: '#1c1917', fontFamily: "'DM Serif Display', serif" }}>
-                      {item.name}
-                    </h2>
+              {/* Scroll body */}
+              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none' }}>
+                <div style={{ padding: '1.75rem 1.5rem 1.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.625rem' }}>
+                    <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.7rem', fontWeight: 400, lineHeight: 1.15, color: theme.textBase, transition: 'color 0.3s' }}>{item.name}</h2>
                     {(item.tag || item.serviceTag) && (
-                      <div className="flex flex-col gap-1 items-end pt-1">
-                        {item.tag && <span className="text-[9px] px-2 py-1 font-bold uppercase tracking-[0.15em] bg-[#f5f5f4] text-[#78716c] rounded-sm">{item.tag}</span>}
-                        {item.serviceTag && <span className="text-[9px] px-2 py-1 font-bold uppercase tracking-[0.15em] bg-[#1c1917] text-white rounded-sm">{item.serviceTag}</span>}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end', flexShrink: 0, paddingTop: '0.25rem' }}>
+                        {item.tag && <span style={{ fontSize: '9px', padding: '0.2rem 0.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', background: theme.bgInput, color: theme.textMuted, borderRadius: '0.2rem' }}>{item.tag}</span>}
+                        {item.serviceTag && <span style={{ fontSize: '9px', padding: '0.2rem 0.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', background: 'rgba(154,116,22,0.18)', color: theme.goldBright, borderRadius: '0.2rem' }}>{item.serviceTag}</span>}
                       </div>
                     )}
                   </div>
+                  <p style={{ fontSize: '14px', lineHeight: 1.7, color: theme.textMuted, marginBottom: '1.25rem', transition: 'color 0.3s' }}>{item.description}</p>
 
-                  <p className="text-[1rem] leading-relaxed text-[#78716c] mb-6">
-                    {item.description}
-                  </p>
+                  {(item.prepTime || (item.spiceLevel && item.spiceLevel !== 'None')) && (
+                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                      {item.prepTime && <div style={{ display: 'flex', background: theme.bgInput, border: `1px solid ${theme.borderFaint}`, padding: '0.35rem 0.875rem', borderRadius: '9999px' }}><span style={{ fontSize: '10px', fontWeight: 700, color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Prep: {item.prepTime}</span></div>}
+                      {item.spiceLevel && item.spiceLevel !== 'None' && <div style={{ display: 'flex', background: theme.bgInput, border: `1px solid ${theme.borderFaint}`, padding: '0.35rem 0.875rem', borderRadius: '9999px' }}><span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: item.spiceLevel === 'Hot' ? '#f87171' : '#fbbf24' }}>Spice: {item.spiceLevel}</span></div>}
+                    </div>
+                  )}
 
-                  <div className="flex gap-4 mb-8">
-                    {item.prepTime && (
-                      <div className="flex bg-[#f5f5f4] py-2 px-4 rounded-full">
-                        <span className="text-[10px] font-bold text-[#574b3f] uppercase tracking-wider">
-                          Prep: {item.prepTime}
-                        </span>
-                      </div>
-                    )}
-                    {item.spiceLevel && item.spiceLevel !== 'None' && (
-                      <div className="flex bg-[#f5f5f4] py-2 px-4 rounded-full">
-                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: item.spiceLevel === 'Hot' ? '#b91c1c' : '#d97706' }}>
-                          Spice: {item.spiceLevel}
-                        </span>
-                      </div>
-                    )}
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: theme.textMuted, marginBottom: '0.5rem', fontFamily: "'Manrope',sans-serif" }}>{t.specialInstructions}</label>
+                    <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.placeholderNote} style={{ width: '100%', background: theme.bgInput, border: `1px solid ${theme.border}`, borderRadius: '0.875rem', padding: '0.875rem 1rem', fontSize: '14px', color: theme.textBase, resize: 'none', height: '5.5rem', outline: 'none', fontFamily: "'Manrope',sans-serif", boxSizing: 'border-box', transition: 'background 0.3s, border-color 0.3s' }} />
                   </div>
 
-                  {/* Note Input */}
-                  <div className="mb-6">
-                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1c1917] mb-3">
-                      {t.specialInstructions}
-                    </label>
-                    <textarea
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      placeholder={t.placeholderNote}
-                      className="w-full bg-[#fdfbf9] border border-[#e7e5e4] rounded-lg p-4 text-[0.95rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50 resize-none h-24 placeholder-[#a8a29e]"
-                    />
-                  </div>
-
-                  {/* Allergens dropdown */}
                   {allergens.length > 0 && (
-                    <div className="border border-[#e7e5e4] rounded-lg overflow-hidden">
-                      <button
-                        onClick={() => setShowAllergens(!showAllergens)}
-                        className="w-full flex items-center justify-between p-4 bg-[#fdfbf9] text-[11px] uppercase tracking-widest font-bold text-[#1c1917] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
-                      >
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="w-4 h-4 text-[#a08850]" />
-                          <span>Show Allergens</span>
+                    <div style={{ border: `1px solid ${theme.border}`, borderRadius: '0.875rem', overflow: 'hidden' }}>
+                      <button onClick={() => setShowAllergens(!showAllergens)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.875rem 1rem', background: theme.bgInput, border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <AlertTriangle size={14} color={theme.goldBright} />
+                          <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'Manrope',sans-serif" }}>{t.containsAllergens}</span>
                         </div>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${showAllergens ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={15} style={{ transition: 'transform 0.2s', transform: showAllergens ? 'rotate(180deg)' : 'none', color: theme.textMuted }} />
                       </button>
                       <AnimatePresence>
                         {showAllergens && (
-                          <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: 'auto' }}
-                            exit={{ height: 0 }}
-                            className="overflow-hidden bg-white"
-                          >
-                            <div className="p-4 pt-0 border-t border-[#e7e5e4] flex flex-wrap gap-2">
-                              {allergens.map((allergen) => (
-                                <span key={allergen} className="px-3 py-1 bg-[#f5f5f4] text-[#574b3f] text-[11px] rounded-full font-medium">
-                                  {allergen}
-                                </span>
-                              ))}
+                          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} style={{ overflow: 'hidden' }}>
+                            <div style={{ padding: '0.875rem 1rem', borderTop: `1px solid ${theme.borderFaint}`, display: 'flex', flexWrap: 'wrap', gap: '0.5rem', background: theme.bgInput }}>
+                              {allergens.map(a => <span key={a} style={{ padding: '0.25rem 0.75rem', background: theme.bgMuted, color: theme.textMuted, fontSize: '11px', borderRadius: '9999px', fontWeight: 500 }}>{a}</span>)}
                             </div>
                           </motion.div>
                         )}
@@ -165,35 +99,20 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                 </div>
               </div>
 
-              {/* Footer Controls */}
-              <div className="p-6 bg-[#ffffff] border-t border-[#e7e5e4] grid grid-cols-[100px_1fr] gap-4">
-                {/* Quantity */}
-                <div className="flex items-center justify-between bg-[#f5f5f4] rounded-full px-2 h-14">
-                  <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    aria-label="Decrease quantity"
-                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] disabled:opacity-30 rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
-                    disabled={qty <= 1}
-                  >
-                    <Minus className="w-4 h-4" />
+              {/* Footer */}
+              <div style={{ padding: '1rem 1.5rem', paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)', background: theme.bgSurface, borderTop: `1px solid ${theme.borderFaint}`, display: 'grid', gridTemplateColumns: '6.5rem 1fr', gap: '0.75rem', transition: 'background 0.3s, border-color 0.3s' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: theme.bgInput, borderRadius: '9999px', padding: '0 0.25rem', height: '3.5rem', border: `1px solid ${theme.borderFaint}` }}>
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} disabled={qty <= 1} style={{ width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: qty <= 1 ? 'not-allowed' : 'pointer', color: qty <= 1 ? theme.textMuted : theme.textSecondary, borderRadius: '9999px' }}>
+                    <Minus size={14} />
                   </button>
-                  <span className="text-[1rem] font-bold text-[#1c1917]">{qty}</span>
-                  <button
-                    onClick={() => setQty(qty + 1)}
-                    aria-label="Increase quantity"
-                    className="w-10 h-10 flex items-center justify-center text-[#1c1917] rounded-full hover:bg-[#e7e5e4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1c1917]/50"
-                  >
-                    <Plus className="w-4 h-4" />
+                  <span style={{ fontSize: '15px', fontWeight: 700, color: theme.textBase, minWidth: '1.25rem', textAlign: 'center' }}>{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} style={{ width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: theme.textSecondary, borderRadius: '9999px' }}>
+                    <Plus size={14} />
                   </button>
                 </div>
-
-                {/* Add to Cart CTA */}
-                <button
-                  onClick={handleAdd}
-                  className="h-14 bg-[#1c1917] text-[#ffffff] rounded-full flex items-center justify-between px-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1c1917]/50 hover:bg-[#2d2d2d] transition-colors active:scale-[0.98]"
-                >
-                  <span className="text-[12px] font-bold uppercase tracking-widest">{t.addToCart}</span>
-                  <span className="text-[14px] font-bold text-[#a08850]">{formatCurrency(totalPrice)}</span>
+                <button onClick={handleAdd} style={{ height: '3.5rem', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 24px rgba(119,90,25,0.28)', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: '1.25rem', cursor: 'pointer' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: '#fff', fontFamily: "'Manrope',sans-serif" }}>{t.addToCart}</span>
+                  <span style={{ fontFamily: "'Noto Serif',serif", fontSize: '15px', color: 'rgba(255,255,255,0.85)' }}>{formatCurrency(totalPrice)}</span>
                 </button>
               </div>
             </motion.div>

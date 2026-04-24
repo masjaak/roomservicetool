@@ -1,19 +1,22 @@
-
 import { createRoot } from "react-dom/client";
 import { useEffect, useState } from "react";
-import App from "./App.tsx";
-import { AdminDashboard } from "./views/AdminDashboard.tsx";
+import App from "./App";
+import { AdminDashboard } from "./views/AdminDashboard";
+import "./styles/globals.css";
 import "./index.css";
 
+const ADMIN_HASH = "#admin";
+
 function Root() {
-  const [isAdmin, setIsAdmin] = useState(window.location.hash === '#admin');
+  const [isAdmin, setIsAdmin] = useState(() => window.location.hash === ADMIN_HASH);
 
   useEffect(() => {
     const handleHashChange = () => {
-      setIsAdmin(window.location.hash === '#admin');
+      setIsAdmin(window.location.hash === ADMIN_HASH);
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
   return isAdmin ? <AdminDashboard /> : <App />;

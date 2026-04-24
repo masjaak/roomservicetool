@@ -43,6 +43,7 @@ describe('CartDrawer', () => {
         lang="EN"
       />
     );
+    // CartDrawer reads theme from context; default context (dark) is used in tests
 
     fireEvent.click(screen.getAllByLabelText('Remove item')[1]);
 

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Star, X } from 'lucide-react';
 import { TRANSLATIONS } from '../data/constants';
-import { guestTheme } from '../styles/guestTheme';
 import { FeedbackPayload, Language } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface RatingModalProps {
 }
 
 export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip, lang }) => {
+  const { theme } = useTheme();
   const [overallRating, setOverallRating] = useState(0);
   const [foodQuality, setFoodQuality] = useState(0);
   const [presentation, setPresentation] = useState(0);
@@ -27,9 +28,6 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
   const [issueNote, setIssueNote] = useState('');
 
   const t = TRANSLATIONS[lang];
-  const accentColor = 'var(--hcs-primary)';
-  const mutedStarColor = 'var(--hcs-line)';
-  const subduedStarColor = 'var(--hcs-line-strong)';
 
   const handleSubmit = () => {
     onRate({
@@ -53,102 +51,144 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`fixed inset-0 z-50 flex items-center justify-center ${guestTheme.bg.canvas}/95 p-4 sm:p-8`}>
+        <>
           <motion.div
-            initial={{ scale: 0.95, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.95, y: 20 }}
-            className={`relative flex min-h-[90vh] w-full max-w-lg flex-col overflow-hidden ${guestTheme.bg.canvas} shadow-[0_28px_80px_rgba(0,0,0,0.12)]`}
-          >
-            <header className={`sticky top-0 z-10 flex h-16 items-center justify-between ${guestTheme.bg.canvas} px-6`}>
-              <button aria-label="Close rating" onClick={() => onSkip && onSkip()} className={`flex h-10 w-10 items-center justify-center rounded-full ${guestTheme.text.primary}`}>
-                <X className="h-5 w-5" />
-              </button>
-              <h1 className={`font-headline absolute left-1/2 -translate-x-1/2 text-xl italic tracking-tight ${guestTheme.text.primary}`}>Atelier Meridian</h1>
-              <div className="w-10" />
-            </header>
-
-            <div className="flex-1 overflow-y-auto px-6 pb-10 pt-28">
-              <div className="flex flex-col items-center text-center">
-                <span className={`text-xs font-semibold uppercase tracking-[0.1em] ${guestTheme.text.label}`}>{t.guestExperience}</span>
-                <h2 className={`font-headline mt-4 text-[4rem] leading-[1.02] tracking-tight ${guestTheme.text.base}`}>{t.enjoyedMeal}</h2>
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => onSkip && onSkip()}
+            style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+          />
+          <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pointerEvents: 'none' }}>
+            <motion.div
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              style={{ pointerEvents: 'auto', width: '100%', maxWidth: '28rem', background: theme.bgSurface, borderTopLeftRadius: '1.75rem', borderTopRightRadius: '1.75rem', overflow: 'hidden', maxHeight: '92vh', display: 'flex', flexDirection: 'column', boxShadow: '0 -20px 60px rgba(0,0,0,0.5)', transition: 'background 0.3s' }}
+            >
+              {/* Header */}
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1.5rem', borderBottom: `1px solid ${theme.borderFaint}`, flexShrink: 0 }}>
+                <button
+                  aria-label="Close rating"
+                  onClick={() => onSkip && onSkip()}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', borderRadius: '9999px', background: theme.bgInput, border: 'none', cursor: 'pointer', color: theme.textMuted }}
+                >
+                  <X size={18} />
+                </button>
+                <h1 style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontFamily: "'Noto Serif',serif", fontSize: '1.15rem', fontWeight: 400, fontStyle: 'italic', color: theme.textBase, lineHeight: 1, whiteSpace: 'nowrap' }}>
+                  Atelier Meridian
+                </h1>
+                <div style={{ width: '2.25rem' }} />
               </div>
 
-              <div className="flex justify-center gap-4 py-10">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button key={n} type="button" onClick={() => setOverallRating(n)} className="rounded-full p-2 transition-transform duration-200 hover:scale-110">
-                    <Star className="h-11 w-11" style={{ color: n <= overallRating ? accentColor : subduedStarColor, fill: n <= overallRating ? accentColor : 'transparent' }} />
-                  </button>
-                ))}
-              </div>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                <textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder={t.tellUsMore}
-                  rows={4}
-                  className={`w-full resize-none border-0 border-b ${guestTheme.border.base} bg-transparent px-0 py-4 text-lg ${guestTheme.text.base} placeholder:text-[var(--hcs-outline)]/60 focus:border-[var(--hcs-primary)] focus:ring-0`}
-                />
+              {/* Scroll body */}
+              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'none' }}>
+                <div style={{ padding: '2rem 1.5rem 1.5rem' }}>
 
-                {overallRating > 0 && overallRating <= 3 ? (
-                  <div className={`space-y-4 rounded-[1.25rem] border ${guestTheme.border.strong} ${guestTheme.bg.surface} p-5`}>
-                    <select
-                      className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
-                      value={issueCategory || ''}
-                      onChange={(e) => setIssueCategory(e.target.value as FeedbackPayload['issueCategory'])}
-                    >
-                      <option value="" disabled>{lang === 'ID' ? 'Pilih kategori...' : 'Select a category...'}</option>
-                      <option value="Food quality">Food quality</option>
-                      <option value="Temperature">Temperature</option>
-                      <option value="Late delivery">Late delivery</option>
-                      <option value="Wrong item">Wrong item</option>
-                      <option value="Packaging">Packaging</option>
-                      <option value="Staff service">Staff service</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    <input
-                      type="text"
-                      placeholder={t.issueDetail}
-                      value={issueNote}
-                      onChange={(e) => setIssueNote(e.target.value)}
-                      className={`w-full rounded-lg border ${guestTheme.border.base} ${guestTheme.bg.surface} p-3 text-sm ${guestTheme.text.base} outline-none focus-visible:ring-2 focus-visible:ring-[var(--hcs-primary)]/30`}
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setWouldOrderAgain('yes')}
-                        className={`flex-1 rounded-lg border py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
-                          wouldOrderAgain === 'yes' ? `${guestTheme.border.strong} ${guestTheme.bg.primary} ${guestTheme.text.onPrimary}` : `${guestTheme.border.base} ${guestTheme.text.base}`
-                        }`}
-                      >
-                        {lang === 'ID' ? 'YA' : 'YES'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setWouldOrderAgain('no')}
-                        className={`flex-1 rounded-lg border py-3 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
-                          wouldOrderAgain === 'no' ? `${guestTheme.border.strong} ${guestTheme.bg.primary} ${guestTheme.text.onPrimary}` : `${guestTheme.border.base} ${guestTheme.text.base}`
-                        }`}
-                      >
-                        {lang === 'ID' ? 'TIDAK' : 'NO'}
-                      </button>
-                    </div>
+                  {/* Heading */}
+                  <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.22em', color: theme.gold, fontFamily: "'Manrope',sans-serif", marginBottom: '0.75rem' }}>
+                      {t.guestExperience}
+                    </p>
+                    <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: '2rem', fontWeight: 400, lineHeight: 1.1, color: theme.textBase }}>
+                      {t.enjoyedMeal}
+                    </h2>
                   </div>
-                ) : null}
 
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className={`w-full ${guestTheme.bg.primary} px-12 py-4 text-sm font-semibold uppercase tracking-[0.14em] ${guestTheme.text.onPrimary} transition-all duration-300 hover:opacity-90`}
-                  >
-                    {t.submitFeedback}
-                  </button>
+                  {/* Stars */}
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setOverallRating(n)}
+                        style={{ padding: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'transform 0.2s' }}
+                      >
+                        <Star
+                          size={40}
+                          style={{
+                            color: n <= overallRating ? theme.goldBright : theme.borderFaint,
+                            fill: n <= overallRating ? theme.goldBright : 'transparent',
+                            transition: 'color 0.2s, fill 0.2s',
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Comment */}
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <textarea
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder={t.tellUsMore}
+                      rows={3}
+                      style={{ width: '100%', background: theme.bgInput, border: `1px solid ${theme.border}`, borderRadius: '0.875rem', padding: '0.875rem 1rem', fontSize: '14px', color: theme.textBase, resize: 'none', outline: 'none', fontFamily: "'Manrope',sans-serif", boxSizing: 'border-box', transition: 'background 0.3s, border-color 0.3s' }}
+                    />
+                  </div>
+
+                  {/* Low-rating extra section */}
+                  {overallRating > 0 && overallRating <= 3 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                      style={{ background: theme.bgInput, border: `1px solid ${theme.border}`, borderRadius: '0.875rem', padding: '1rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+                    >
+                      <select
+                        value={issueCategory || ''}
+                        onChange={(e) => setIssueCategory(e.target.value as FeedbackPayload['issueCategory'])}
+                        style={{ width: '100%', background: theme.bgSurface, border: `1px solid ${theme.border}`, borderRadius: '0.625rem', padding: '0.75rem 1rem', fontSize: '13px', color: theme.textBase, outline: 'none', fontFamily: "'Manrope',sans-serif', appearance: 'none" }}
+                      >
+                        <option value="" disabled>{lang === 'ID' ? 'Pilih kategori...' : 'Select a category...'}</option>
+                        <option value="Food quality">Food quality</option>
+                        <option value="Temperature">Temperature</option>
+                        <option value="Late delivery">Late delivery</option>
+                        <option value="Wrong item">Wrong item</option>
+                        <option value="Packaging">Packaging</option>
+                        <option value="Staff service">Staff service</option>
+                        <option value="Other">Other</option>
+                      </select>
+
+                      <input
+                        type="text"
+                        placeholder={t.issueDetail}
+                        value={issueNote}
+                        onChange={(e) => setIssueNote(e.target.value)}
+                        style={{ width: '100%', background: theme.bgSurface, border: `1px solid ${theme.border}`, borderRadius: '0.625rem', padding: '0.75rem 1rem', fontSize: '13px', color: theme.textBase, outline: 'none', fontFamily: "'Manrope',sans-serif", boxSizing: 'border-box' }}
+                      />
+
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {(['yes', 'no'] as const).map((v) => (
+                          <button
+                            key={v}
+                            type="button"
+                            onClick={() => setWouldOrderAgain(v)}
+                            style={{
+                              flex: 1, padding: '0.75rem', borderRadius: '0.625rem', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'Manrope',sans-serif", cursor: 'pointer', transition: 'all 0.2s',
+                              border: wouldOrderAgain === v ? '1px solid rgba(154,116,22,0.45)' : `1px solid ${theme.border}`,
+                              background: wouldOrderAgain === v ? 'rgba(154,116,22,0.14)' : 'transparent',
+                              color: wouldOrderAgain === v ? theme.goldBright : theme.textMuted,
+                            }}
+                          >
+                            {v === 'yes' ? (lang === 'ID' ? 'YA' : 'YES') : (lang === 'ID' ? 'TIDAK' : 'NO')}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </motion.div>
+              </div>
+
+              {/* Footer CTA */}
+              <div style={{ padding: '1rem 1.5rem', paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)', background: theme.bgSurface, borderTop: `1px solid ${theme.borderFaint}`, transition: 'background 0.3s' }}>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={overallRating === 0}
+                  style={{ width: '100%', height: '3.5rem', borderRadius: '9999px', background: overallRating === 0 ? theme.bgInput : 'linear-gradient(135deg,#7a5c10,#9a7416)', border: overallRating === 0 ? `1px solid ${theme.border}` : '1px solid rgba(255,255,255,0.1)', boxShadow: overallRating === 0 ? 'none' : '0 10px 24px rgba(119,90,25,0.28)', color: overallRating === 0 ? theme.textMuted : '#fff', fontFamily: "'Manrope',sans-serif", fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: overallRating === 0 ? 'not-allowed' : 'pointer', transition: 'all 0.3s' }}
+                >
+                  {t.submitFeedback}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </>
       )}
     </AnimatePresence>
   );

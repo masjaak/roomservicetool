@@ -1,7 +1,7 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 import { MenuItem } from '../types';
-import { guestTheme } from '../styles/guestTheme';
+import { useTheme } from '../contexts/ThemeContext';
 import { formatCurrency } from '../utils/format';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
@@ -13,43 +13,27 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item, onClick, onAdd, freeLabel }) => {
+  const { theme } = useTheme();
   return (
-    <div
-      onClick={onClick}
-      className={`group flex cursor-pointer overflow-hidden ${guestTheme.bg.surface} transition-all duration-300`}
-    >
-      <div className="h-32 w-32 flex-shrink-0 overflow-hidden">
-        <ImageWithFallback
-          src={item.image}
-          alt={item.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-        />
+  <div onClick={onClick} style={{ display: 'flex', overflow: 'hidden', borderRadius: '1.1rem', background: theme.bgSurface, border: `1px solid ${theme.borderFaint}`, cursor: 'pointer', transition: 'background 0.3s, border-color 0.3s' }}>
+    <div style={{ width: '7.5rem', flexShrink: 0, overflow: 'hidden' }}>
+      <ImageWithFallback src={item.image} alt={item.name} className="h-full w-full object-cover" />
+    </div>
+    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0.875rem 1rem' }}>
+      <div>
+        <h3 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1rem', fontWeight: 400, lineHeight: 1.25, color: theme.textBase, marginBottom: '0.25rem', transition: 'color 0.3s' }}>{item.name}</h3>
+        <p style={{ fontSize: '12px', fontStyle: 'italic', lineHeight: 1.4, color: theme.textMuted, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', transition: 'color 0.3s' }}>{item.description}</p>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
-        <div>
-          <h3 className={`font-headline text-[1.05rem] font-medium leading-[1.25] ${guestTheme.text.base}`}>{item.name}</h3>
-          <p className={`mt-1 line-clamp-2 text-xs italic leading-[1.35] ${guestTheme.text.muted}`}>{item.description}</p>
-        </div>
-
-        <div className="mt-3 flex items-end justify-between gap-4">
-          <span className={`font-headline text-[0.95rem] font-medium leading-none ${guestTheme.text.primary}`}>
-            {item.price > 0 ? formatCurrency(item.price) : freeLabel}
-          </span>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAdd(e);
-            }}
-            style={{ touchAction: 'manipulation' }}
-            aria-label={`Add ${item.name} to cart`}
-            className={`inline-flex h-10 min-w-[6.75rem] items-center justify-center gap-1 rounded-lg ${guestTheme.bg.primary} px-4 text-xs font-semibold uppercase tracking-[0.12em] ${guestTheme.text.onPrimary} transition-all hover:brightness-110 active:scale-95`}
-          >
-            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Add</span>
-          </button>
-        </div>
+      <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '0.5rem' }}>
+        <span style={{ fontFamily: "'Noto Serif',serif", fontSize: '0.95rem', fontWeight: 400, color: theme.goldBright, lineHeight: 1, transition: 'color 0.3s' }}>
+          {item.price > 0 ? formatCurrency(item.price) : freeLabel}
+        </span>
+        <button onClick={(e) => { e.stopPropagation(); onAdd(e); }} aria-label={`Add ${item.name}`}
+          style={{ touchAction: 'manipulation', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', height: '2.25rem', minWidth: '5.5rem', borderRadius: '0.625rem', background: 'rgba(154,116,22,0.14)', border: '1px solid rgba(154,116,22,0.32)', color: theme.goldBright, fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'Manrope',sans-serif", cursor: 'pointer', transition: 'background 0.2s' }}>
+          <Plus size={13} aria-hidden="true" /><span>Add</span>
+        </button>
       </div>
     </div>
+  </div>
   );
 };

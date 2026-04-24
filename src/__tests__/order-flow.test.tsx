@@ -16,7 +16,7 @@ describe('ProductCard UI Expectations', () => {
   it('explicitly renders a direct Add button, which adds to cart independently of the modal', () => {
     const clickSpy = vi.fn();
     const addSpy = vi.fn();
-    render(<ProductCard item={mockItem} onClick={clickSpy} onAdd={addSpy} freeLabel="Free" />);
+    render(<ProductCard item={mockItem as any} onClick={clickSpy} onAdd={addSpy} freeLabel="Free" />);
 
     // Since the new rule specifies making CTA explicitly obvious
     const addBtn = screen.getByText('Add');

@@ -33,7 +33,7 @@ describe('CheckoutView', () => {
 
     expect(screen.getByText('Checkout')).toBeTruthy();
     expect(screen.getByText('Folio Summary')).toBeTruthy();
-    expect(screen.getByText('Billing Method')).toBeTruthy();
+    expect(screen.getByText('Payment Method')).toBeTruthy();
   });
 
   it('shows the selected bank account code instead of an undefined transfer target', () => {

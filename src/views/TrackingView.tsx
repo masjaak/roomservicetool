@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Clock3, ConciergeBell, Phone } from 'lucide-react';
+import { Clock3, ConciergeBell, Phone, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { TRANSLATIONS } from '../data/constants';
 import { RatingModal } from '../components/RatingModal';
 import { db } from '../lib/firebase';
-import { guestTheme } from '../styles/guestTheme';
 import { mapOrderStatusToStep } from '../utils/statusMapping';
 import { buildTrackingPresentation } from '../utils/trackingPresentation';
 import { buildLegacyFeedback } from '../utils/feedbackMapping';
 import { FeedbackPayload, Language } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface TrackingViewProps {
   roomNumber: string;
@@ -20,25 +20,21 @@ interface TrackingViewProps {
 }
 
 export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish, lang, orderId, blockedWaUrl }) => {
+  const { theme } = useTheme();
   const [orderStatus, setOrderStatus] = useState(0);
   const [showRating, setShowRating] = useState(false);
   const t = TRANSLATIONS[lang];
 
   useEffect(() => {
     if (!orderId) return;
-
     let ratingTimer: ReturnType<typeof setTimeout> | null = null;
 
     const unsubscribe = onSnapshot(doc(db, 'orders', orderId), (snapshot) => {
       if (!snapshot.exists()) return;
-
       const data = snapshot.data();
       const status = data.status;
       const statusLower = status?.toLowerCase() || '';
-
-      const newStep = mapOrderStatusToStep(status);
-      setOrderStatus(newStep);
-
+      setOrderStatus(mapOrderStatusToStep(status));
       if (statusLower === 'completed' || statusLower === 'delivered') {
         if (ratingTimer) clearTimeout(ratingTimer);
         ratingTimer = setTimeout(() => setShowRating(true), 2000);
@@ -61,72 +57,81 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
     onFinish();
   };
 
-  const presentation = buildTrackingPresentation({
-    statusStep: orderStatus,
-    roomNumber,
-    lang,
-  });
-  const currentStep = presentation.currentStep;
+  const pres = buildTrackingPresentation({ statusStep: orderStatus, roomNumber, lang });
+  const currentStep = pres.currentStep;
 
   return (
-    <div className={`min-h-screen ${guestTheme.bg.canvas}`}>
-      <div className={`mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden ${guestTheme.bg.canvas}`}>
-        <header className={`hcs-safe-top sticky top-0 z-10 flex items-center justify-between bg-[#f4f3f1] px-6 py-4`}>
-          <div className="flex-1" />
-          <h1 className={`font-headline text-xl tracking-tight ${guestTheme.text.base}`}>Atelier Dining</h1>
-          <div className="flex flex-1 justify-end">
-            <ConciergeBell className={`h-5 w-5 ${guestTheme.text.base}/60`} />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      style={{ minHeight: '100dvh', background: theme.bgBase, fontFamily: "'Manrope', sans-serif", WebkitFontSmoothing: 'antialiased', transition: 'background 0.3s' }}
+    >
+      <div style={{ maxWidth: '28rem', marginInline: 'auto', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+
+        {/* Header */}
+        <header style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: theme.bgHeader, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${theme.borderFaint}`, paddingInline: '1.5rem', paddingTop: 'calc(env(safe-area-inset-top) + 1rem)', paddingBottom: '1rem', transition: 'background 0.3s, border-color 0.3s' }}>
+          <div style={{ width: '2.25rem' }} />
+          <h1 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.15rem', fontWeight: 400, fontStyle: 'italic', color: theme.textBase, lineHeight: 1, transition: 'color 0.3s' }}>
+            Atelier Dining
+          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem' }}>
+            <ConciergeBell size={18} color={theme.textMuted} />
           </div>
         </header>
 
-        <main className="flex flex-1 flex-col overflow-y-auto px-8 py-10">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-12 text-center">
-            <h2 className={`font-headline text-3xl leading-[1.02] ${guestTheme.text.base}`}>{currentStep.label}</h2>
-            <span className="sr-only">Order Status</span>
-            <p className={`mt-2 text-sm font-medium uppercase tracking-[0.1em] ${guestTheme.text.primary}`}>
+        {/* Main content */}
+        <main style={{ flex: 1, overflowY: 'auto', padding: '2rem 1.5rem', paddingBottom: 'calc(env(safe-area-inset-bottom) + 6rem)', scrollbarWidth: 'none' }}>
+
+          {/* Status heading */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.22em', color: theme.gold, fontFamily: "'Manrope',sans-serif", marginBottom: '0.5rem' }}>
+              {lang === 'ID' ? 'Status Pesanan' : 'Order Status'}
+            </p>
+            <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: '2rem', fontWeight: 400, lineHeight: 1.1, color: theme.textBase, marginBottom: '0.5rem', transition: 'color 0.3s' }}>
+              {currentStep.label}
+            </h2>
+            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: theme.textMuted, fontFamily: "'Manrope',sans-serif" }}>
               ORDER #{orderId?.slice(-6).toUpperCase() || 'AM-8921'}
             </p>
           </motion.div>
 
-          <div className={`relative mb-12 overflow-hidden rounded-xl ${guestTheme.bg.surface} p-8`}>
-            <div className="absolute inset-0 opacity-10 bg-[linear-gradient(135deg,#775a19,transparent)]" />
-            <div className="relative z-10 flex flex-col items-center">
-              <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${guestTheme.bg.primary}`}>
-                <Clock3 className="h-6 w-6 text-white" />
+          {/* ETA card */}
+          <div style={{ position: 'relative', background: theme.bgSurface, border: `1px solid ${theme.borderFaint}`, borderRadius: '1.25rem', padding: '1.75rem', marginBottom: '2rem', overflow: 'hidden', transition: 'background 0.3s' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,rgba(119,90,25,0.12),transparent)', pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+              <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '3.5rem', height: '3.5rem', borderRadius: '9999px', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', boxShadow: '0 8px 20px rgba(119,90,25,0.3)' }}>
+                <Clock3 size={20} color="#fff" />
               </div>
-              <p className={`mb-1 text-sm uppercase tracking-wider ${guestTheme.text.muted}`}>{t.estimatedDelivery}</p>
-              <p className={`font-headline text-2xl ${guestTheme.text.base}`}>{presentation.estimatedDeliveryLabel}</p>
+              <p style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: theme.textMuted, fontFamily: "'Manrope',sans-serif", fontWeight: 700, marginBottom: '0.35rem' }}>
+                {t.estimatedDelivery}
+              </p>
+              <p style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.75rem', fontWeight: 400, color: theme.textBase, lineHeight: 1 }}>
+                {pres.estimatedDeliveryLabel}
+              </p>
             </div>
           </div>
 
-          {blockedWaUrl && (
-            <a
-              href={blockedWaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`mb-6 inline-flex items-center justify-center rounded-lg border ${guestTheme.border.base} px-4 py-3 text-sm font-semibold ${guestTheme.text.primary}`}
-            >
-              Open Manual Chat
-            </a>
-          )}
-
-          <div className="mb-12 px-4">
-            <div className="relative">
-              <div className={`absolute bottom-4 left-[11px] top-4 w-[2px] ${guestTheme.bg.surfaceMuted}`} />
-              {presentation.steps.map((step, index) => {
-                const active = index === presentation.activeStepIndex;
-                const completed = index < presentation.activeStepIndex;
+          {/* Steps timeline */}
+          <div style={{ padding: '0 0.25rem', marginBottom: '2rem' }}>
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '0.75rem', bottom: '0.75rem', left: '0.6875rem', width: '2px', background: theme.borderFaint }} />
+              {pres.steps.map((step, index) => {
+                const active = index === pres.activeStepIndex;
+                const completed = index < pres.activeStepIndex;
 
                 return (
-                  <div key={step.label} className="relative z-10 mb-8 flex items-start last:mb-0" aria-current={active ? 'step' : undefined}>
-                    <div className={`mr-6 mt-1 flex h-6 w-6 items-center justify-center rounded-full ${active ? `${guestTheme.bg.primary} shadow-[0_4px_10px_rgba(119,90,25,0.3)]` : completed ? `${guestTheme.bg.primarySoft}` : `border-2 border-[var(--hcs-background)] ${guestTheme.bg.surfaceMuted}`}`}>
-                      {active ? <div className="h-2 w-2 rounded-full bg-white" /> : null}
+                  <div key={step.label} style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '1.25rem', marginBottom: index < pres.steps.length - 1 ? '1.75rem' : 0 }}>
+                    <div style={{ flexShrink: 0, marginTop: '0.125rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '9999px', background: active ? 'linear-gradient(135deg,#7a5c10,#9a7416)' : completed ? 'rgba(154,116,22,0.25)' : theme.bgInput, border: active ? 'none' : completed ? '1px solid rgba(154,116,22,0.4)' : `1px solid ${theme.borderFaint}`, boxShadow: active ? '0 4px 12px rgba(119,90,25,0.4)' : 'none', transition: 'all 0.3s' }}>
+                      {active ? <div style={{ width: '0.5rem', height: '0.5rem', borderRadius: '9999px', background: '#fff' }} /> :
+                       completed ? <CheckCircle2 size={12} color={theme.goldBright} /> : null}
                     </div>
                     <div>
-                      <div className={`${active ? guestTheme.text.primary : completed ? `${guestTheme.text.primary}/75` : `${guestTheme.text.muted}/55`}`}>
-                        <h3 className="font-headline text-lg font-bold leading-none">{step.label}</h3>
-                      </div>
-                      <p className={`mt-1 text-sm ${active ? guestTheme.text.muted : `${guestTheme.text.muted}/55`}`}>{step.sub}</p>
+                      <h3 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1rem', fontWeight: 400, lineHeight: 1.2, color: active ? theme.textBase : completed ? theme.textSecondary : theme.textMuted, transition: 'color 0.3s', marginBottom: '0.2rem' }}>
+                        {step.label}
+                      </h3>
+                      <p style={{ fontSize: '12px', color: theme.textMuted, lineHeight: 1.5, opacity: active ? 1 : completed ? 0.7 : 0.45 }}>
+                        {step.sub}
+                      </p>
                     </div>
                   </div>
                 );
@@ -134,35 +139,38 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
             </div>
           </div>
 
-          <div className="mt-auto flex flex-col gap-6">
-            <button
-              type="button"
-              onClick={() => {
-                if (blockedWaUrl) {
-                  window.open(blockedWaUrl, '_blank');
-                }
-              }}
-              className={`flex w-full items-center justify-center gap-2 rounded-[0.125rem] border ${guestTheme.border.base} bg-transparent px-6 py-4 text-[1rem] font-medium ${guestTheme.text.primary} transition-colors hover:bg-[var(--hcs-surface-soft)]`}
+          {/* Manual WhatsApp link */}
+          {blockedWaUrl && (
+            <a
+              href={blockedWaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.875rem', borderRadius: '0.875rem', background: theme.bgInput, border: `1px solid ${theme.borderFaint}`, fontSize: '13px', fontWeight: 600, color: theme.goldBright, textDecoration: 'none', marginBottom: '1rem', fontFamily: "'Manrope',sans-serif" }}
             >
-              <Phone className="h-4 w-4" />
-              {t.callRoomService}
-            </button>
-            <button type="button" className={`text-xs uppercase tracking-[0.1em] ${guestTheme.text.muted}/60`}>
-              Simulate Delivery
-            </button>
-          </div>
+              Open Manual Chat
+            </a>
+          )}
         </main>
+
+        {/* Fixed bottom bar */}
+        <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '28rem', background: theme.bgBase, backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: `1px solid ${theme.borderFaint}`, padding: '1rem 1.5rem', paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)', transition: 'background 0.3s, border-color 0.3s', zIndex: 10 }}>
+          <button
+            type="button"
+            onClick={() => blockedWaUrl && window.open(blockedWaUrl, '_blank')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', height: '3.5rem', borderRadius: '9999px', background: theme.bgInput, border: `1px solid ${theme.borderFaint}`, color: theme.textSecondary, fontFamily: "'Manrope',sans-serif", fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: 'pointer', transition: 'background 0.2s' }}
+          >
+            <Phone size={15} />
+            {t.callRoomService}
+          </button>
+        </div>
       </div>
 
       <RatingModal
         isOpen={showRating}
-        onSkip={() => {
-          setShowRating(false);
-          onFinish();
-        }}
+        onSkip={() => { setShowRating(false); onFinish(); }}
         onRate={handleSubmitFeedback}
         lang={lang}
       />
-    </div>
+    </motion.div>
   );
 };
