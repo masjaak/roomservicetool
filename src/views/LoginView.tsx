@@ -114,6 +114,42 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
           marginInline: 'auto',
         }}
       >
+        <header
+          style={{
+            paddingTop: 'calc(env(safe-area-inset-top) + 2.25rem)',
+            paddingLeft: '2rem',
+            paddingRight: '2rem',
+            textAlign: 'center',
+          }}
+        >
+          <p
+            style={{
+              margin: '0 0 0.7rem',
+              fontSize: '9px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.34em',
+              color: 'rgba(255,255,255,0.78)',
+            }}
+          >
+            {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
+          </p>
+          <h1
+            style={{
+              margin: 0,
+              fontFamily: "'Noto Serif', serif",
+              fontSize: '2.2rem',
+              fontWeight: 400,
+              fontStyle: 'italic',
+              lineHeight: 1,
+              letterSpacing: '0.04em',
+              color: '#ffffff',
+              textShadow: '0 6px 24px rgba(0,0,0,0.18)',
+            }}
+          >
+            Atelier Meridian
+          </h1>
+        </header>
+
         {/* Spacer to push card toward bottom */}
         <div style={{ flex: 1 }} />
 

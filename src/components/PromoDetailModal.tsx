@@ -5,6 +5,15 @@ import { PromoCampaign, Language } from '../types';
 import { TRANSLATIONS } from '../data/constants';
 import { useTheme } from '../contexts/ThemeContext';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { openWhatsAppOrder } from '../utils/whatsAppNavigation';
+
+function buildPromoInquiryUrl(promo: PromoCampaign, lang: Language, staffPhone: string = '6281285864059'): string {
+  const message = lang === 'ID'
+    ? `Halo Room Service, saya ingin menanyakan promo *${promo.title.ID}*. Mohon info ketersediaan dan detail reservasinya.`
+    : `Hello Room Service, I would like to enquire about the *${promo.title.EN}* offer. Please share the availability and reservation details.`;
+
+  return `https://wa.me/${staffPhone}?text=${encodeURIComponent(message)}`;
+}
 
 interface PromoDetailModalProps {
   promo: PromoCampaign | null;
@@ -20,6 +29,16 @@ export const PromoDetailModal: React.FC<PromoDetailModalProps> = ({ promo, isOpe
   if (!promo) {
     return null;
   }
+
+  const handlePromoInquiry = () => {
+    const url = buildPromoInquiryUrl(promo, lang);
+    openWhatsAppOrder({
+      url,
+      viewportWidth: window.innerWidth,
+      openNewTab: (nextUrl) => window.open(nextUrl, '_blank', 'noopener,noreferrer'),
+      replaceLocation: (nextUrl) => window.location.assign(nextUrl),
+    });
+  };
 
   return (
     <AnimatePresence>
@@ -87,7 +106,7 @@ export const PromoDetailModal: React.FC<PromoDetailModalProps> = ({ promo, isOpe
               <div style={{ padding: '1rem 1.5rem calc(env(safe-area-inset-bottom) + 1rem)', borderTop: `1px solid ${theme.borderFaint}`, background: theme.bgSurface }}>
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={handlePromoInquiry}
                   style={{ width: '100%', height: '3.5rem', borderRadius: '9999px', border: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', color: '#fff', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: 'pointer' }}
                 >
                   {promo.cta[lang]}

@@ -154,23 +154,23 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   onClick={() => setSelectedPromoId(promo.id)}
                   style={{ minWidth: '19.5rem', width: '19.5rem', padding: 0, border: 'none', background: 'none', textAlign: 'left', cursor: 'pointer', flexShrink: 0 }}
                 >
-                  <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '1.4rem', minHeight: '12rem', background: theme.bgMuted, boxShadow: '0 20px 45px rgba(0,0,0,0.24)' }}>
+                  <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '1.4rem', aspectRatio: '16 / 10', background: theme.bgMuted, boxShadow: '0 20px 45px rgba(0,0,0,0.24)' }}>
                     <ImageWithFallback src={promo.image} alt={promo.title[lang]} className="h-full w-full object-cover" />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(115deg, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0.32) 54%, rgba(0,0,0,0.18) 100%)' }} />
-                    <div style={{ position: 'absolute', inset: 0, padding: '1.15rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div style={{ position: 'absolute', inset: 0, padding: '1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.7rem' }}>
                       <div>
-                        <span style={{ display: 'inline-flex', borderRadius: '9999px', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.16)', padding: '0.32rem 0.68rem', fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fff', marginBottom: '0.8rem' }}>
+                        <span style={{ display: 'inline-flex', borderRadius: '9999px', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.16)', padding: '0.26rem 0.58rem', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff', marginBottom: '0.65rem' }}>
                           {promo.badge}
                         </span>
-                        <h3 style={{ margin: '0 0 0.45rem', maxWidth: '14rem', fontFamily: "'Noto Serif',serif", fontSize: '1.45rem', fontWeight: 400, lineHeight: 1.08, color: '#fff' }}>
+                        <h3 style={{ margin: '0 0 0.35rem', maxWidth: '13rem', fontFamily: "'Noto Serif',serif", fontSize: '1.28rem', fontWeight: 400, lineHeight: 1.06, color: '#fff' }}>
                           {promo.title[lang]}
                         </h3>
-                        <p style={{ margin: 0, maxWidth: '15rem', fontSize: '12px', lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>
+                        <p style={{ margin: 0, maxWidth: '13rem', fontSize: '10px', lineHeight: 1.45, color: 'rgba(255,255,255,0.78)' }}>
                           {promo.summary[lang]}
                         </p>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.14)', padding: '0.6rem 0.95rem', fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fff' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.14)', padding: '0.42rem 0.68rem', fontSize: '8px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', whiteSpace: 'nowrap', maxWidth: '100%' }}>
                           {tr.viewDetails}
                           <span aria-hidden="true">→</span>
                         </span>
