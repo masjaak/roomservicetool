@@ -255,13 +255,16 @@ export default function App() {
       console.error('Order save error:', error);
       const isTimeout = error instanceof Error && error.message === 'timeout';
       const isRateLimited = error instanceof Error && error.message === 'rate-limit';
+      const rawMsg = error instanceof Error ? error.message : String(error);
+      const firestoreCode = (error as Record<string, unknown>)?.code as string | undefined;
+      const debugInfo = firestoreCode ? `[${firestoreCode}]` : rawMsg ? `[${rawMsg.slice(0, 80)}]` : '';
       dispatch({
-        type: AppEvent.OrderSubmitFailed, 
+        type: AppEvent.OrderSubmitFailed,
         payload: isTimeout
           ? (lang === 'ID' ? 'Koneksi terlalu lama. Silakan coba lagi.' : 'Connection timeout. Please try again.')
           : isRateLimited
             ? (lang === 'ID' ? 'Terlalu banyak percobaan pesanan. Coba lagi beberapa menit lagi.' : 'Too many order attempts. Please wait a few minutes and try again.')
-            : (lang === 'ID' ? 'Gagal menyimpan pesanan. Silakan coba lagi.' : 'Failed to save order. Please try again.') 
+            : `Failed to save order. ${debugInfo}`
       });
     }
   };

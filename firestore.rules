@@ -27,13 +27,9 @@ service cloud.firestore {
 
     function validDemoAccessToken() {
       let stay = stayDoc(request.resource.data.stayId);
-      let stayLastName = stay.data.get('lastNameNormalized', null);
-      let stayPhone = stay.data.get('phoneNumberNormalized', null);
 
       return stay.exists() &&
         stay.data.roomNumber == request.resource.data.roomNumber &&
-        (stayLastName == null || stayLastName == request.resource.data.lastNameNormalized) &&
-        (stayPhone == null || stayPhone == request.resource.data.phoneNumberNormalized) &&
         isActiveStay(stay.data) &&
         (
           !hasAccessTokenId() ||
