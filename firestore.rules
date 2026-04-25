@@ -10,6 +10,11 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/guest_access_tokens/$(tokenId));
     }
 
+    function hasAccessTokenId() {
+      return request.resource.data.accessTokenId is string &&
+        request.resource.data.accessTokenId != '';
+    }
+
     function isActiveStay(data) {
       return data.checkedIn == true ||
         data.active == true ||
@@ -19,19 +24,23 @@ service cloud.firestore {
     }
 
     function validDemoAccessToken() {
-      let token = accessTokenDoc(request.resource.data.accessTokenId);
       let stay = stayDoc(request.resource.data.stayId);
 
-      return token.exists() &&
-        stay.exists() &&
-        token.data.status == 'active' &&
-        token.data.expiresAt > request.time &&
-        token.data.stayId == request.resource.data.stayId &&
-        token.data.roomNumber == request.resource.data.roomNumber &&
+      return stay.exists() &&
         stay.data.roomNumber == request.resource.data.roomNumber &&
         stay.data.lastNameNormalized == request.resource.data.lastNameNormalized &&
         stay.data.phoneNumberNormalized == request.resource.data.phoneNumberNormalized &&
-        isActiveStay(stay.data);
+        isActiveStay(stay.data) &&
+        (
+          !hasAccessTokenId() ||
+          (
+            accessTokenDoc(request.resource.data.accessTokenId).exists() &&
+            accessTokenDoc(request.resource.data.accessTokenId).data.status == 'active' &&
+            accessTokenDoc(request.resource.data.accessTokenId).data.expiresAt > request.time &&
+            accessTokenDoc(request.resource.data.accessTokenId).data.stayId == request.resource.data.stayId &&
+            accessTokenDoc(request.resource.data.accessTokenId).data.roomNumber == request.resource.data.roomNumber
+          )
+        );
     }
 
     function validDemoOrderCreateShape() {

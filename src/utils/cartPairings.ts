@@ -1,13 +1,13 @@
 import type { CartItem, MenuItem } from '../types';
 
-const MAX_SUGGESTIONS = 2;
+const MAX_SUGGESTIONS = 4;
 
 const PAIRING_IDS = {
-  mains: [21, 27, 20, 26],
-  signatures: [21, 27, 22, 30],
-  starters: [12, 16, 18, 26],
-  desserts: [25, 28, 29, 30],
-  beverages: [23, 20, 21, 22],
+  mains: [21, 20, 27, 26, 22, 30],
+  signatures: [21, 22, 27, 30, 20, 26],
+  starters: [12, 16, 18, 14, 26, 27],
+  desserts: [27, 25, 28, 29, 30, 26],
+  beverages: [23, 20, 21, 22, 12, 16],
 };
 
 function getCategoryPresence(cart: CartItem[]) {
@@ -29,7 +29,7 @@ function buildPriorityIds(cart: CartItem[]): number[] {
   }
 
   if ((presence.hasMains || presence.hasSignatures || presence.hasDesserts) && !presence.hasBeverages) {
-    ids.push(27, 26, 30, 25);
+    ids.push(27, 26, 30, 25, 29, 28);
   }
 
   if (presence.hasStarters && !presence.hasMains && !presence.hasSignatures) {
@@ -44,8 +44,16 @@ function buildPriorityIds(cart: CartItem[]): number[] {
     ids.push(...PAIRING_IDS.beverages);
   }
 
+  if ((presence.hasMains || presence.hasSignatures) && !presence.hasStarters) {
+    ids.push(6, 7, 9, 10);
+  }
+
+  if (presence.hasBeverages && !presence.hasDesserts) {
+    ids.push(20, 21, 22, 23);
+  }
+
   if (ids.length === 0) {
-    ids.push(27, 20, 26, 21);
+    ids.push(27, 20, 26, 21, 22, 30);
   }
 
   return ids;

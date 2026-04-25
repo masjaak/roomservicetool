@@ -77,4 +77,29 @@ describe('CartDrawer', () => {
       expect.objectContaining({ name: 'Chocolate Lava Cake', category: 'Desserts' })
     );
   });
+
+  it('opens details breakdown and continues to checkout from the drawer footer', () => {
+    const onCheckout = vi.fn();
+
+    render(
+      <CartDrawer
+        cart={cart}
+        isOpen
+        onClose={() => {}}
+        onRemove={() => {}}
+        onAddSuggestion={() => {}}
+        onCheckout={onCheckout}
+        lang="EN"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Details' }));
+
+    expect(screen.getByText('Subtotal')).toBeTruthy();
+    expect(screen.getByText('Service & Tax (21%)')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: /proceed to checkout/i }));
+
+    expect(onCheckout).toHaveBeenCalledTimes(1);
+  });
 });

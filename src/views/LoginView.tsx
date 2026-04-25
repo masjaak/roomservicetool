@@ -7,22 +7,19 @@ import { validateGuestAccess } from './loginValidation';
 interface LoginViewProps {
   lang: Language;
   setLang: (lang: Language) => void;
-  onLogin: (room: string, phone: string, lastName: string, accessCode?: string) => Promise<string | null | void> | string | null | void;
-  requiresAccessCode?: boolean;
+  onLogin: (room: string, phone: string, lastName: string) => Promise<string | null | void> | string | null | void;
 }
 
 const loginHeroImage =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAkd7RklJ7B8ol4y2KFLFG-AXLVRW0GmuiRe-f2PVr_OsOU7bli6263fxf1QuvywDKHLYtg5aiUMiIw0KBiRJNKK4cYa8a1mO2MOowmwxTRxYjIES1kCts-Ol6OI6GXr8S1dDxNmL0Vt80Yo-9t6FgE5xWtNg7bYSRQj7U_E2qyiwUW-NK9pOY6QUzapco6F0x2scioqJuSjkUjHInSIeww_wvR0GA8rOFc3RAY21FhDU-UPwzN1ZIklThbrKkcZn9KOqeq051ciw';
 
-export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin, requiresAccessCode = false }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) => {
   const roomInputRef = useRef<HTMLInputElement | null>(null);
   const lastNameInputRef = useRef<HTMLInputElement | null>(null);
   const phoneInputRef = useRef<HTMLInputElement | null>(null);
-  const accessCodeInputRef = useRef<HTMLInputElement | null>(null);
   const [roomNumber, setRoomNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [lastName, setLastName] = useState('');
-  const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,13 +47,13 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin, re
 
     setIsSubmitting(true);
     try {
-      const submitError = await onLogin(roomNumber, phoneNumber, lastName, accessCode);
+      const submitError = await onLogin(roomNumber, phoneNumber, lastName);
       setError(submitError || '');
     } catch {
       setError(
         lang === 'ID'
-          ? 'Verifikasi tamu gagal. Pastikan access code kamar benar atau hubungi resepsionis.'
-          : 'Guest verification failed. Please contact the front desk.'
+          ? 'Verifikasi tamu gagal. Silakan periksa kembali detail Anda dan coba lagi.'
+          : 'Guest verification failed. Please review your details and try again.'
       );
     } finally {
       setIsSubmitting(false);
@@ -117,51 +114,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin, re
           marginInline: 'auto',
         }}
       >
-        {/* Header — top section, grows to push card down */}
-        <header
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            textAlign: 'center',
-            paddingTop: 'calc(env(safe-area-inset-top) + 4.8rem)',
-            paddingLeft: '2rem',
-            paddingRight: '2rem',
-          }}
-        >
-          <p
-            style={{
-              marginBottom: '0.9rem',
-              fontFamily: "'Manrope', sans-serif",
-              fontSize: '9px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.34em',
-              color: 'rgba(255,255,255,0.82)',
-            }}
-          >
-            {lang === 'ID' ? 'Selamat datang di' : 'Welcome to'}
-          </p>
-          <h1
-            style={{
-              maxWidth: '15rem',
-              fontFamily: "'Noto Serif', serif",
-              fontSize: '2.5rem',
-              fontWeight: 400,
-              fontStyle: 'italic',
-              lineHeight: 1,
-              letterSpacing: '0.04em',
-              color: '#ffffff',
-              textShadow: '0 6px 24px rgba(0,0,0,0.18)',
-              margin: 0,
-            }}
-          >
-            Atelier Meridian
-          </h1>
-        </header>
+        {/* Spacer to push card toward bottom */}
+        <div style={{ flex: 1 }} />
 
-        {/* Glass card — sits at bottom, pushed by flex-1 header */}
+        {/* Glass card — sits at bottom */}
         <motion.section
           initial={{ y: 32, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -280,60 +236,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin, re
               style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
               onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}
             >
-              {requiresAccessCode && (
-                <div
-                  style={{
-                    position: 'relative',
-                    borderRadius: '1.1rem',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    background: 'rgba(255,255,255,0.08)',
-                    padding: '0.75rem 1rem 0.75rem',
-                    transition: 'border-color 0.2s, background 0.2s',
-                  }}
-                >
-                  <label
-                    htmlFor="access_code"
-                    style={{
-                      display: 'block',
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '10px',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.18em',
-                      color: 'rgba(255,255,255,0.68)',
-                      marginBottom: '0.25rem',
-                    }}
-                  >
-                    {lang === 'ID' ? 'Access Code Kamar' : 'Room Access Code'}
-                  </label>
-                  <input
-                    id="access_code"
-                    ref={accessCodeInputRef}
-                    type="text"
-                    autoComplete="off"
-                    autoCapitalize="none"
-                    spellCheck={false}
-                    enterKeyHint="next"
-                    value={accessCode}
-                    onKeyDown={(e) => moveFocus(e, roomInputRef.current)}
-                    onChange={(e) => setAccessCode(e.target.value.trim())}
-                    placeholder={lang === 'ID' ? 'Paste kode dari admin QR' : 'Paste the code from the admin QR'}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      background: 'transparent',
-                      border: 'none',
-                      outline: 'none',
-                      fontSize: '15px',
-                      fontWeight: 500,
-                      color: '#ffffff',
-                      padding: 0,
-                      lineHeight: 1.4,
-                      boxSizing: 'border-box',
-                    }}
-                  />
-                </div>
-              )}
-
               {/* Room Number */}
               <div
                 style={{

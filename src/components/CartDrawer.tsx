@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartItem, Language, MenuItem } from '../types';
@@ -25,6 +25,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, o
   const tax = calculateTax(subtotal);
   const total = calculateTotal(subtotal);
   const pairingSuggestions = getCartPairingSuggestions(cart, MENU_ITEMS);
+  const [showDetails, setShowDetails] = useState(false);
 
   return (
     <AnimatePresence>
@@ -174,14 +175,51 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, o
                       <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: theme.textMuted, display: 'block', marginBottom: '2px', fontFamily: "'Manrope',sans-serif" }}>{t.total}</span>
                       <span style={{ fontFamily: "'Noto Serif',serif", fontSize: '2rem', fontWeight: 400, color: theme.textBase, lineHeight: 1 }}>{formatCurrency(total)}</span>
                     </div>
-                    <button type="button" style={{ fontSize: '13px', color: theme.textMuted, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Details</button>
+                    <button
+                      type="button"
+                      onClick={() => setShowDetails((current) => !current)}
+                      style={{ fontSize: '13px', color: theme.textMuted, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+                    >
+                      {showDetails ? (lang === 'ID' ? 'Tutup' : 'Hide') : (lang === 'ID' ? 'Detail' : 'Details')}
+                    </button>
                   </div>
-                  <button onClick={() => { onClose(); setTimeout(onCheckout, 300); }}
+
+                  {showDetails && (
+                    <div
+                      style={{
+                        marginBottom: '1rem',
+                        borderRadius: '0.875rem',
+                        background: theme.bgSurface,
+                        border: `1px solid ${theme.borderFaint}`,
+                        padding: '0.875rem 1rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: theme.textMuted }}>
+                        <span>{t.subtotal}</span>
+                        <span>{formatCurrency(subtotal)}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: theme.textMuted }}>
+                        <span>{t.serviceTax}</span>
+                        <span>{formatCurrency(tax)}</span>
+                      </div>
+                      <div style={{ height: '1px', background: theme.borderFaint }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '14px', fontWeight: 700, color: theme.textBase }}>
+                        <span>{t.total}</span>
+                        <span>{formatCurrency(total)}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={onCheckout}
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', width: '100%', height: '3.75rem', borderRadius: '1rem', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 12px 28px rgba(119,90,25,0.28)', color: '#fff', fontFamily: "'Manrope',sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: 'pointer' }}>
                     <span>{lang === 'ID' ? 'Lanjut ke Checkout' : 'Proceed to Checkout'}</span>
                     <span aria-hidden="true">→</span>
                   </button>
-                  <div className="sr-only">{t.subtotal}: {formatCurrency(subtotal)}. {t.serviceTax}: {formatCurrency(tax)}.</div>
                 </div>
               )}
             </motion.div>

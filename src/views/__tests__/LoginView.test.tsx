@@ -1,17 +1,13 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { LoginView } from '../LoginView';
 
 describe('LoginView', () => {
-  it('renders the hotel name, welcome copy, and all three input fields', () => {
+  it('renders the room service login card and all three input fields', () => {
     render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
-    expect(screen.getByText('Welcome to')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Atelier Meridian' })).toBeTruthy();
-    // loginTitle = 'Room Service' renders as an h2 inside the card
     expect(screen.getByRole('heading', { name: 'Room Service' })).toBeTruthy();
-    // All three fields must be present and labelled
     expect(screen.getByLabelText('Room Number')).toBeTruthy();
     expect(screen.getByLabelText('Guest Last Name')).toBeTruthy();
     expect(screen.getByLabelText('Phone Number')).toBeTruthy();
@@ -28,7 +24,7 @@ describe('LoginView', () => {
     expect(document.activeElement).toBe(lastNameInput);
   });
 
-  it('submits when room, last name and a valid phone number are all filled', () => {
+  it('submits when room, last name and a valid phone number are all filled', async () => {
     const onLogin = vi.fn();
 
     render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} />);
@@ -40,7 +36,9 @@ describe('LoginView', () => {
     // Enter on the phone field triggers submit
     fireEvent.keyDown(screen.getByLabelText('Phone Number'), { key: 'Enter', code: 'Enter' });
 
-    expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Tan', '');
+    await waitFor(() => {
+      expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Tan');
+    });
   });
 
   it('does not submit when phone number is missing', () => {
@@ -57,7 +55,7 @@ describe('LoginView', () => {
   });
 
   it('shows a server-side verification error when login is rejected after submit', async () => {
-    const onLogin = vi.fn().mockResolvedValue('Only registered in-house guests can access room service.');
+    const onLogin = vi.fn().mockResolvedValue('We could not verify your guest details. Please review your information and try again.');
 
     render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} />);
 
@@ -66,20 +64,12 @@ describe('LoginView', () => {
     fireEvent.change(screen.getByLabelText('Phone Number'), { target: { value: '081234567890' } });
     fireEvent.click(screen.getByRole('button', { name: /access in-room dining/i }));
 
-    expect(await screen.findByText('Only registered in-house guests can access room service.')).toBeTruthy();
+    expect(await screen.findByText('We could not verify your guest details. Please review your information and try again.')).toBeTruthy();
   });
 
-  it('shows room access code field when login needs a manual token and submits it', () => {
-    const onLogin = vi.fn();
+  it('does not render a manual room access code field in the default guest login flow', () => {
+    render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
-    render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} requiresAccessCode />);
-
-    fireEvent.change(screen.getByLabelText('Room Access Code'), { target: { value: 'demo-token-123' } });
-    fireEvent.change(screen.getByLabelText('Room Number'), { target: { value: '1204' } });
-    fireEvent.change(screen.getByLabelText('Guest Last Name'), { target: { value: 'Santoso' } });
-    fireEvent.change(screen.getByLabelText('Phone Number'), { target: { value: '081234567890' } });
-    fireEvent.click(screen.getByRole('button', { name: /access in-room dining/i }));
-
-    expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Santoso', 'demo-token-123');
+    expect(screen.queryByLabelText('Room Access Code')).toBeNull();
   });
 });

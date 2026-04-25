@@ -21,7 +21,12 @@ describe('getCartPairingSuggestions', () => {
       MENU_ITEMS,
     );
 
-    expect(suggestions.map((item) => item.name)).toEqual(['Chocolate Lava Cake', 'Virgin Mojito']);
+    expect(suggestions.map((item) => item.name)).toEqual([
+      'Chocolate Lava Cake',
+      'Vanilla Bean Cheesecake',
+      'Virgin Mojito',
+      'Fresh Orange Juice',
+    ]);
   });
 
   it('suggests beverages after dessert-only carts', () => {

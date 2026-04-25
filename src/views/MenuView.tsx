@@ -44,10 +44,15 @@ export const MenuView: React.FC<MenuViewProps> = ({
       animate={{ opacity: 1 }}
       style={{
         minHeight: '100dvh',
+        height: '100dvh',
         background: theme.bgBase,
         fontFamily: "'Manrope', sans-serif",
         WebkitFontSmoothing: 'antialiased',
-        paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorY: 'contain',
         transition: 'background 0.3s',
       }}
     >
@@ -154,7 +159,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
       <AnimatePresence>
         {totalQty > 0 && (
           <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-            style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom) + 5.5rem)', left: '50%', transform: 'translateX(-50%)', width: 'calc(min(28rem, 100%) - 3rem)', zIndex: 40 }}>
+            style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)', left: '50%', transform: 'translateX(-50%)', width: 'calc(min(28rem, 100%) - 3rem)', zIndex: 40 }}>
             <button onClick={onOpenCart} aria-label="Open cart"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '3.75rem', borderRadius: '1.25rem', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 16px 40px rgba(119,90,25,0.38)', padding: '0 0.5rem 0 1.5rem', cursor: 'pointer' }}>
               <div>
@@ -170,19 +175,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Bottom nav */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20, background: theme.bgNav, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderTop: `1px solid ${theme.borderFaint}`, paddingBottom: 'env(safe-area-inset-bottom)', transition: 'background 0.3s, border-color 0.3s' }}>
-        <div style={{ maxWidth: '28rem', marginInline: 'auto', height: '3.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-around', paddingInline: '2rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', color: theme.gold }}>
-            <span style={{ fontSize: '10px', lineHeight: 1 }}>●</span>
-            <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: "'Manrope',sans-serif" }}>Menu</span>
-          </div>
-          {['Orders', 'Suite', 'Inquiry'].map((l) => (
-            <span key={l} style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: theme.textMuted, opacity: 0.45, fontFamily: "'Manrope',sans-serif" }}>{l}</span>
-          ))}
-        </div>
-      </nav>
 
       <ItemDetailModal item={selectedItem} isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} onAdd={addToCart} lang={lang} />
       <CartDrawer

@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import { signInWithCustomToken, signOut } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
 import { auth, db, functions, isSparkDemoMode } from './firebase';
@@ -105,6 +105,26 @@ function normalizeDemoOrderItems(items: unknown[]): Array<Record<string, unknown
   }).filter((item) => item.name && item.qty > 0 && item.price >= 0);
 }
 
+async function createSparkDemoAccessToken(input: {
+  hotelId: string;
+  stayId: string;
+  roomNumber: string;
+  expiresAt: string;
+}): Promise<string> {
+  const tokenRef = await addDoc(collection(db, 'guest_access_tokens'), {
+    hotelId: input.hotelId,
+    stayId: input.stayId,
+    roomNumber: input.roomNumber,
+    status: 'active',
+    mode: 'spark_demo',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    expiresAt: Timestamp.fromDate(new Date(input.expiresAt)),
+  });
+
+  return tokenRef.id;
+}
+
 export function getAccessTokenFromUrl(): string | null {
   return new URLSearchParams(window.location.search).get('access');
 }
@@ -149,28 +169,55 @@ async function redeemSparkDemoAccessSession(input: {
   lastName: string;
   phoneNumber: string;
 }): Promise<GuestSession> {
-  const tokenRef = doc(db, 'guest_access_tokens', input.accessToken);
-  const tokenSnap = await getDoc(tokenRef);
+  let tokenRef: ReturnType<typeof doc> | null = null;
+  let tokenSnap: Awaited<ReturnType<typeof getDoc>> | null = null;
+  let token: Record<string, unknown> | null = null;
+  let stayId = '';
 
-  if (!tokenSnap.exists()) {
-    throw new Error('invalid-token');
+  if (input.accessToken.trim()) {
+    tokenRef = doc(db, 'guest_access_tokens', input.accessToken.trim());
+    tokenSnap = await getDoc(tokenRef);
+
+    if (!tokenSnap.exists()) {
+      throw new Error('invalid-token');
+    }
+
+    token = tokenSnap.data();
+    const expiresAt = token.expiresAt?.toDate?.() ?? null;
+
+    if (token.status !== 'active' || !expiresAt || expiresAt.getTime() <= Date.now()) {
+      throw new Error('inactive-token');
+    }
+
+    stayId = String(token.stayId || '');
+    if (!stayId) {
+      throw new Error('invalid-stay');
+    }
   }
 
-  const token = tokenSnap.data();
-  const expiresAt = token.expiresAt?.toDate?.() ?? null;
+  let staySnap = stayId ? await getDoc(doc(db, 'guest_stays', stayId)) : null;
 
-  if (token.status !== 'active' || !expiresAt || expiresAt.getTime() <= Date.now()) {
-    throw new Error('inactive-token');
-  }
+  if (!staySnap || !staySnap.exists()) {
+    const matchingStayQuery = query(
+      collection(db, 'guest_stays'),
+      where('roomNumber', '==', input.roomNumber.trim()),
+    );
+    const matchingStays = await getDocs(matchingStayQuery);
 
-  const stayId = String(token.stayId || '');
-  if (!stayId) {
-    throw new Error('invalid-stay');
-  }
+    const matchedStayDoc = matchingStays.docs.find((candidate) =>
+      isGuestStayRecordMatch(candidate.data() as DemoGuestStayRecord, {
+        roomNumber: input.roomNumber,
+        lastName: input.lastName,
+        phoneNumber: input.phoneNumber,
+      }),
+    );
 
-  const staySnap = await getDoc(doc(db, 'guest_stays', stayId));
-  if (!staySnap.exists()) {
-    throw new Error('missing-stay');
+    if (!matchedStayDoc) {
+      throw new Error('missing-stay');
+    }
+
+    staySnap = matchedStayDoc;
+    stayId = matchedStayDoc.id;
   }
 
   const stay = staySnap.data() as DemoGuestStayRecord;
@@ -185,23 +232,34 @@ async function redeemSparkDemoAccessSession(input: {
     throw new Error('guest-mismatch');
   }
 
+  const expiresAtIso = (token?.expiresAt?.toDate?.() ?? new Date(Date.now() + 18 * 60 * 60 * 1000)).toISOString();
+  const hotelId = String(token?.hotelId || stay.hotelId || '');
+  const accessTokenId = tokenSnap?.id || await createSparkDemoAccessToken({
+    hotelId,
+    stayId,
+    roomNumber: input.roomNumber.trim(),
+    expiresAt: expiresAtIso,
+  });
+
   const session: GuestSession = {
-    accessTokenId: tokenSnap.id,
-    hotelId: String(token.hotelId || stay.hotelId || ''),
+    accessTokenId,
+    hotelId,
     stayId,
     roomNumber: input.roomNumber.trim(),
     lastName: input.lastName.trim().replace(/\s+/g, ' '),
     phoneNumber: normalizeGuestPhone(input.phoneNumber),
-    expiresAt: expiresAt.toISOString(),
+    expiresAt: expiresAtIso,
   };
 
-  await updateDoc(tokenRef, {
-    lastRedeemedAt: serverTimestamp(),
-    lastRedeemedRoomNumber: session.roomNumber,
-  }).catch(() => undefined);
+  if (tokenRef) {
+    await updateDoc(tokenRef, {
+      lastRedeemedAt: serverTimestamp(),
+      lastRedeemedRoomNumber: session.roomNumber,
+    }).catch(() => undefined);
+  }
 
   await addDoc(collection(db, 'guest_access_logins'), {
-    accessTokenId: tokenSnap.id,
+    accessTokenId: tokenSnap?.id || null,
     hotelId: session.hotelId,
     stayId: session.stayId,
     roomNumber: session.roomNumber,
@@ -219,7 +277,7 @@ async function redeemSparkDemoAccessSession(input: {
 async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<CreateGuestOrderResponse> {
   const session = loadStoredGuestSession();
 
-  if (!session?.accessTokenId) {
+  if (!session) {
     throw new Error('missing-session');
   }
 
@@ -231,7 +289,23 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
     throw new Error('session-mismatch');
   }
 
-  enforceDemoOrderRateLimit(session.accessTokenId);
+  const accessTokenId = session.accessTokenId || await createSparkDemoAccessToken({
+    hotelId: session.hotelId,
+    stayId: session.stayId,
+    roomNumber: session.roomNumber,
+    expiresAt: session.expiresAt,
+  });
+  const normalizedSession =
+    accessTokenId === session.accessTokenId
+      ? session
+      : { ...session, accessTokenId };
+
+  if (normalizedSession !== session) {
+    persistDemoSession(normalizedSession);
+  }
+
+  const rateLimitKey = accessTokenId;
+  enforceDemoOrderRateLimit(rateLimitKey);
   const normalizedItems = normalizeDemoOrderItems(input.items);
 
   if (normalizedItems.length === 0) {
@@ -243,14 +317,14 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
   const total = subtotal + tax;
 
   const orderRef = await addDoc(collection(db, 'orders'), {
-    accessTokenId: session.accessTokenId,
-    hotelId: session.hotelId,
-    stayId: session.stayId,
-    roomNumber: session.roomNumber,
-    lastName: session.lastName,
-    lastNameNormalized: normalizeGuestLastName(session.lastName),
-    phoneNumber: session.phoneNumber,
-    phoneNumberNormalized: normalizeGuestPhone(session.phoneNumber),
+    accessTokenId,
+    hotelId: normalizedSession.hotelId,
+    stayId: normalizedSession.stayId,
+    roomNumber: normalizedSession.roomNumber,
+    lastName: normalizedSession.lastName,
+    lastNameNormalized: normalizeGuestLastName(normalizedSession.lastName),
+    phoneNumber: normalizedSession.phoneNumber,
+    phoneNumberNormalized: normalizeGuestPhone(normalizedSession.phoneNumber),
     items: normalizedItems,
     subtotal,
     tax,

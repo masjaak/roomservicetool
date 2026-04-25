@@ -8,6 +8,7 @@ import { persistCart, loadCart, buildWhatsAppUrl, clearCart } from './machine/ef
 import type { CartEntry, PaymentMethod } from './machine/types';
 import type { Language, MenuItem } from './types';
 import { ErrorBoundary, TrackingFallback, GuestFallback } from './components/ErrorBoundary';
+import { SplashScreen } from './components/SplashScreen';
 import { openWhatsAppOrder } from './utils/whatsAppNavigation';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { auth, db, isSparkDemoMode } from './lib/firebase';
@@ -22,6 +23,7 @@ export default function App() {
   const [lang, setLang] = useState<Language>('EN');
   const [state, dispatch] = useReducer(reducer, createInitialState(loadCart()));
   const [guestSession, setGuestSession] = useState<GuestSession | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
   const accessToken = getAccessTokenFromUrl();
 
   const resetFlow = useCallback((shouldClearCart: boolean) => {
@@ -111,13 +113,7 @@ export default function App() {
 
   // --- Event dispatchers ---
   const handleLogin = useCallback(async (room: string, phone: string, lastName: string, manualAccessCode?: string) => {
-    const resolvedAccessToken = accessToken || manualAccessCode?.trim() || null;
-
-    if (!resolvedAccessToken) {
-      return lang === 'ID'
-        ? 'Akses room service memerlukan QR atau access code kamar yang valid.'
-        : 'Room service access requires a valid in-room QR or access code.';
-    }
+    const resolvedAccessToken = accessToken || manualAccessCode?.trim() || '';
 
     const roomNumber = room.trim();
     const guestLastName = lastName.trim().replace(/\s+/g, ' ');
@@ -133,8 +129,8 @@ export default function App() {
       });
     } catch {
       return lang === 'ID'
-        ? 'Hanya tamu yang sedang menginap yang dapat mengakses room service. Periksa QR dan detail Anda atau hubungi resepsionis.'
-        : 'Only registered in-house guests can access room service. Check your QR and details or contact the front desk.';
+        ? 'Detail tamu tidak dapat diverifikasi. Silakan periksa kembali data Anda.'
+        : 'We could not verify your guest details. Please review your information and try again.';
     }
 
     setGuestSession(session);
@@ -163,8 +159,6 @@ export default function App() {
       allergens: item.allergens,
     };
     dispatch({ type: AppEvent.AddItem, payload: { item: entry, qty, note } });
-    // UX FIX: Automatically show cart to confirm addition
-    dispatch({ type: AppEvent.OpenCart });
   }, []);
 
   const removeFromCart = useCallback((index: number) => {
@@ -176,8 +170,8 @@ export default function App() {
       dispatch({
         type: AppEvent.OrderSubmitFailed,
         payload: lang === 'ID'
-          ? 'Sesi tamu tidak valid. Silakan scan ulang QR kamar.'
-          : 'Guest session is invalid. Please scan the room QR again.',
+          ? 'Sesi tamu tidak valid. Silakan masuk kembali dengan detail Anda.'
+          : 'Your guest session is no longer valid. Please sign in again with your details.',
       });
       return;
     }
@@ -273,7 +267,8 @@ export default function App() {
   // --- Render based on state machine screen ---
   return (
     <ThemeProvider>
-      <div className="hcs-mobile-shell min-h-screen" style={{ fontFamily: "'Manrope', sans-serif" }}>
+      {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
+      <div className="hcs-mobile-shell min-h-screen" style={{ fontFamily: "'Manrope', sans-serif", visibility: showSplash ? 'hidden' : 'visible' }}>
         <AnimatePresence mode="wait">
           {state.screen === Screen.Welcome && (
             <LoginView
@@ -281,7 +276,6 @@ export default function App() {
               lang={lang}
               setLang={setLang}
               onLogin={handleLogin}
-              requiresAccessCode={!accessToken}
             />
           )}
 
