@@ -1,0 +1,26 @@
+{
+  "admin_users": {
+    "admin-demo-uid": {
+      "hotelId": "atelier-meridian-demo",
+      "email": "ops@ateliermeridian.demo",
+      "name": "Operations Manager",
+      "role": "admin",
+      "active": true
+    }
+  },
+  "guest_stays": {
+    "stay-1204-demo": {
+      "hotelId": "atelier-meridian-demo",
+      "reservationId": "RES-1204-DEMO",
+      "roomNumber": "1204",
+      "lastName": "Santoso",
+      "lastNameNormalized": "santoso",
+      "phoneNumber": "6281234567890",
+      "phoneNumberNormalized": "6281234567890",
+      "status": "checked_in",
+      "checkedIn": true,
+      "guestCount": 2,
+      "language": "ID"
+    }
+  }
+}

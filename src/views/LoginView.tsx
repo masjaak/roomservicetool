@@ -7,7 +7,7 @@ import { validateGuestAccess } from './loginValidation';
 interface LoginViewProps {
   lang: Language;
   setLang: (lang: Language) => void;
-  onLogin: (room: string, phone: string, lastName: string) => void;
+  onLogin: (room: string, phone: string, lastName: string) => Promise<string | null | void> | string | null | void;
 }
 
 const loginHeroImage =
@@ -22,6 +22,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
   const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const t = TRANSLATIONS[lang];
 
   useEffect(() => {
@@ -39,8 +40,24 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
     return () => { document.body.style.overflow = prev; };
   }, []);
 
-  const handleSubmit = () => {
-    if (isValid) onLogin(roomNumber, phoneNumber, lastName);
+  const handleSubmit = async () => {
+    if (!isValid || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const submitError = await onLogin(roomNumber, phoneNumber, lastName);
+      setError(submitError || '');
+    } catch {
+      setError(
+        lang === 'ID'
+          ? 'Verifikasi tamu gagal. Silakan hubungi resepsionis.'
+          : 'Guest verification failed. Please contact the front desk.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const moveFocus = (e: React.KeyboardEvent<HTMLInputElement>, next?: HTMLInputElement | null) => {
@@ -258,7 +275,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
             {/* Form */}
             <form
               style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-              onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}
+              onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}
             >
               {/* Room Number */}
               <div
@@ -437,7 +454,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
               <div style={{ paddingTop: '0.75rem' }}>
                 <button
                   type="submit"
-                  disabled={!isValid}
+                  disabled={!isValid || isSubmitting}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -455,14 +472,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
                     textTransform: 'uppercase',
                     letterSpacing: '0.18em',
                     boxShadow: '0 18px 34px rgba(119,90,25,0.28), inset 0 1px 0 rgba(255,255,255,0.22)',
-                    cursor: isValid ? 'pointer' : 'not-allowed',
+                    cursor: isValid && !isSubmitting ? 'pointer' : 'not-allowed',
                     opacity: 1,
                     WebkitAppearance: 'none',
                     appearance: 'none',
                     transition: 'transform 0.15s',
                   }}
                 >
-                  <span>{t.accessDining}</span>
+                  <span>{isSubmitting ? (lang === 'ID' ? 'Memverifikasi Tamu' : 'Verifying Guest') : t.accessDining}</span>
                   <span
                     aria-hidden="true"
                     style={{

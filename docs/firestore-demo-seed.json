@@ -1,0 +1,119 @@
+{
+  "admin_users": {
+    "demo-admin-uid": {
+      "hotelId": "atelier-meridian-demo",
+      "email": "ops@ateliermeridian.demo",
+      "name": "Operations Manager",
+      "role": "admin",
+      "active": true,
+      "createdAt": {
+        "__type": "serverTimestamp"
+      },
+      "updatedAt": {
+        "__type": "serverTimestamp"
+      }
+    },
+    "demo-fdm-uid": {
+      "hotelId": "atelier-meridian-demo",
+      "email": "frontoffice@ateliermeridian.demo",
+      "name": "Front Office Manager",
+      "role": "admin",
+      "active": true,
+      "createdAt": {
+        "__type": "serverTimestamp"
+      },
+      "updatedAt": {
+        "__type": "serverTimestamp"
+      }
+    }
+  },
+  "guest_stays": {
+    "stay-1204-demo": {
+      "hotelId": "atelier-meridian-demo",
+      "reservationId": "RES-1204-DEMO",
+      "roomNumber": "1204",
+      "firstName": "Rina",
+      "lastName": "Santoso",
+      "lastNameNormalized": "santoso",
+      "phoneNumber": "6281234567890",
+      "phoneNumberNormalized": "6281234567890",
+      "status": "checked_in",
+      "checkedIn": true,
+      "active": true,
+      "guestCount": 2,
+      "language": "ID",
+      "checkedInAt": {
+        "__type": "timestamp",
+        "value": "2026-04-24T07:00:00.000Z"
+      },
+      "expectedCheckoutAt": {
+        "__type": "timestamp",
+        "value": "2026-04-27T04:00:00.000Z"
+      },
+      "createdAt": {
+        "__type": "serverTimestamp"
+      },
+      "updatedAt": {
+        "__type": "serverTimestamp"
+      }
+    },
+    "stay-0807-checkedout": {
+      "hotelId": "atelier-meridian-demo",
+      "reservationId": "RES-0807-OLD",
+      "roomNumber": "807",
+      "firstName": "Dwi",
+      "lastName": "Pratama",
+      "lastNameNormalized": "pratama",
+      "phoneNumber": "6281111111111",
+      "phoneNumberNormalized": "6281111111111",
+      "status": "checked_out",
+      "checkedIn": false,
+      "active": false,
+      "guestCount": 1,
+      "language": "ID",
+      "checkedInAt": {
+        "__type": "timestamp",
+        "value": "2026-04-20T07:00:00.000Z"
+      },
+      "expectedCheckoutAt": {
+        "__type": "timestamp",
+        "value": "2026-04-22T04:00:00.000Z"
+      },
+      "createdAt": {
+        "__type": "serverTimestamp"
+      },
+      "updatedAt": {
+        "__type": "serverTimestamp"
+      }
+    },
+    "stay-1204-wrong-phone": {
+      "hotelId": "atelier-meridian-demo",
+      "reservationId": "RES-1204-WRONG",
+      "roomNumber": "1204",
+      "firstName": "Rina",
+      "lastName": "Santoso",
+      "lastNameNormalized": "santoso",
+      "phoneNumber": "6289999999999",
+      "phoneNumberNormalized": "6289999999999",
+      "status": "checked_out",
+      "checkedIn": false,
+      "active": false,
+      "guestCount": 2,
+      "language": "ID",
+      "checkedInAt": {
+        "__type": "timestamp",
+        "value": "2026-04-18T07:00:00.000Z"
+      },
+      "expectedCheckoutAt": {
+        "__type": "timestamp",
+        "value": "2026-04-20T04:00:00.000Z"
+      },
+      "createdAt": {
+        "__type": "serverTimestamp"
+      },
+      "updatedAt": {
+        "__type": "serverTimestamp"
+      }
+    }
+  }
+}

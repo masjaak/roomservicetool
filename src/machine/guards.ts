@@ -19,7 +19,7 @@ export function isGuestInfoValid(info: GuestInfo): boolean {
   if (info.lastName.trim().length === 0) return false;
 
   const digits = info.phoneNumber.replace(/\D/g, '');
-  if (digits.length === 0) return true;
+  if (digits.length === 0) return false;
   if (digits.length < 10 || digits.length > 14) return false;
   if (!digits.startsWith('08') && !digits.startsWith('628')) return false;
 

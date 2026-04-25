@@ -51,7 +51,17 @@ npm install
 
 ### 2. Configure Firebase
 
-Update the Firebase client config in `src/lib/firebase.ts` to match the target project.
+Create a `.env.local` file from `.env.example` and set:
+
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+- `VITE_FIREBASE_MEASUREMENT_ID`
+- `VITE_FIREBASE_FUNCTIONS_REGION`
+- `VITE_FIREBASE_APP_CHECK_SITE_KEY`
 
 ### 3. Start the app
 
@@ -68,7 +78,26 @@ npm run dev
 npm run build
 npm run test
 npm run test:watch
+npm run functions:build
+npm run seed:demo
+npm run review:agent
 ```
+
+## Firebase Security
+
+Production Firebase structure, QR access model, and Firestore rules are documented in:
+
+- `docs/firebase-security.md`
+- `docs/deployment-checklist.md`
+- `docs/firebase-deploy-runbook.md`
+- `docs/firestore-seed-guide.md`
+- `docs/firestore-seed-example.json`
+- `docs/firestore-demo-seed.json`
+- `docs/demo-presentation-checklist.md`
+- `docs/demo-operator-script.md`
+- `firestore.rules`
+- `firestore.indexes.json`
+- `firebase.json`
 
 ## UI Migration Notes
 

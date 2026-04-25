@@ -1,0 +1,230 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function stayDoc(stayId) {
+      return get(/databases/$(database)/documents/guest_stays/$(stayId));
+    }
+
+    function accessTokenDoc(tokenId) {
+      return get(/databases/$(database)/documents/guest_access_tokens/$(tokenId));
+    }
+
+    function isActiveStay(data) {
+      return data.checkedIn == true ||
+        data.active == true ||
+        data.status == 'active' ||
+        data.status == 'checked_in' ||
+        data.status == 'in_house';
+    }
+
+    function validDemoAccessToken() {
+      let token = accessTokenDoc(request.resource.data.accessTokenId);
+      let stay = stayDoc(request.resource.data.stayId);
+
+      return token.exists() &&
+        stay.exists() &&
+        token.data.status == 'active' &&
+        token.data.expiresAt > request.time &&
+        token.data.stayId == request.resource.data.stayId &&
+        token.data.roomNumber == request.resource.data.roomNumber &&
+        stay.data.roomNumber == request.resource.data.roomNumber &&
+        stay.data.lastNameNormalized == request.resource.data.lastNameNormalized &&
+        stay.data.phoneNumberNormalized == request.resource.data.phoneNumberNormalized &&
+        isActiveStay(stay.data);
+    }
+
+    function validDemoOrderCreateShape() {
+      let keys = request.resource.data.keys();
+
+      return keys.hasAll([
+        'accessTokenId',
+        'hotelId',
+        'stayId',
+        'roomNumber',
+        'lastName',
+        'lastNameNormalized',
+        'phoneNumber',
+        'phoneNumberNormalized',
+        'items',
+        'subtotal',
+        'tax',
+        'total',
+        'paymentMethod',
+        'status',
+        'createdAt',
+        'updatedAt',
+        'isRead',
+        'source'
+      ]) &&
+      keys.hasOnly([
+        'accessTokenId',
+        'hotelId',
+        'stayId',
+        'roomNumber',
+        'lastName',
+        'lastNameNormalized',
+        'phoneNumber',
+        'phoneNumberNormalized',
+        'items',
+        'subtotal',
+        'tax',
+        'total',
+        'paymentMethod',
+        'selectedBank',
+        'hasPaymentProof',
+        'status',
+        'createdAt',
+        'updatedAt',
+        'isRead',
+        'source'
+      ]) &&
+      request.resource.data.items.size() > 0 &&
+      request.resource.data.status == 'incoming' &&
+      request.resource.data.isRead == false &&
+      request.resource.data.source == 'spark_demo';
+    }
+
+    function adminOrderWorkflowUpdateOnly() {
+      return request.resource.data.keys().hasOnly([
+        'accessTokenId',
+        'hotelId',
+        'stayId',
+        'roomNumber',
+        'lastName',
+        'lastNameNormalized',
+        'phoneNumber',
+        'phoneNumberNormalized',
+        'items',
+        'subtotal',
+        'tax',
+        'total',
+        'paymentMethod',
+        'selectedBank',
+        'hasPaymentProof',
+        'status',
+        'createdAt',
+        'updatedAt',
+        'isRead',
+        'source',
+        'rating',
+        'feedback',
+        'review',
+        'reviewSummary',
+        'feedbackDetails',
+        'isFeedbackSubmitted',
+        'feedbackSubmittedAt'
+      ]) &&
+      request.resource.data.accessTokenId == resource.data.accessTokenId &&
+      request.resource.data.hotelId == resource.data.hotelId &&
+      request.resource.data.stayId == resource.data.stayId &&
+      request.resource.data.roomNumber == resource.data.roomNumber &&
+      request.resource.data.lastName == resource.data.lastName &&
+      request.resource.data.lastNameNormalized == resource.data.lastNameNormalized &&
+      request.resource.data.phoneNumber == resource.data.phoneNumber &&
+      request.resource.data.phoneNumberNormalized == resource.data.phoneNumberNormalized &&
+      request.resource.data.items == resource.data.items &&
+      request.resource.data.subtotal == resource.data.subtotal &&
+      request.resource.data.tax == resource.data.tax &&
+      request.resource.data.total == resource.data.total &&
+      request.resource.data.paymentMethod == resource.data.paymentMethod &&
+      request.resource.data.source == resource.data.source;
+    }
+
+    function guestFeedbackUpdateOnly() {
+      return adminOrderWorkflowUpdateOnly() &&
+        (resource.data.status == 'delivered' || resource.data.status == 'completed') &&
+        request.resource.data.status == resource.data.status &&
+        request.resource.data.isRead == resource.data.isRead;
+    }
+
+    match /admin_users/{userId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /guest_stays/{stayId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /guest_access_tokens/{tokenId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll([
+        'hotelId',
+        'stayId',
+        'roomNumber',
+        'status',
+        'mode',
+        'createdAt',
+        'updatedAt',
+        'expiresAt'
+      ]) &&
+      request.resource.data.keys().hasOnly([
+        'hotelId',
+        'stayId',
+        'roomNumber',
+        'status',
+        'mode',
+        'createdAt',
+        'updatedAt',
+        'expiresAt'
+      ]) &&
+      request.resource.data.status == 'active' &&
+      request.resource.data.mode == 'spark_demo' &&
+      stayDoc(request.resource.data.stayId).exists() &&
+      stayDoc(request.resource.data.stayId).data.roomNumber == request.resource.data.roomNumber &&
+      isActiveStay(stayDoc(request.resource.data.stayId).data);
+      allow update: if resource.data.mode == 'spark_demo' &&
+        request.resource.data.keys().hasOnly([
+          'hotelId',
+          'stayId',
+          'roomNumber',
+          'status',
+          'mode',
+          'createdAt',
+          'updatedAt',
+          'expiresAt',
+          'revokedAt',
+          'lastRedeemedAt',
+          'lastRedeemedRoomNumber'
+        ]) &&
+        request.resource.data.hotelId == resource.data.hotelId &&
+        request.resource.data.stayId == resource.data.stayId &&
+        request.resource.data.roomNumber == resource.data.roomNumber &&
+        request.resource.data.mode == resource.data.mode;
+      allow delete: if false;
+    }
+
+    match /guest_access_sessions/{userId} {
+      allow read, write: if false;
+    }
+
+    match /guest_access_logins/{logId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll([
+        'accessTokenId',
+        'hotelId',
+        'stayId',
+        'roomNumber',
+        'lastName',
+        'lastNameNormalized',
+        'phoneNumber',
+        'source',
+        'createdAt'
+      ]);
+      allow update, delete: if false;
+    }
+
+    match /orders/{orderId} {
+      allow create: if validDemoOrderCreateShape() && validDemoAccessToken();
+      allow read: if true;
+      allow update: if adminOrderWorkflowUpdateOnly() || guestFeedbackUpdateOnly();
+      allow delete: if false;
+    }
+
+    match /rate_limits/{docId} {
+      allow read, write: if false;
+    }
+  }
+}

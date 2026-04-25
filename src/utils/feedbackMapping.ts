@@ -19,12 +19,12 @@ export function buildLegacyFeedback(payload: FeedbackPayload): LegacyFeedbackFor
 
   // Only append specific feedback if exists and <= 3 stars 
   if (payload.foodQuality) parts.push(`Food ${payload.foodQuality}`);
-  if (payload.speedOfService) parts.push(`Speed ${payload.speedOfService}`);
+  if (payload.deliverySpeed) parts.push(`Speed ${payload.deliverySpeed}`);
   if (payload.staffCourtesy) parts.push(`Staff ${payload.staffCourtesy}`);
   if (payload.presentation) parts.push(`Pres ${payload.presentation}`);
   
   if (payload.wouldOrderAgain !== undefined) {
-    parts.push(`Would order again: ${payload.wouldOrderAgain ? 'yes' : 'no'}`);
+    parts.push(`Would order again: ${payload.wouldOrderAgain === 'yes' ? 'yes' : 'no'}`);
   }
 
   if (payload.requestManagerFollowUp) {

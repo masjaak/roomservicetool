@@ -27,6 +27,7 @@
             "@types/react": "^19.2.14",
             "@types/react-dom": "^19.2.3",
             "@vitejs/plugin-react-swc": "^3.10.2",
+            "firebase-tools": "^15.15.0",
             "jsdom": "^29.0.2",
             "typescript": "^6.0.3",
             "vite": "6.3.5",
@@ -35,6 +36,9 @@
       "scripts": {
             "dev": "vite",
             "build": "vite build",
+            "functions:build": "npm --prefix functions run build",
+            "seed:demo": "npm --prefix functions run seed:demo",
+            "review:agent": "npm run test && npm run build && npm run functions:build && npx cap sync ios",
             "cap:copy": "npx cap copy",
             "cap:sync": "npx cap sync",
             "ios:open": "npx cap open ios",

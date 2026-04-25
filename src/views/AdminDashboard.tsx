@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { normalizeOrderForAdmin, AdminOrderViewModel } from '../utils/adminMappers';
+import { createGuestQrToken, revokeGuestSessionAsAdmin } from '../lib/adminAccess';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { Search, UtensilsCrossed, AlertTriangle, MessageSquare, CheckCircle2, Clock } from 'lucide-react';
+import { Search, UtensilsCrossed, AlertTriangle, MessageSquare, CheckCircle2, Clock, QrCode, Copy, ShieldBan } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 import { ScrollArea } from '../components/ui/scroll-area';
@@ -41,6 +42,14 @@ const STATUS_COLORS: Record<string, string> = {
 export const AdminDashboard: React.FC = () => {
   const [orders, setOrders] = useState<AdminOrderViewModel[]>([]);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed' | 'needs_review'>('active');
+  const [hotelId, setHotelId] = useState('atelier-meridian-demo');
+  const [stayId, setStayId] = useState('');
+  const [roomNumber, setRoomNumber] = useState('');
+  const [expiresInMinutes, setExpiresInMinutes] = useState('720');
+  const [tokenResult, setTokenResult] = useState<{ qrUrl: string; rawToken: string; expiresAt: string } | null>(null);
+  const [tokenStatus, setTokenStatus] = useState<string>('');
+  const [isGeneratingToken, setIsGeneratingToken] = useState(false);
+  const [revokingSessionId, setRevokingSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
@@ -68,6 +77,58 @@ export const AdminDashboard: React.FC = () => {
       await updateDoc(doc(db, 'orders', orderId), { isRead: true });
     } catch (e) {
       console.error("Failed to mark as read", e);
+    }
+  };
+
+  const handleGenerateQr = async () => {
+    if (!hotelId.trim() || !stayId.trim() || !roomNumber.trim()) {
+      setTokenStatus('Hotel ID, stay ID, and room number are required.');
+      return;
+    }
+
+    setIsGeneratingToken(true);
+    setTokenStatus('');
+
+    try {
+      const result = await createGuestQrToken({
+        hotelId: hotelId.trim(),
+        stayId: stayId.trim(),
+        roomNumber: roomNumber.trim(),
+        baseUrl: window.location.origin,
+        expiresInMinutes: Number(expiresInMinutes) || 720,
+      });
+
+      setTokenResult(result);
+      setTokenStatus('QR token created. Copy the URL into your QR generator or print workflow.');
+    } catch (error) {
+      console.error('Failed to create guest QR token', error);
+      setTokenStatus('Failed to create QR token. Make sure admin auth and Functions deployment are ready.');
+    } finally {
+      setIsGeneratingToken(false);
+    }
+  };
+
+  const copyTokenUrl = async () => {
+    if (!tokenResult?.qrUrl) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(tokenResult.qrUrl);
+      setTokenStatus('Guest QR URL copied to clipboard.');
+    } catch {
+      setTokenStatus('Unable to copy automatically. Copy the URL manually.');
+    }
+  };
+
+  const handleRevokeGuest = async (sessionId: string) => {
+    setRevokingSessionId(sessionId);
+    try {
+      await revokeGuestSessionAsAdmin(sessionId);
+    } catch (error) {
+      console.error('Failed to revoke guest session', error);
+    } finally {
+      setRevokingSessionId(null);
     }
   };
 
@@ -101,6 +162,73 @@ export const AdminDashboard: React.FC = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 mt-8">
+        <Card className="mb-8 border-[#d8c8ab]">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-[#2d2d2d]">
+              <QrCode className="w-5 h-5" />
+              Guest QR Access
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-3">
+              <div className="grid gap-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Hotel ID</label>
+                <input value={hotelId} onChange={(e) => setHotelId(e.target.value)} className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-[#2d2d2d]" />
+              </div>
+              <div className="grid gap-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Stay ID</label>
+                <input value={stayId} onChange={(e) => setStayId(e.target.value)} placeholder="reservation-1204-guest" className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-[#2d2d2d]" />
+              </div>
+              <div className="grid gap-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Room Number</label>
+                <input value={roomNumber} onChange={(e) => setRoomNumber(e.target.value)} placeholder="1204" className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-[#2d2d2d]" />
+              </div>
+              <div className="grid gap-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Expiry (minutes)</label>
+                <input value={expiresInMinutes} onChange={(e) => setExpiresInMinutes(e.target.value)} placeholder="720" className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-[#2d2d2d]" />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button onClick={handleGenerateQr} disabled={isGeneratingToken}>
+                  {isGeneratingToken ? 'Generating…' : 'Generate Guest QR'}
+                </Button>
+                {tokenResult?.qrUrl && (
+                  <Button variant="outline" onClick={copyTokenUrl}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copy URL
+                  </Button>
+                )}
+              </div>
+              {tokenStatus && (
+                <p className="text-sm text-gray-600">{tokenStatus}</p>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-dashed border-[#d8c8ab] bg-[#fcfbf8] p-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Print Pack</p>
+              {tokenResult ? (
+                <div className="space-y-3 text-sm text-[#2d2d2d]">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Guest URL</p>
+                    <p className="mt-1 break-all rounded-md bg-white p-3 text-xs leading-relaxed">{tokenResult.qrUrl}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Raw Token</p>
+                    <p className="mt-1 rounded-md bg-white p-3 text-xs break-all">{tokenResult.rawToken}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Expires At</p>
+                    <p className="mt-1 rounded-md bg-white p-3 text-xs">{new Date(tokenResult.expiresAt).toLocaleString()}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Generate a short-lived QR token for a checked-in guest stay. Use the generated URL inside your QR printer workflow or hotel collateral.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Insights */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card>
@@ -259,7 +387,25 @@ export const AdminDashboard: React.FC = () => {
                                   <span className="font-medium text-right text-[#2d2d2d]">{order.lastName || '-'}</span>
                                   <span className="text-gray-500">Phone</span>
                                   <span className="font-medium text-right text-[#2d2d2d]">{order.phoneNumber || '-'}</span>
+                                  <span className="text-gray-500">Guest UID</span>
+                                  <span className="font-medium text-right text-[#2d2d2d]">{order.guestUid || '-'}</span>
+                                  <span className="text-gray-500">Access Token</span>
+                                  <span className="font-medium text-right text-[#2d2d2d]">{order.accessTokenId || '-'}</span>
                                 </div>
+                                {(order.accessTokenId || order.guestUid) && (
+                                  <div className="mt-3 pt-3 border-t">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleRevokeGuest(order.accessTokenId || order.guestUid!)}
+                                      disabled={revokingSessionId === (order.accessTokenId || order.guestUid)}
+                                      className="w-full justify-center text-red-700 border-red-200 hover:bg-red-50"
+                                    >
+                                      <ShieldBan className="w-4 h-4 mr-2" />
+                                      {revokingSessionId === (order.accessTokenId || order.guestUid) ? 'Revoking Session…' : 'Revoke Guest Session'}
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
                             </div>
 

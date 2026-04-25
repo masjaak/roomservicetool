@@ -1,15 +1,18 @@
 import React, { useReducer, useEffect, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { reducer } from './machine/reducer';
 import { createInitialState, Screen, AppEvent } from './machine/types';
 import { persistCart, loadCart, buildWhatsAppUrl, clearCart } from './machine/effects';
 import type { CartEntry, PaymentMethod } from './machine/types';
 import type { Language, MenuItem } from './types';
 import { ErrorBoundary, TrackingFallback, GuestFallback } from './components/ErrorBoundary';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from './lib/firebase';
 import { openWhatsAppOrder } from './utils/whatsAppNavigation';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { auth, db, isSparkDemoMode } from './lib/firebase';
+import { createGuestOrder, getAccessTokenFromUrl, GuestSession, loadStoredGuestSession, redeemGuestAccessSession, revokeCurrentGuestSession, scrubAccessTokenFromUrl } from './lib/guestSession';
+import { normalizeGuestPhone } from './lib/guestAccess';
 import { LoginView } from './views/LoginView';
 import { MenuView } from './views/MenuView';
 import { CheckoutView } from './views/CheckoutView';
@@ -18,6 +21,8 @@ import { TrackingView } from './views/TrackingView';
 export default function App() {
   const [lang, setLang] = useState<Language>('EN');
   const [state, dispatch] = useReducer(reducer, createInitialState(loadCart()));
+  const [guestSession, setGuestSession] = useState<GuestSession | null>(null);
+  const accessToken = getAccessTokenFromUrl();
 
   const resetFlow = useCallback((shouldClearCart: boolean) => {
     dispatch({ type: AppEvent.ResetFlow });
@@ -31,13 +36,118 @@ export default function App() {
     persistCart(state.cart);
   }, [state.cart]);
 
+  useEffect(() => {
+    if (isSparkDemoMode) {
+      const session = loadStoredGuestSession();
+
+      if (!session) {
+        setGuestSession(null);
+        return;
+      }
+
+      setGuestSession(session);
+      scrubAccessTokenFromUrl();
+
+      if (state.screen === Screen.Welcome && !state.guest.roomNumber) {
+        dispatch({
+          type: AppEvent.SubmitGuestInfo,
+          payload: {
+            roomNumber: session.roomNumber,
+            lastName: session.lastName,
+            phoneNumber: session.phoneNumber,
+          },
+        });
+      }
+
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setGuestSession(null);
+        return;
+      }
+
+      const sessionSnap = await getDoc(doc(db, 'guest_access_sessions', user.uid));
+      if (!sessionSnap.exists()) {
+        setGuestSession(null);
+        return;
+      }
+
+      const sessionData = sessionSnap.data();
+      const expiresAt = sessionData.expiresAt?.toDate?.();
+
+      if (sessionData.status !== 'active' || !expiresAt || expiresAt.getTime() <= Date.now()) {
+        setGuestSession(null);
+        return;
+      }
+
+      const session: GuestSession = {
+        hotelId: String(sessionData.hotelId || ''),
+        stayId: String(sessionData.stayId || ''),
+        roomNumber: String(sessionData.roomNumber || ''),
+        lastName: String(sessionData.lastName || ''),
+        phoneNumber: String(sessionData.phoneNumber || ''),
+        expiresAt: expiresAt.toISOString(),
+      };
+
+      setGuestSession(session);
+      scrubAccessTokenFromUrl();
+
+      if (state.screen === Screen.Welcome && !state.guest.roomNumber) {
+        dispatch({
+          type: AppEvent.SubmitGuestInfo,
+          payload: {
+            roomNumber: session.roomNumber,
+            lastName: session.lastName,
+            phoneNumber: session.phoneNumber,
+          },
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [state.guest.roomNumber, state.screen]);
+
   // --- Event dispatchers ---
-  const handleLogin = useCallback((room: string, phone: string, lastName: string) => {
+  const handleLogin = useCallback(async (room: string, phone: string, lastName: string) => {
+    if (!accessToken) {
+      return lang === 'ID'
+        ? 'Akses room service hanya tersedia dari QR kamar yang valid.'
+        : 'Room service access is only available from a valid in-room QR code.';
+    }
+
+    const roomNumber = room.trim();
+    const guestLastName = lastName.trim().replace(/\s+/g, ' ');
+    const normalizedPhoneNumber = normalizeGuestPhone(phone);
+    let session: GuestSession;
+
+    try {
+      session = await redeemGuestAccessSession({
+        accessToken,
+        roomNumber,
+        lastName: guestLastName,
+        phoneNumber: normalizedPhoneNumber,
+      });
+    } catch {
+      return lang === 'ID'
+        ? 'Hanya tamu yang sedang menginap yang dapat mengakses room service. Periksa QR dan detail Anda atau hubungi resepsionis.'
+        : 'Only registered in-house guests can access room service. Check your QR and details or contact the front desk.';
+    }
+
+    setGuestSession(session);
+    scrubAccessTokenFromUrl();
+
     dispatch({
       type: AppEvent.SubmitGuestInfo,
-      payload: { roomNumber: room, lastName, phoneNumber: phone },
+      payload: {
+        roomNumber: session.roomNumber,
+        lastName: session.lastName,
+        phoneNumber: session.phoneNumber,
+      },
     });
-  }, []);
+    return null;
+  }, [accessToken, lang]);
 
   const addToCart = useCallback((item: MenuItem, qty: number, note: string) => {
     const entry: Omit<CartEntry, 'qty' | 'note'> = {
@@ -60,6 +170,16 @@ export default function App() {
   }, []);
 
   const handlePlaceOrder = async (method: PaymentMethod, selectedBank: string | null, proof: File | null) => {
+    if (!guestSession || (!isSparkDemoMode && !auth.currentUser)) {
+      dispatch({
+        type: AppEvent.OrderSubmitFailed,
+        payload: lang === 'ID'
+          ? 'Sesi tamu tidak valid. Silakan scan ulang QR kamar.'
+          : 'Guest session is invalid. Please scan the room QR again.',
+      });
+      return;
+    }
+
     // Update payment info in state
     dispatch({
       type: AppEvent.SelectPaymentMethod,
@@ -73,24 +193,21 @@ export default function App() {
     const tax = subtotal * 0.21;
     const total = subtotal + tax;
 
-    const orderData = {
-      roomNumber: state.guest.roomNumber,
-      phoneNumber: state.guest.phoneNumber,
-      lastName: state.guest.lastName,
-      items: state.cart,
-      subtotal,
-      tax,
-      total,
-      paymentMethod: method,
-      status: 'incoming',
-      createdAt: serverTimestamp(),
-      isRead: false,
-    };
-
     try {
-      const docRef = await Promise.race([
-        addDoc(collection(db, 'orders'), orderData),
-        new Promise<never>((_, reject) => 
+      const orderResult = await Promise.race([
+        createGuestOrder({
+          roomNumber: state.guest.roomNumber,
+          lastName: state.guest.lastName,
+          phoneNumber: state.guest.phoneNumber,
+          items: state.cart,
+          subtotal,
+          tax,
+          total,
+          paymentMethod: method,
+          selectedBank,
+          hasPaymentProof: method === 'room' || !!proof,
+        }),
+        new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('timeout')), 10000)
         )
       ]);
@@ -107,26 +224,29 @@ export default function App() {
         });
 
         blockedWaUrl = navigationResult.blockedUrl;
-      } catch (e) {
+      } catch {
         blockedWaUrl = waUrl;
       }
 
       // Dispatch success
       dispatch({ 
         type: AppEvent.OrderSubmitSucceeded, 
-        payload: { id: docRef.id, blockedWaUrl } 
+        payload: { id: orderResult.orderId, blockedWaUrl: orderResult.blockedWaUrl ?? blockedWaUrl } 
       });
 
       // Clear persisted cart immediately on success
       clearCart();
-    } catch (error: Error | any) {
+    } catch (error: unknown) {
       console.error('Order save error:', error);
-      const isTimeout = error?.message === 'timeout';
-      dispatch({ 
+      const isTimeout = error instanceof Error && error.message === 'timeout';
+      const isRateLimited = error instanceof Error && error.message === 'rate-limit';
+      dispatch({
         type: AppEvent.OrderSubmitFailed, 
         payload: isTimeout
           ? (lang === 'ID' ? 'Koneksi terlalu lama. Silakan coba lagi.' : 'Connection timeout. Please try again.')
-          : (lang === 'ID' ? 'Gagal menyimpan pesanan. Silakan coba lagi.' : 'Failed to save order. Please try again.') 
+          : isRateLimited
+            ? (lang === 'ID' ? 'Terlalu banyak percobaan pesanan. Coba lagi beberapa menit lagi.' : 'Too many order attempts. Please wait a few minutes and try again.')
+            : (lang === 'ID' ? 'Gagal menyimpan pesanan. Silakan coba lagi.' : 'Failed to save order. Please try again.') 
       });
     }
   };
@@ -142,6 +262,8 @@ export default function App() {
       : 'Switch rooms? Your order will be cleared.';
 
     if (window.confirm(message)) {
+      setGuestSession(null);
+      void revokeCurrentGuestSession().catch(() => undefined);
       resetFlow(true);
     }
   }, [lang, resetFlow]);

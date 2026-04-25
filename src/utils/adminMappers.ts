@@ -19,6 +19,8 @@ export interface StructuredFeedbackDetails {
 
 export interface AdminOrderViewModel {
   id: string;
+  guestUid?: string;
+  accessTokenId?: string;
   roomNumber: string;
   phoneNumber: string;
   lastName?: string;
@@ -68,6 +70,8 @@ export function normalizeOrderForAdmin(docSnap: QueryDocumentSnapshot<DocumentDa
 
   return {
     id: docSnap.id,
+    guestUid: data.guestUid || '',
+    accessTokenId: data.accessTokenId || '',
     roomNumber: data.roomNumber || 'Unknown',
     phoneNumber: data.phoneNumber || '',
     lastName: data.lastName || '',

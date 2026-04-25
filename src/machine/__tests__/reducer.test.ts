@@ -51,6 +51,16 @@ describe('reducer — screen transitions', () => {
     expect(next.lastRejectedEvent).toBe(AppEvent.SubmitGuestInfo);
   });
 
+  it('stays on Welcome with invalid guest info (missing phone) — rejected', () => {
+    const state = stateAt(Screen.Welcome);
+    const next = reducer(state, {
+      type: AppEvent.SubmitGuestInfo,
+      payload: { ...validGuest, phoneNumber: '' },
+    });
+    expect(next.screen).toBe(Screen.Welcome);
+    expect(next.lastRejectedEvent).toBe(AppEvent.SubmitGuestInfo);
+  });
+
   // Cart open/close (modal overlay, not a screen)
   it('opens cart modal on Menu when cart is not empty', () => {
     const state = stateAt(Screen.Menu, { cart: [sampleEntry] });

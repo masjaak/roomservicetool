@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { LoginView } from '../LoginView';
 
 describe('LoginView', () => {
@@ -53,5 +54,18 @@ describe('LoginView', () => {
     fireEvent.keyDown(screen.getByLabelText('Guest Last Name'), { key: 'Enter', code: 'Enter' });
 
     expect(onLogin).not.toHaveBeenCalled();
+  });
+
+  it('shows a server-side verification error when login is rejected after submit', async () => {
+    const onLogin = vi.fn().mockResolvedValue('Only registered in-house guests can access room service.');
+
+    render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} />);
+
+    fireEvent.change(screen.getByLabelText('Room Number'), { target: { value: '1204' } });
+    fireEvent.change(screen.getByLabelText('Guest Last Name'), { target: { value: 'Tan' } });
+    fireEvent.change(screen.getByLabelText('Phone Number'), { target: { value: '081234567890' } });
+    fireEvent.click(screen.getByRole('button', { name: /access in-room dining/i }));
+
+    expect(await screen.findByText('Only registered in-house guests can access room service.')).toBeTruthy();
   });
 });

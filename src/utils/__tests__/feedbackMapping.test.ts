@@ -7,8 +7,8 @@ describe('feedbackMapping', () => {
     const payload: FeedbackPayload = {
       overallRating: 5,
       foodQuality: 5,
-      speedOfService: 4,
-      wouldOrderAgain: true,
+      deliverySpeed: 4,
+      wouldOrderAgain: 'yes',
       comment: '',
     };
     
@@ -27,10 +27,10 @@ describe('feedbackMapping', () => {
       overallRating: 2,
       foodQuality: 2,
       presentation: 1,
-      issueCategory: 'Late Delivery',
+      issueCategory: 'Late delivery',
       issueNote: 'Food arrived cold and 40 mins late',
-      requestManagerFollowUp: true,
-      wouldOrderAgain: false,
+      requestManagerFollowUp: 'yes',
+      wouldOrderAgain: 'no',
       comment: 'Very disappointing.',
     };
     
@@ -39,7 +39,7 @@ describe('feedbackMapping', () => {
     expect(result.rating).toBe(2);
     expect(result.feedback).toBe('Very disappointing.');
     expect(result.review).toBe('Very disappointing.');
-    expect(result.reviewSummary).toBe('2★ · Food 2 · Pres 1 · Would order again: no · Manager follow-up requested · Issue: Late Delivery');
+    expect(result.reviewSummary).toBe('2★ · Food 2 · Pres 1 · Would order again: no · Manager follow-up requested · Issue: Late delivery');
   });
 
   it('generates a minimal correct payload', () => {
