@@ -5,9 +5,15 @@ export interface LegacyFeedbackFormat {
   feedback: string;
   review: string;
   reviewSummary: string;
-  feedbackDetails: FeedbackPayload;
+  feedbackDetails: Partial<FeedbackPayload>;
   isFeedbackSubmitted: boolean;
   feedbackSubmittedAt: Date;
+}
+
+function stripUndefinedFields<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, value]) => value !== undefined),
+  ) as Partial<T>;
 }
 
 /**
@@ -15,6 +21,21 @@ export interface LegacyFeedbackFormat {
  * while retaining the structured nested object for future use.
  */
 export function buildLegacyFeedback(payload: FeedbackPayload): LegacyFeedbackFormat {
+  const feedbackDetails = stripUndefinedFields({
+    overallRating: payload.overallRating,
+    foodQuality: payload.foodQuality,
+    presentation: payload.presentation,
+    deliverySpeed: payload.deliverySpeed,
+    orderAccuracy: payload.orderAccuracy,
+    staffCourtesy: payload.staffCourtesy,
+    valueForMoney: payload.valueForMoney,
+    wouldOrderAgain: payload.wouldOrderAgain,
+    comment: payload.comment || '',
+    requestManagerFollowUp: payload.requestManagerFollowUp,
+    issueCategory: payload.issueCategory,
+    issueNote: payload.issueNote,
+  });
+
   const parts: string[] = [`${payload.overallRating}★`];
 
   // Only append specific feedback if exists and <= 3 stars 
@@ -40,8 +61,8 @@ export function buildLegacyFeedback(payload: FeedbackPayload): LegacyFeedbackFor
     feedback: payload.comment || '',
     review: payload.comment || '',
     reviewSummary: parts.join(' · '),
-    feedbackDetails: payload,
+    feedbackDetails,
     isFeedbackSubmitted: true,
-    feedbackSubmittedAt: new Date()
+    feedbackSubmittedAt: new Date(),
   };
 }

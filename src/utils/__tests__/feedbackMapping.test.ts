@@ -19,7 +19,13 @@ describe('feedbackMapping', () => {
     expect(result.review).toBe('');
     expect(result.reviewSummary).toBe('5★ · Food 5 · Speed 4 · Would order again: yes');
     expect(result.isFeedbackSubmitted).toBe(true);
-    expect(result.feedbackDetails).toEqual(payload);
+    expect(result.feedbackDetails).toEqual({
+      overallRating: 5,
+      foodQuality: 5,
+      deliverySpeed: 4,
+      wouldOrderAgain: 'yes',
+      comment: '',
+    });
   });
 
   it('generates a highly escalated review correctly', () => {
@@ -43,8 +49,9 @@ describe('feedbackMapping', () => {
   });
 
   it('generates a minimal correct payload', () => {
-    const payload: FeedbackPayload = { overallRating: 4 };
+    const payload: FeedbackPayload = { overallRating: 4, comment: '' };
     const result = buildLegacyFeedback(payload);
     expect(result.reviewSummary).toBe('4★');
+    expect(result.feedbackDetails).toEqual({ overallRating: 4, comment: '' });
   });
 });
