@@ -6,7 +6,7 @@ let initialized = false;
 export function initializeGuestAppCheck(): void {
   const siteKey = import.meta.env.VITE_FIREBASE_APP_CHECK_SITE_KEY;
 
-  if (!siteKey || initialized) {
+  if (!siteKey || initialized || !app) {
     return;
   }
 

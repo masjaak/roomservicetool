@@ -1,7 +1,7 @@
 import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import { signInWithCustomToken, signOut } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
-import { auth, db, functions, isSparkDemoMode } from './firebase';
+import { assertFirebaseConfigured, auth, db, functions, isSparkDemoMode } from './firebase';
 import { isGuestStayRecordMatch, normalizeGuestLastName, normalizeGuestPhone } from './guestAccess';
 
 export interface GuestSession {
@@ -53,9 +53,9 @@ const DEMO_SESSION_STORAGE_KEY = 'hcs_guest_demo_session';
 const DEMO_RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 const DEMO_RATE_LIMIT_MAX = 3;
 
-const redeemGuestAccessCallable = httpsCallable(functions, 'redeemGuestAccess');
-const createGuestOrderCallable = httpsCallable(functions, 'createGuestOrder');
-const revokeGuestSessionCallable = httpsCallable(functions, 'revokeGuestSession');
+const redeemGuestAccessCallable = functions ? httpsCallable(functions, 'redeemGuestAccess') : null;
+const createGuestOrderCallable = functions ? httpsCallable(functions, 'createGuestOrder') : null;
+const revokeGuestSessionCallable = functions ? httpsCallable(functions, 'revokeGuestSession') : null;
 
 function persistDemoSession(session: GuestSession): void {
   window.localStorage.setItem(DEMO_SESSION_STORAGE_KEY, JSON.stringify(session));
@@ -111,7 +111,8 @@ async function createSparkDemoAccessToken(input: {
   roomNumber: string;
   expiresAt: string;
 }): Promise<string> {
-  const tokenRef = await addDoc(collection(db, 'guest_access_tokens'), {
+  const firestore = assertFirebaseConfigured(db, 'Firestore');
+  const tokenRef = await addDoc(collection(firestore, 'guest_access_tokens'), {
     hotelId: input.hotelId,
     stayId: input.stayId,
     roomNumber: input.roomNumber,
@@ -169,13 +170,14 @@ async function redeemSparkDemoAccessSession(input: {
   lastName: string;
   phoneNumber: string;
 }): Promise<GuestSession> {
+  const firestore = assertFirebaseConfigured(db, 'Firestore');
   let tokenRef: ReturnType<typeof doc> | null = null;
   let tokenSnap: Awaited<ReturnType<typeof getDoc>> | null = null;
   let token: Record<string, unknown> | null = null;
   let stayId = '';
 
   if (input.accessToken.trim()) {
-    tokenRef = doc(db, 'guest_access_tokens', input.accessToken.trim());
+    tokenRef = doc(firestore, 'guest_access_tokens', input.accessToken.trim());
     tokenSnap = await getDoc(tokenRef);
 
     if (!tokenSnap.exists()) {
@@ -195,11 +197,11 @@ async function redeemSparkDemoAccessSession(input: {
     }
   }
 
-  let staySnap = stayId ? await getDoc(doc(db, 'guest_stays', stayId)) : null;
+  let staySnap = stayId ? await getDoc(doc(firestore, 'guest_stays', stayId)) : null;
 
   if (!staySnap || !staySnap.exists()) {
     const matchingStayQuery = query(
-      collection(db, 'guest_stays'),
+      collection(firestore, 'guest_stays'),
       where('roomNumber', '==', input.roomNumber.trim()),
     );
     const matchingStays = await getDocs(matchingStayQuery);
@@ -262,7 +264,7 @@ async function redeemSparkDemoAccessSession(input: {
     }).catch(() => undefined);
   }
 
-  await addDoc(collection(db, 'guest_access_logins'), {
+  await addDoc(collection(firestore, 'guest_access_logins'), {
     accessTokenId: tokenSnap?.id || null,
     hotelId: session.hotelId,
     stayId: session.stayId,
@@ -279,6 +281,7 @@ async function redeemSparkDemoAccessSession(input: {
 }
 
 async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<CreateGuestOrderResponse> {
+  const firestore = assertFirebaseConfigured(db, 'Firestore');
   const session = loadStoredGuestSession();
 
   if (!session) {
@@ -320,7 +323,7 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
   const tax = Math.round(subtotal * 0.21);
   const total = subtotal + tax;
 
-  const orderRef = await addDoc(collection(db, 'orders'), {
+  const orderRef = await addDoc(collection(firestore, 'orders'), {
     accessTokenId,
     hotelId: normalizedSession.hotelId,
     stayId: normalizedSession.stayId,
@@ -359,7 +362,9 @@ export async function redeemGuestAccessSession(input: {
     return redeemSparkDemoAccessSession(input);
   }
 
-  const result = await redeemGuestAccessCallable({
+  const callable = assertFirebaseConfigured(redeemGuestAccessCallable, 'Firebase Functions');
+  const authInstance = assertFirebaseConfigured(auth, 'Firebase Auth');
+  const result = await callable({
     accessToken: input.accessToken,
     roomNumber: input.roomNumber.trim(),
     lastName: input.lastName.trim().replace(/\s+/g, ' '),
@@ -367,7 +372,7 @@ export async function redeemGuestAccessSession(input: {
   });
 
   const data = result.data as RedeemGuestAccessResponse;
-  await signInWithCustomToken(auth, data.customToken);
+  await signInWithCustomToken(authInstance, data.customToken);
   return data.session;
 }
 
@@ -376,7 +381,8 @@ export async function createGuestOrder(input: CreateGuestOrderInput): Promise<Cr
     return createSparkDemoGuestOrder(input);
   }
 
-  const result = await createGuestOrderCallable({
+  const callable = assertFirebaseConfigured(createGuestOrderCallable, 'Firebase Functions');
+  const result = await callable({
     ...input,
     roomNumber: input.roomNumber.trim(),
     lastName: input.lastName.trim().replace(/\s+/g, ' '),
@@ -392,8 +398,11 @@ export async function revokeCurrentGuestSession(): Promise<void> {
     return;
   }
 
-  if (auth.currentUser) {
-    await revokeGuestSessionCallable({});
-    await signOut(auth);
+  const authInstance = assertFirebaseConfigured(auth, 'Firebase Auth');
+  const callable = assertFirebaseConfigured(revokeGuestSessionCallable, 'Firebase Functions');
+
+  if (authInstance.currentUser) {
+    await callable({});
+    await signOut(authInstance);
   }
 }

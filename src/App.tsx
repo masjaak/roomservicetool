@@ -11,7 +11,7 @@ import { ErrorBoundary, TrackingFallback, GuestFallback } from './components/Err
 import { SplashScreen } from './components/SplashScreen';
 import { openWhatsAppOrder } from './utils/whatsAppNavigation';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { auth, db, isSparkDemoMode } from './lib/firebase';
+import { auth, db, firebaseConfigError, isSparkDemoMode } from './lib/firebase';
 import { createGuestOrder, getAccessTokenFromUrl, GuestSession, loadStoredGuestSession, redeemGuestAccessSession, revokeCurrentGuestSession, scrubAccessTokenFromUrl } from './lib/guestSession';
 import { normalizeGuestPhone } from './lib/guestAccess';
 import { LoginView } from './views/LoginView';
@@ -39,6 +39,10 @@ export default function App() {
   }, [state.cart]);
 
   useEffect(() => {
+    if (firebaseConfigError) {
+      return;
+    }
+
     if (isSparkDemoMode) {
       const session = loadStoredGuestSession();
 
@@ -61,6 +65,10 @@ export default function App() {
         });
       }
 
+      return;
+    }
+
+    if (!auth || !db) {
       return;
     }
 
@@ -267,6 +275,18 @@ export default function App() {
   // --- Render based on state machine screen ---
   return (
     <ThemeProvider>
+      {firebaseConfigError ? (
+        <div style={{ minHeight: '100dvh', background: '#0d0c0b', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', fontFamily: "'Manrope', sans-serif" }}>
+          <div style={{ maxWidth: '24rem', textAlign: 'center' }}>
+            <p style={{ margin: '0 0 0.75rem', fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.62)' }}>Configuration Required</p>
+            <h1 style={{ margin: '0 0 0.8rem', fontFamily: "'Noto Serif', serif", fontSize: '2rem', fontWeight: 400, lineHeight: 1.05 }}>Firebase setup is incomplete</h1>
+            <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.7, color: 'rgba(255,255,255,0.74)' }}>
+              {firebaseConfigError}. Add the missing `VITE_FIREBASE_*` variables to this deployment and redeploy the app.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
       {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
       <div className="hcs-mobile-shell min-h-screen" style={{ fontFamily: "'Manrope', sans-serif", visibility: showSplash ? 'hidden' : 'visible' }}>
         <AnimatePresence mode="wait">
@@ -338,6 +358,8 @@ export default function App() {
           )}
         </AnimatePresence>
       </div>
+        </>
+      )}
     </ThemeProvider>
   );
 }
