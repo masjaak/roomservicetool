@@ -135,7 +135,18 @@ export default function App() {
         lastName: guestLastName,
         phoneNumber: normalizedPhoneNumber,
       });
-    } catch {
+    } catch (err) {
+      const code = err instanceof Error ? err.message : String(err);
+      if (code === 'missing-stay' || code === 'guest-mismatch') {
+        return lang === 'ID'
+          ? 'Data tamu tidak ditemukan. Pastikan nomor kamar, nama belakang, dan nomor HP sudah benar.'
+          : 'Guest not found. Please check your room number, last name, and phone number.';
+      }
+      if (code === 'invalid-token' || code === 'inactive-token') {
+        return lang === 'ID'
+          ? 'QR kode tidak valid atau sudah kadaluarsa. Silakan scan ulang atau hubungi resepsionis.'
+          : 'Your QR code is invalid or has expired. Please scan again or contact the front desk.';
+      }
       return lang === 'ID'
         ? 'Detail tamu tidak dapat diverifikasi. Silakan periksa kembali data Anda.'
         : 'We could not verify your guest details. Please review your information and try again.';

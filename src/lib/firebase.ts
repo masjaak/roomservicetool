@@ -44,7 +44,7 @@ export const functions = getFunctions(
   import.meta.env.VITE_FIREBASE_FUNCTIONS_REGION || 'asia-southeast2'
 );
 
-export const isSparkDemoMode = import.meta.env.VITE_FIREBASE_SPARK_DEMO_MODE === 'true';
+export const isSparkDemoMode = (import.meta.env.VITE_FIREBASE_SPARK_DEMO_MODE ?? 'true') === 'true';
 
 export function assertFirebaseConfigured<T>(value: T | null, label: string): T {
   if (!value) {
