@@ -45,7 +45,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onBack, onPlac
     <div style={{ minHeight: '100dvh', background: theme.bgBase, fontFamily: "'Manrope',sans-serif", WebkitFontSmoothing: 'antialiased', transition: 'background 0.3s' }}>
       {/* Header */}
       <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: theme.bgHeader, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${theme.borderFaint}`, transition: 'background 0.3s, border-color 0.3s' }}>
-        <div style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="hcs-checkout-inner" style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'env(safe-area-inset-top)' }}>
           <div style={{ height: '3.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: '1.5rem' }}>
             <button onClick={onBack} aria-label="Back" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', borderRadius: '9999px', background: theme.bgInput, border: 'none', cursor: 'pointer', color: theme.textBase }}>
               <ArrowLeft size={18} />
@@ -58,7 +58,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onBack, onPlac
         </div>
       </header>
 
-      <main style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'calc(env(safe-area-inset-top) + 3.75rem + 1.5rem)', paddingInline: '1.5rem', paddingBottom: '8rem' }}>
+      <main className="hcs-checkout-inner" style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'calc(env(safe-area-inset-top) + 3.75rem + 1.5rem)', paddingInline: '1.5rem', paddingBottom: '8rem' }}>
         <h2 className="sr-only">Checkout</h2>
 
         {/* Status banner */}
@@ -199,7 +199,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onBack, onPlac
 
       {/* CTA footer */}
       <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, background: `linear-gradient(to top, ${theme.bgBase} 60%, transparent)`, paddingInline: '1.5rem', paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)', paddingTop: '2.5rem', transition: 'background 0.3s' }}>
-        <div style={{ maxWidth: '28rem', marginInline: 'auto' }}>
+        <div className="hcs-checkout-inner" style={{ maxWidth: '28rem', marginInline: 'auto' }}>
           <button type="button" onClick={() => onPlaceOrder(paymentState.method, paymentState.selectedBank, paymentState.transferProof)} disabled={!canSubmit || loading}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', width: '100%', height: '3.75rem', borderRadius: '1rem', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 14px 32px rgba(119,90,25,0.3)', color: '#fff', fontFamily: "'Manrope',sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: !canSubmit || loading ? 'not-allowed' : 'pointer', opacity: !canSubmit || loading ? 0.55 : 1, transition: 'opacity 0.2s' }}>
             {loading ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : null}

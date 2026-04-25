@@ -104,6 +104,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
 
       {/* Content layer — flex column, full height */}
       <div
+        className="hcs-login-content"
         style={{
           position: 'relative',
           zIndex: 10,
@@ -112,6 +113,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
           flexDirection: 'column',
           maxWidth: '28rem',
           marginInline: 'auto',
+          width: '100%',
         }}
       >
         <header

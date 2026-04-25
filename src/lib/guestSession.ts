@@ -296,22 +296,19 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
     throw new Error('session-mismatch');
   }
 
-  const accessTokenId = session.accessTokenId || await createSparkDemoAccessToken({
-    hotelId: session.hotelId,
-    stayId: session.stayId,
-    roomNumber: session.roomNumber,
-    expiresAt: session.expiresAt,
-  });
-  const normalizedSession =
-    accessTokenId === session.accessTokenId
-      ? session
-      : { ...session, accessTokenId };
+  const accessTokenId = session.accessTokenId ||
+    await createSparkDemoAccessToken({
+      hotelId: session.hotelId,
+      stayId: session.stayId,
+      roomNumber: session.roomNumber,
+      expiresAt: session.expiresAt,
+    }).catch(() => null);
 
-  if (normalizedSession !== session) {
-    persistDemoSession(normalizedSession);
+  if (accessTokenId && accessTokenId !== session.accessTokenId) {
+    persistDemoSession({ ...session, accessTokenId });
   }
 
-  const rateLimitKey = accessTokenId;
+  const rateLimitKey = accessTokenId || `stay-${session.stayId}`;
   enforceDemoOrderRateLimit(rateLimitKey);
   const normalizedItems = normalizeDemoOrderItems(input.items);
 
@@ -324,14 +321,14 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
   const total = subtotal + tax;
 
   const orderRef = await addDoc(collection(firestore, 'orders'), {
-    accessTokenId,
-    hotelId: normalizedSession.hotelId,
-    stayId: normalizedSession.stayId,
-    roomNumber: normalizedSession.roomNumber,
-    lastName: normalizedSession.lastName,
-    lastNameNormalized: normalizeGuestLastName(normalizedSession.lastName),
-    phoneNumber: normalizedSession.phoneNumber,
-    phoneNumberNormalized: normalizeGuestPhone(normalizedSession.phoneNumber),
+    accessTokenId: accessTokenId || null,
+    hotelId: session.hotelId,
+    stayId: session.stayId,
+    roomNumber: session.roomNumber,
+    lastName: session.lastName,
+    lastNameNormalized: normalizeGuestLastName(session.lastName),
+    phoneNumber: session.phoneNumber,
+    phoneNumberNormalized: normalizeGuestPhone(session.phoneNumber),
     items: normalizedItems,
     subtotal,
     tax,

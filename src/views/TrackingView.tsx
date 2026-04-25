@@ -66,7 +66,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
       animate={{ opacity: 1 }}
       style={{ minHeight: '100dvh', background: theme.bgBase, fontFamily: "'Manrope', sans-serif", WebkitFontSmoothing: 'antialiased', transition: 'background 0.3s' }}
     >
-      <div style={{ maxWidth: '28rem', marginInline: 'auto', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <div className="hcs-checkout-inner" style={{ maxWidth: '28rem', marginInline: 'auto', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
 
         {/* Header */}
         <header style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: theme.bgHeader, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${theme.borderFaint}`, paddingInline: '1.5rem', paddingTop: 'calc(env(safe-area-inset-top) + 1rem)', paddingBottom: '1rem', transition: 'background 0.3s, border-color 0.3s' }}>

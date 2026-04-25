@@ -16,20 +16,24 @@ service cloud.firestore {
     }
 
     function isActiveStay(data) {
-      return data.checkedIn == true ||
-        data.active == true ||
-        data.status == 'active' ||
-        data.status == 'checked_in' ||
-        data.status == 'in_house';
+      let hasStatusFields = data.keys().hasAny(['checkedIn', 'active', 'status']);
+      return !hasStatusFields ||
+        data.get('checkedIn', false) == true ||
+        data.get('active', false) == true ||
+        data.get('status', '') == 'active' ||
+        data.get('status', '') == 'checked_in' ||
+        data.get('status', '') == 'in_house';
     }
 
     function validDemoAccessToken() {
       let stay = stayDoc(request.resource.data.stayId);
+      let stayLastName = stay.data.get('lastNameNormalized', null);
+      let stayPhone = stay.data.get('phoneNumberNormalized', null);
 
       return stay.exists() &&
         stay.data.roomNumber == request.resource.data.roomNumber &&
-        stay.data.lastNameNormalized == request.resource.data.lastNameNormalized &&
-        stay.data.phoneNumberNormalized == request.resource.data.phoneNumberNormalized &&
+        (stayLastName == null || stayLastName == request.resource.data.lastNameNormalized) &&
+        (stayPhone == null || stayPhone == request.resource.data.phoneNumberNormalized) &&
         isActiveStay(stay.data) &&
         (
           !hasAccessTokenId() ||

@@ -68,7 +68,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         borderBottom: `1px solid ${theme.borderFaint}`,
         transition: 'background 0.3s, border-color 0.3s',
       }}>
-        <div style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="hcs-header-inner" style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'env(safe-area-inset-top)' }}>
           <div style={{ height: '3.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: '1.5rem' }}>
             <div>
               <p style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.28em', color: theme.textMuted, fontFamily: "'Manrope',sans-serif", marginBottom: '1px', transition: 'color 0.3s' }}>
@@ -102,7 +102,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
         </div>
       </header>
 
-      <div style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'calc(env(safe-area-inset-top) + 3.75rem)' }}>
+      <div className="hcs-content-inner" style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'calc(env(safe-area-inset-top) + 3.75rem)' }}>
         {/* Category tabs */}
         <nav style={{ position: 'sticky', top: 'calc(env(safe-area-inset-top) + 3.75rem)', zIndex: 40, background: isLight ? 'rgba(250,249,247,0.94)' : 'rgba(13,12,11,0.94)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: `1px solid ${theme.borderFaint}`, padding: '0.75rem 1.5rem', transition: 'background 0.3s' }}>
           <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', scrollbarWidth: 'none' }}>
@@ -194,7 +194,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
               <p style={{ marginTop: '0.5rem', fontSize: '14px', color: theme.textMuted, maxWidth: '20rem', lineHeight: 1.6 }}>{tr.emptyMenuDesc}</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="hcs-menu-grid" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {filteredItems.map((item) => (
                 <ProductCard key={item.id} item={item}
                   onClick={() => setSelectedItem(item)}
@@ -210,7 +210,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
       <AnimatePresence>
         {totalQty > 0 && (
           <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-            style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)', left: '50%', transform: 'translateX(-50%)', width: 'calc(min(28rem, 100%) - 3rem)', zIndex: 40 }}>
+            className="hcs-cart-btn-wrap" style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)', left: '50%', transform: 'translateX(-50%)', width: 'calc(min(28rem, 100%) - 3rem)', zIndex: 40 }}>
             <button onClick={onOpenCart} aria-label="Open cart"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '3.75rem', borderRadius: '1.25rem', background: 'linear-gradient(135deg,#7a5c10,#9a7416)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 16px 40px rgba(119,90,25,0.38)', padding: '0 0.5rem 0 1.5rem', cursor: 'pointer' }}>
               <div>
