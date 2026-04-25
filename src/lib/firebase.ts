@@ -3,60 +3,52 @@ import { getAuth } from 'firebase/auth';
 import { initializeFirestore } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
 
-const REQUIRED_FIREBASE_ENV_NAMES: Array<keyof ImportMetaEnv> = [
-  'VITE_FIREBASE_API_KEY',
-  'VITE_FIREBASE_AUTH_DOMAIN',
-  'VITE_FIREBASE_PROJECT_ID',
-  'VITE_FIREBASE_STORAGE_BUCKET',
-  'VITE_FIREBASE_MESSAGING_SENDER_ID',
-  'VITE_FIREBASE_APP_ID',
-];
+const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyD1IbtZeRumahNgK4JyV5s8wWDFrlTXJqF',
+  authDomain: 'hcsroomserviceapp.firebaseapp.com',
+  projectId: 'hcsroomserviceapp',
+  storageBucket: 'hcsroomserviceapp.firebasestorage.app',
+  messagingSenderId: '949808465266',
+  appId: '1:949808465266:web:4609a0f650a8f9106071eb',
+  measurementId: 'G-VJ1MXRJ60X',
+};
 
-export const missingFirebaseEnvNames = REQUIRED_FIREBASE_ENV_NAMES.filter((name) => !import.meta.env[name]);
-
-export const firebaseConfigError = missingFirebaseEnvNames.length > 0
-  ? `Missing required Firebase environment variables: ${missingFirebaseEnvNames.join(', ')}`
-  : null;
-
-function getEnv(name: keyof ImportMetaEnv): string {
-  return import.meta.env[name] || '';
+function getEnv(name: keyof ImportMetaEnv, fallback: string): string {
+  return import.meta.env[name] || fallback;
 }
 
-const firebaseConfig = firebaseConfigError
-  ? null
-  : {
-      apiKey: getEnv('VITE_FIREBASE_API_KEY'),
-      authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN'),
-      projectId: getEnv('VITE_FIREBASE_PROJECT_ID'),
-      storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET'),
-      messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-      appId: getEnv('VITE_FIREBASE_APP_ID'),
-      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-    };
+export const missingFirebaseEnvNames: string[] = [];
+export const firebaseConfigError: string | null = null;
 
-export const app = firebaseConfig ? initializeApp(firebaseConfig) : null;
+const firebaseConfig = {
+  apiKey: getEnv('VITE_FIREBASE_API_KEY', DEFAULT_FIREBASE_CONFIG.apiKey),
+  authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN', DEFAULT_FIREBASE_CONFIG.authDomain),
+  projectId: getEnv('VITE_FIREBASE_PROJECT_ID', DEFAULT_FIREBASE_CONFIG.projectId),
+  storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET', DEFAULT_FIREBASE_CONFIG.storageBucket),
+  messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', DEFAULT_FIREBASE_CONFIG.messagingSenderId),
+  appId: getEnv('VITE_FIREBASE_APP_ID', DEFAULT_FIREBASE_CONFIG.appId),
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || DEFAULT_FIREBASE_CONFIG.measurementId,
+};
+
+export const app = initializeApp(firebaseConfig);
 
 // Force long polling for stable connections on restricted networks
-export const db = app
-  ? initializeFirestore(app, {
-      experimentalForceLongPolling: true,
-    })
-  : null;
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+});
 
-export const auth = app ? getAuth(app) : null;
+export const auth = getAuth(app);
 
-export const functions = app
-  ? getFunctions(
-      app,
-      import.meta.env.VITE_FIREBASE_FUNCTIONS_REGION || 'asia-southeast2'
-    )
-  : null;
+export const functions = getFunctions(
+  app,
+  import.meta.env.VITE_FIREBASE_FUNCTIONS_REGION || 'asia-southeast2'
+);
 
 export const isSparkDemoMode = import.meta.env.VITE_FIREBASE_SPARK_DEMO_MODE === 'true';
 
 export function assertFirebaseConfigured<T>(value: T | null, label: string): T {
   if (!value) {
-    throw new Error(firebaseConfigError || `${label} is not configured.`);
+    throw new Error(`${label} is not configured.`);
   }
 
   return value;
