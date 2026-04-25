@@ -321,7 +321,7 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
   const total = subtotal + tax;
 
   const orderRef = await addDoc(collection(firestore, 'orders'), {
-    accessTokenId: accessTokenId || null,
+    accessTokenId: accessTokenId || '',
     hotelId: session.hotelId,
     stayId: session.stayId,
     roomNumber: session.roomNumber,
