@@ -185,7 +185,15 @@ export const MenuView: React.FC<MenuViewProps> = ({
       </nav>
 
       <ItemDetailModal item={selectedItem} isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} onAdd={addToCart} lang={lang} />
-      <CartDrawer cart={cart} isOpen={isCartOpen} onClose={onCloseCart} onRemove={removeFromCart} onCheckout={onCheckout} lang={lang} />
+      <CartDrawer
+        cart={cart}
+        isOpen={isCartOpen}
+        onClose={onCloseCart}
+        onRemove={removeFromCart}
+        onAddSuggestion={(item) => addToCart(item, 1, '')}
+        onCheckout={onCheckout}
+        lang={lang}
+      />
     </motion.div>
   );
 };

@@ -39,6 +39,7 @@ describe('CartDrawer', () => {
         isOpen
         onClose={() => {}}
         onRemove={onRemove}
+        onAddSuggestion={() => {}}
         onCheckout={() => {}}
         lang="EN"
       />
@@ -49,5 +50,31 @@ describe('CartDrawer', () => {
 
     expect(onRemove).toHaveBeenCalledTimes(1);
     expect(onRemove).toHaveBeenCalledWith(1);
+  });
+
+  it('shows contextual meal pairings and lets guests add one directly from the drawer', () => {
+    const onAddSuggestion = vi.fn();
+
+    render(
+      <CartDrawer
+        cart={cart}
+        isOpen
+        onClose={() => {}}
+        onRemove={() => {}}
+        onAddSuggestion={onAddSuggestion}
+        onCheckout={() => {}}
+        lang="EN"
+      />
+    );
+
+    expect(screen.getByText('Perfect with your meal')).toBeTruthy();
+    expect(screen.getByText('Chocolate Lava Cake')).toBeTruthy();
+
+    fireEvent.click(screen.getAllByText('Add')[0]);
+
+    expect(onAddSuggestion).toHaveBeenCalledTimes(1);
+    expect(onAddSuggestion).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Chocolate Lava Cake', category: 'Desserts' })
+    );
   });
 });

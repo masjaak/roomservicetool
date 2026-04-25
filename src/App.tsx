@@ -110,11 +110,13 @@ export default function App() {
   }, [state.guest.roomNumber, state.screen]);
 
   // --- Event dispatchers ---
-  const handleLogin = useCallback(async (room: string, phone: string, lastName: string) => {
-    if (!accessToken) {
+  const handleLogin = useCallback(async (room: string, phone: string, lastName: string, manualAccessCode?: string) => {
+    const resolvedAccessToken = accessToken || manualAccessCode?.trim() || null;
+
+    if (!resolvedAccessToken) {
       return lang === 'ID'
-        ? 'Akses room service hanya tersedia dari QR kamar yang valid.'
-        : 'Room service access is only available from a valid in-room QR code.';
+        ? 'Akses room service memerlukan QR atau access code kamar yang valid.'
+        : 'Room service access requires a valid in-room QR or access code.';
     }
 
     const roomNumber = room.trim();
@@ -124,7 +126,7 @@ export default function App() {
 
     try {
       session = await redeemGuestAccessSession({
-        accessToken,
+        accessToken: resolvedAccessToken,
         roomNumber,
         lastName: guestLastName,
         phoneNumber: normalizedPhoneNumber,
@@ -279,6 +281,7 @@ export default function App() {
               lang={lang}
               setLang={setLang}
               onLogin={handleLogin}
+              requiresAccessCode={!accessToken}
             />
           )}
 

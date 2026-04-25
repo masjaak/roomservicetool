@@ -40,7 +40,7 @@ describe('LoginView', () => {
     // Enter on the phone field triggers submit
     fireEvent.keyDown(screen.getByLabelText('Phone Number'), { key: 'Enter', code: 'Enter' });
 
-    expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Tan');
+    expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Tan', '');
   });
 
   it('does not submit when phone number is missing', () => {
@@ -67,5 +67,19 @@ describe('LoginView', () => {
     fireEvent.click(screen.getByRole('button', { name: /access in-room dining/i }));
 
     expect(await screen.findByText('Only registered in-house guests can access room service.')).toBeTruthy();
+  });
+
+  it('shows room access code field when login needs a manual token and submits it', () => {
+    const onLogin = vi.fn();
+
+    render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} requiresAccessCode />);
+
+    fireEvent.change(screen.getByLabelText('Room Access Code'), { target: { value: 'demo-token-123' } });
+    fireEvent.change(screen.getByLabelText('Room Number'), { target: { value: '1204' } });
+    fireEvent.change(screen.getByLabelText('Guest Last Name'), { target: { value: 'Santoso' } });
+    fireEvent.change(screen.getByLabelText('Phone Number'), { target: { value: '081234567890' } });
+    fireEvent.click(screen.getByRole('button', { name: /access in-room dining/i }));
+
+    expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Santoso', 'demo-token-123');
   });
 });

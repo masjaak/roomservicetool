@@ -1,27 +1,30 @@
 import React from 'react';
 import { ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CartItem, Language } from '../types';
-import { TRANSLATIONS } from '../data/constants';
+import { CartItem, Language, MenuItem } from '../types';
+import { MENU_ITEMS, TRANSLATIONS } from '../data/constants';
 import { useTheme } from '../contexts/ThemeContext';
 import { calculateSubtotal, calculateTax, calculateTotal, formatCurrency } from '../utils/format';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { getCartPairingSuggestions } from '../utils/cartPairings';
 
 interface CartDrawerProps {
   cart: CartItem[];
   isOpen: boolean;
   onClose: () => void;
   onRemove: (index: number) => void;
+  onAddSuggestion: (item: MenuItem) => void;
   onCheckout: () => void;
   lang: Language;
 }
 
-export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, onRemove, onCheckout, lang }) => {
+export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, onRemove, onAddSuggestion, onCheckout, lang }) => {
   const { theme } = useTheme();
   const t = TRANSLATIONS[lang];
   const subtotal = calculateSubtotal(cart);
   const tax = calculateTax(subtotal);
   const total = calculateTotal(subtotal);
+  const pairingSuggestions = getCartPairingSuggestions(cart, MENU_ITEMS);
 
   return (
     <AnimatePresence>
@@ -86,6 +89,80 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, o
                         </div>
                       </div>
                     ))}
+
+                    {pairingSuggestions.length > 0 && (
+                      <section
+                        aria-label={t.perfectWithMeal}
+                        style={{
+                          marginTop: '0.5rem',
+                          borderRadius: '1rem',
+                          background: theme.bgSurface,
+                          border: `1px solid ${theme.borderFaint}`,
+                          padding: '1rem',
+                          transition: 'background 0.3s',
+                        }}
+                      >
+                        <div style={{ marginBottom: '0.875rem' }}>
+                          <p style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.22em', color: theme.gold, fontFamily: "'Manrope',sans-serif", fontWeight: 700, marginBottom: '0.35rem' }}>
+                            {lang === 'ID' ? 'Tambahan Pilihan' : 'Suggested Pairing'}
+                          </p>
+                          <h3 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.2rem', fontWeight: 400, color: theme.textBase, lineHeight: 1.2 }}>
+                            {t.perfectWithMeal}
+                          </h3>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                          {pairingSuggestions.map((item) => (
+                            <div
+                              key={`pairing-${item.id}`}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                borderRadius: '0.875rem',
+                                background: theme.bgInput,
+                                border: `1px solid ${theme.borderFaint}`,
+                                padding: '0.75rem',
+                              }}
+                            >
+                              <div style={{ width: '4rem', height: '4rem', flexShrink: 0, overflow: 'hidden', borderRadius: '0.625rem', background: theme.bgMuted }}>
+                                <ImageWithFallback src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <p style={{ fontFamily: "'Noto Serif',serif", fontSize: '0.95rem', lineHeight: 1.25, color: theme.textBase, marginBottom: '0.2rem' }}>
+                                  {item.name}
+                                </p>
+                                <p style={{ fontSize: '12px', color: theme.textMuted, lineHeight: 1.45, marginBottom: '0.35rem' }}>
+                                  {item.description}
+                                </p>
+                                <span style={{ fontSize: '12px', fontWeight: 700, color: theme.goldBright }}>
+                                  {formatCurrency(item.price)}
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => onAddSuggestion(item)}
+                                style={{
+                                  flexShrink: 0,
+                                  borderRadius: '9999px',
+                                  border: `1px solid rgba(154,116,22,0.28)`,
+                                  background: 'rgba(154,116,22,0.12)',
+                                  color: theme.goldBright,
+                                  padding: '0.55rem 0.9rem',
+                                  fontSize: '11px',
+                                  fontWeight: 700,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.12em',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {lang === 'ID' ? 'Tambah' : 'Add'}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
                   </div>
                 )}
               </div>
