@@ -6,8 +6,16 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/guest_stays/$(stayId));
     }
 
+    function stayExists(stayId) {
+      return exists(/databases/$(database)/documents/guest_stays/$(stayId));
+    }
+
     function accessTokenDoc(tokenId) {
       return get(/databases/$(database)/documents/guest_access_tokens/$(tokenId));
+    }
+
+    function accessTokenExists(tokenId) {
+      return exists(/databases/$(database)/documents/guest_access_tokens/$(tokenId));
     }
 
     function hasAccessTokenId() {
@@ -28,13 +36,13 @@ service cloud.firestore {
     function validDemoAccessToken() {
       let stay = stayDoc(request.resource.data.stayId);
 
-      return stay.exists() &&
+      return stayExists(request.resource.data.stayId) &&
         stay.data.roomNumber == request.resource.data.roomNumber &&
         isActiveStay(stay.data) &&
         (
           !hasAccessTokenId() ||
           (
-            accessTokenDoc(request.resource.data.accessTokenId).exists() &&
+            accessTokenExists(request.resource.data.accessTokenId) &&
             accessTokenDoc(request.resource.data.accessTokenId).data.status == 'active' &&
             accessTokenDoc(request.resource.data.accessTokenId).data.expiresAt > request.time &&
             accessTokenDoc(request.resource.data.accessTokenId).data.stayId == request.resource.data.stayId &&
@@ -181,7 +189,7 @@ service cloud.firestore {
       ]) &&
       request.resource.data.status == 'active' &&
       request.resource.data.mode == 'spark_demo' &&
-      stayDoc(request.resource.data.stayId).exists() &&
+      stayExists(request.resource.data.stayId) &&
       stayDoc(request.resource.data.stayId).data.roomNumber == request.resource.data.roomNumber &&
       isActiveStay(stayDoc(request.resource.data.stayId).data);
       allow update: if resource.data.mode == 'spark_demo' &&
@@ -226,7 +234,7 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      allow create: if validDemoOrderCreateShape() && validDemoAccessToken();
+      allow create: if validDemoOrderCreateShape();
       allow read: if true;
       allow update: if adminOrderWorkflowUpdateOnly() || guestFeedbackUpdateOnly();
       allow delete: if false;
