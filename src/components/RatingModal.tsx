@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Star, X } from 'lucide-react';
 import { TRANSLATIONS } from '../data/constants';
@@ -7,7 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 
 interface RatingModalProps {
   isOpen: boolean;
-  onRate: (payload: FeedbackPayload) => void;
+  onRate: (payload: FeedbackPayload) => Promise<void> | void;
   onSkip?: () => void;
   lang: Language;
 }
@@ -26,26 +26,48 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
   const [requestManagerFollowUp, setRequestManagerFollowUp] = useState<'yes' | 'no'>('no');
   const [issueCategory, setIssueCategory] = useState<FeedbackPayload['issueCategory']>();
   const [issueNote, setIssueNote] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const t = TRANSLATIONS[lang];
 
-  const handleSubmit = () => {
-    onRate({
-      overallRating,
-      foodQuality,
-      presentation,
-      deliverySpeed,
-      orderAccuracy,
-      staffCourtesy,
-      valueForMoney,
-      wouldOrderAgain,
-      comment,
-      ...(overallRating <= 3 && {
-        requestManagerFollowUp,
-        issueCategory,
-        issueNote,
-      }),
-    });
+  useEffect(() => {
+    if (!isOpen) return;
+    setIsSubmitting(false);
+    setSubmitError(null);
+  }, [isOpen]);
+
+  const handleSubmit = async () => {
+    if (overallRating === 0 || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      await onRate({
+        overallRating,
+        foodQuality,
+        presentation,
+        deliverySpeed,
+        orderAccuracy,
+        staffCourtesy,
+        valueForMoney,
+        wouldOrderAgain,
+        comment,
+        ...(overallRating <= 3 && {
+          requestManagerFollowUp,
+          issueCategory,
+          issueNote,
+        }),
+      });
+    } catch {
+      setSubmitError(
+        lang === 'ID'
+          ? 'Feedback belum berhasil dikirim. Coba lagi.'
+          : 'Feedback could not be submitted yet. Please try again.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -133,7 +155,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
                       <select
                         value={issueCategory || ''}
                         onChange={(e) => setIssueCategory(e.target.value as FeedbackPayload['issueCategory'])}
-                        style={{ width: '100%', background: theme.bgSurface, border: `1px solid ${theme.border}`, borderRadius: '0.625rem', padding: '0.75rem 1rem', fontSize: '13px', color: theme.textBase, outline: 'none', fontFamily: "'Manrope',sans-serif', appearance: 'none" }}
+                        style={{ width: '100%', background: theme.bgSurface, border: `1px solid ${theme.border}`, borderRadius: '0.625rem', padding: '0.75rem 1rem', fontSize: '13px', color: theme.textBase, outline: 'none', fontFamily: "'Manrope',sans-serif", appearance: 'none' }}
                       >
                         <option value="" disabled>{lang === 'ID' ? 'Pilih kategori...' : 'Select a category...'}</option>
                         <option value="Food quality">Food quality</option>
@@ -177,13 +199,20 @@ export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onRate, onSkip
 
               {/* Footer CTA */}
               <div style={{ padding: '1rem 1.5rem', paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)', background: theme.bgSurface, borderTop: `1px solid ${theme.borderFaint}`, transition: 'background 0.3s' }}>
+                {submitError && (
+                  <p style={{ marginBottom: '0.75rem', fontSize: '12px', lineHeight: 1.5, color: '#c24d2c', fontFamily: "'Manrope',sans-serif" }}>
+                    {submitError}
+                  </p>
+                )}
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={overallRating === 0}
-                  style={{ width: '100%', height: '3.5rem', borderRadius: '9999px', background: overallRating === 0 ? theme.bgInput : 'linear-gradient(135deg,#7a5c10,#9a7416)', border: overallRating === 0 ? `1px solid ${theme.border}` : '1px solid rgba(255,255,255,0.1)', boxShadow: overallRating === 0 ? 'none' : '0 10px 24px rgba(119,90,25,0.28)', color: overallRating === 0 ? theme.textMuted : '#fff', fontFamily: "'Manrope',sans-serif", fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: overallRating === 0 ? 'not-allowed' : 'pointer', transition: 'all 0.3s' }}
+                  disabled={overallRating === 0 || isSubmitting}
+                  style={{ width: '100%', height: '3.5rem', borderRadius: '9999px', background: overallRating === 0 || isSubmitting ? theme.bgInput : 'linear-gradient(135deg,#7a5c10,#9a7416)', border: overallRating === 0 || isSubmitting ? `1px solid ${theme.border}` : '1px solid rgba(255,255,255,0.1)', boxShadow: overallRating === 0 || isSubmitting ? 'none' : '0 10px 24px rgba(119,90,25,0.28)', color: overallRating === 0 || isSubmitting ? theme.textMuted : '#fff', fontFamily: "'Manrope',sans-serif", fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', cursor: overallRating === 0 || isSubmitting ? 'not-allowed' : 'pointer', transition: 'all 0.3s' }}
                 >
-                  {t.submitFeedback}
+                  {isSubmitting
+                    ? lang === 'ID' ? 'Mengirim...' : 'Submitting...'
+                    : t.submitFeedback}
                 </button>
               </div>
             </motion.div>

@@ -26,6 +26,28 @@ interface MenuViewProps {
 
 const CATEGORY_LABELS = ['Breakfast', 'Mains', 'Beverages', 'Snacks'];
 
+function getTimeBasedMenuCopy(lang: Language): { title: string; subtitle: string } {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) {
+    return lang === 'ID'
+      ? { title: 'Menu Pagi', subtitle: 'Pilihan hidangan pagi yang segar, siap diantarkan ke kamar Anda.' }
+      : { title: 'The Morning Menu', subtitle: 'A thoughtful selection of morning favourites and light bites, served fresh to your room.' };
+  }
+  if (hour >= 12 && hour < 17) {
+    return lang === 'ID'
+      ? { title: 'Menu Siang', subtitle: 'Sajian siang dan comfort food pilihan, siap dinikmati di kamar Anda.' }
+      : { title: 'The Afternoon Menu', subtitle: 'Midday comforts and afternoon favourites, ready to be delivered to your door.' };
+  }
+  if (hour >= 17 && hour < 22) {
+    return lang === 'ID'
+      ? { title: 'Menu Malam', subtitle: 'Menu signature dan hidangan malam, dikurasi khusus untuk kamar Anda.' }
+      : { title: 'The Evening Menu', subtitle: 'Signature dishes and evening comforts, curated and prepared for your room.' };
+  }
+  return lang === 'ID'
+    ? { title: 'Menu Larut Malam', subtitle: 'Camilan dan minuman tengah malam, tersedia kapan pun Anda butuhkan.' }
+    : { title: 'The Late-Night Menu', subtitle: 'Late-night bites and beverages, available whenever you need them.' };
+}
+
 export const MenuView: React.FC<MenuViewProps> = ({
   roomNumber, cart, addToCart, removeFromCart,
   onCheckout, onOpenCart, onCloseCart, onLogout, isCartOpen, lang,
@@ -41,6 +63,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const grandTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const totalQty = cart.reduce((a, i) => a + i.qty, 0);
   const filteredItems = MENU_ITEMS.filter((i) => i.category === selectedCategory);
+  const menuCopy = getTimeBasedMenuCopy(lang);
 
   return (
     <motion.div
@@ -129,10 +152,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
             Atelier Meridian
           </p>
           <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: '2.1rem', fontWeight: 400, color: theme.textBase, lineHeight: 1.1, marginBottom: '0.625rem', transition: 'color 0.3s' }}>
-            {tr.dinnerMenu}
+            {menuCopy.title}
           </h2>
           <p style={{ maxWidth: '22rem', fontSize: '13px', lineHeight: 1.7, color: theme.textMuted, transition: 'color 0.3s' }}>
-            {tr.curatedMenuIntro}
+            {menuCopy.subtitle}
           </p>
         </section>
 

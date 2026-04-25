@@ -52,37 +52,37 @@ export function buildWhatsAppMessage(
   const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   const date = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  let msg = `*🔔 ATELIER MERIDIAN · ROOM SERVICE*\n`;
-  msg += `*Room ${guest.roomNumber}*\n`;
-  msg += `📅 ${date} | ⏰ ${time}\n`;
-  msg += `📞 Guest: ${guest.phoneNumber}\n`;
+  let msg = `*ATELIER MERIDIAN | ROOM SERVICE*\n`;
+  msg += `Room ${guest.roomNumber}\n`;
+  msg += `Date: ${date} | Time: ${time}\n`;
+  msg += `Guest: ${guest.phoneNumber}\n`;
   msg += `=============================\n`;
 
   for (const item of cart) {
     const lineTotal = item.price * item.qty;
     msg += `*${item.qty}x ${item.name}*\n`;
-    if (item.note) msg += `   📝 _${item.note}_\n`;
+    if (item.note) msg += `   Note: ${item.note}\n`;
     msg += `   @ ${formatIDR(item.price)} = ${formatIDR(lineTotal)}\n\n`;
   }
 
   msg += `=============================\n`;
   msg += `Subtotal: ${formatIDR(subtotal)}\n`;
   msg += `Service & Tax (21%): ${formatIDR(taxService)}\n`;
-  msg += `*💰 TOTAL: ${formatIDR(total)}*\n`;
+  msg += `*TOTAL: ${formatIDR(total)}*\n`;
   msg += `=============================\n`;
 
   let paymentLabel = '';
-  if (paymentMethod === 'room') paymentLabel = 'CHARGE TO ROOM 🏨';
-  if (paymentMethod === 'qris') paymentLabel = 'QRIS / E-WALLET 📱';
-  if (paymentMethod === 'bank') paymentLabel = 'BANK TRANSFER 💳';
+  if (paymentMethod === 'room') paymentLabel = 'CHARGE TO ROOM';
+  if (paymentMethod === 'qris') paymentLabel = 'QRIS / E-WALLET';
+  if (paymentMethod === 'bank') paymentLabel = 'BANK TRANSFER';
 
   msg += `Payment: *${paymentLabel}*\n`;
 
   if (paymentMethod !== 'room') {
-    msg += `\n_(Please attach payment proof)_\n`;
+    msg += `\nPlease attach payment proof.\n`;
   }
 
-  msg += `\n_Atelier Meridian Room Service · Thank you_ 🙏`;
+  msg += `\nAtelier Meridian Room Service | Thank you`;
 
   return msg;
 }

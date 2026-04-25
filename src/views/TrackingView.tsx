@@ -51,8 +51,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
     if (orderId) {
       await updateDoc(doc(db, 'orders', orderId), {
         ...buildLegacyFeedback(payload),
-        feedbackSubmittedAt: new Date().toISOString(),
-      }).catch(console.error);
+      });
     }
     onFinish();
   };
