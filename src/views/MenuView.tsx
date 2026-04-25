@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { SearchX, ShoppingBag, LogOut, Sun, Moon } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartItem, Language, MenuItem } from '../types';
-import { CATEGORIES, MENU_ITEMS, TRANSLATIONS } from '../data/constants';
+import { CATEGORIES, MENU_ITEMS, PROMO_CAMPAIGNS, TRANSLATIONS } from '../data/constants';
 import { formatCurrency } from '../utils/format';
 import { CartDrawer } from '../components/CartDrawer';
 import { ItemDetailModal } from '../components/ItemDetailModal';
 import { ProductCard } from '../components/ProductCard';
+import { PromoDetailModal } from '../components/PromoDetailModal';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface MenuViewProps {
@@ -31,8 +33,10 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const { theme, toggle: toggleTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [selectedPromoId, setSelectedPromoId] = useState<string | null>(PROMO_CAMPAIGNS[0]?.id ?? null);
   const tr = TRANSLATIONS[lang];
   const isLight = theme.mode === 'light';
+  const selectedPromo = PROMO_CAMPAIGNS.find((promo) => promo.id === selectedPromoId) ?? null;
 
   const grandTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const totalQty = cart.reduce((a, i) => a + i.qty, 0);
@@ -132,6 +136,53 @@ export const MenuView: React.FC<MenuViewProps> = ({
           </p>
         </section>
 
+        {PROMO_CAMPAIGNS.length > 0 && (
+          <section style={{ padding: '0 1.5rem 1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: theme.goldBright, fontWeight: 700 }}>
+                {tr.featuredOffer}
+              </span>
+              <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.14em', color: theme.textMuted }}>
+                {lang === 'ID' ? 'Geser untuk lihat lainnya' : 'Swipe to see more'}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.9rem', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '0.15rem', WebkitOverflowScrolling: 'touch' }}>
+              {PROMO_CAMPAIGNS.map((promo) => (
+                <button
+                  key={promo.id}
+                  type="button"
+                  onClick={() => setSelectedPromoId(promo.id)}
+                  style={{ minWidth: '19.5rem', width: '19.5rem', padding: 0, border: 'none', background: 'none', textAlign: 'left', cursor: 'pointer', flexShrink: 0 }}
+                >
+                  <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '1.4rem', minHeight: '12rem', background: theme.bgMuted, boxShadow: '0 20px 45px rgba(0,0,0,0.24)' }}>
+                    <ImageWithFallback src={promo.image} alt={promo.title[lang]} className="h-full w-full object-cover" />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(115deg, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0.32) 54%, rgba(0,0,0,0.18) 100%)' }} />
+                    <div style={{ position: 'absolute', inset: 0, padding: '1.15rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div>
+                        <span style={{ display: 'inline-flex', borderRadius: '9999px', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.16)', padding: '0.32rem 0.68rem', fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fff', marginBottom: '0.8rem' }}>
+                          {promo.badge}
+                        </span>
+                        <h3 style={{ margin: '0 0 0.45rem', maxWidth: '14rem', fontFamily: "'Noto Serif',serif", fontSize: '1.45rem', fontWeight: 400, lineHeight: 1.08, color: '#fff' }}>
+                          {promo.title[lang]}
+                        </h3>
+                        <p style={{ margin: 0, maxWidth: '15rem', fontSize: '12px', lineHeight: 1.6, color: 'rgba(255,255,255,0.78)' }}>
+                          {promo.summary[lang]}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.14)', padding: '0.6rem 0.95rem', fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fff' }}>
+                          {tr.viewDetails}
+                          <span aria-hidden="true">→</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Menu items */}
         <main style={{ paddingInline: '1.5rem' }}>
           {filteredItems.length === 0 ? (
@@ -177,6 +228,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
       </AnimatePresence>
 
       <ItemDetailModal item={selectedItem} isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} onAdd={addToCart} lang={lang} />
+      <PromoDetailModal promo={selectedPromo} isOpen={!!selectedPromo} onClose={() => setSelectedPromoId(null)} lang={lang} />
       <CartDrawer
         cart={cart}
         isOpen={isCartOpen}

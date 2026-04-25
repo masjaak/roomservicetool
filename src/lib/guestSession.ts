@@ -234,12 +234,16 @@ async function redeemSparkDemoAccessSession(input: {
 
   const expiresAtIso = (token?.expiresAt?.toDate?.() ?? new Date(Date.now() + 18 * 60 * 60 * 1000)).toISOString();
   const hotelId = String(token?.hotelId || stay.hotelId || '');
-  const accessTokenId = tokenSnap?.id || await createSparkDemoAccessToken({
-    hotelId,
-    stayId,
-    roomNumber: input.roomNumber.trim(),
-    expiresAt: expiresAtIso,
-  });
+  let accessTokenId = tokenSnap?.id;
+
+  if (!accessTokenId) {
+    accessTokenId = await createSparkDemoAccessToken({
+      hotelId,
+      stayId,
+      roomNumber: input.roomNumber.trim(),
+      expiresAt: expiresAtIso,
+    }).catch(() => undefined);
+  }
 
   const session: GuestSession = {
     accessTokenId,

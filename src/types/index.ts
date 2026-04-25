@@ -41,5 +41,31 @@ export interface Bank {
   code: string;
 }
 
+export interface PromoCampaign {
+  id: string;
+  badge: string;
+  image: string;
+  title: {
+    EN: string;
+    ID: string;
+  };
+  summary: {
+    EN: string;
+    ID: string;
+  };
+  details: {
+    EN: string;
+    ID: string;
+  };
+  cta: {
+    EN: string;
+    ID: string;
+  };
+  terms: {
+    EN: string[];
+    ID: string[];
+  };
+}
+
 export type ViewState = 'welcome' | 'menu' | 'cart-open' | 'checkout' | 'confirmed';
 export type Language = 'EN' | 'ID';

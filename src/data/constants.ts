@@ -1,4 +1,4 @@
-import { MenuItem, Bank } from '../types';
+import { MenuItem, Bank, PromoCampaign } from '../types';
 
 export const CATEGORIES = ['Signatures', 'Starters', 'Mains', 'Desserts', 'Beverages'];
 
@@ -81,6 +81,9 @@ export const TRANSLATIONS = {
     issueDetail: 'Issue Detail',
     requestFollowUp: 'Request Manager Follow-up',
     skip: 'Skip',
+    featuredOffer: 'Featured Offer',
+    viewDetails: 'View Details',
+    offerTerms: 'Offer Details',
   },
   ID: {
     subtitle: 'Layanan kamar, dikurasi untuk Anda',
@@ -154,8 +157,113 @@ export const TRANSLATIONS = {
     issueDetail: 'Detail Kendala',
     requestFollowUp: 'Minta Tindak Lanjut Manajer',
     skip: 'Lewati',
+    featuredOffer: 'Promo Pilihan',
+    viewDetails: 'Lihat Detail',
+    offerTerms: 'Detail Penawaran',
   },
 };
+
+export const PROMO_CAMPAIGNS: PromoCampaign[] = [
+  {
+    id: 'monthly-poolside-escape',
+    badge: 'Monthly Offer',
+    image: '/assets/hero.jpg',
+    title: {
+      EN: 'Poolside Escape for Two',
+      ID: 'Poolside Escape untuk Dua Orang',
+    },
+    summary: {
+      EN: 'Reserve a curated afternoon by the pool with artisan beverages, petite pastries, and private daybed access.',
+      ID: 'Nikmati sore santai di area kolam dengan minuman artisan, petite pastries, dan akses daybed pribadi.',
+    },
+    details: {
+      EN: 'This month’s signature hotel experience pairs room service elegance with a relaxed poolside setting. Guests receive two crafted drinks, one pastry selection, chilled towels, and two-hour access to a premium daybed area. Ideal for school holidays, anniversary stays, or a leisurely late afternoon.',
+      ID: 'Pengalaman signature bulan ini memadukan sentuhan room service dengan suasana santai di area kolam. Tamu mendapatkan dua crafted drinks, satu pilihan pastry, chilled towel, serta akses dua jam ke area premium daybed. Cocok untuk masa liburan sekolah, anniversary stay, atau sore yang lebih santai.',
+    },
+    cta: {
+      EN: 'Enquire with Room Service',
+      ID: 'Tanyakan ke Room Service',
+    },
+    terms: {
+      EN: [
+        'Available daily from 2 PM to 6 PM.',
+        'Advance reservation is recommended.',
+        'Subject to weather and poolside availability.',
+      ],
+      ID: [
+        'Tersedia setiap hari pukul 14.00 hingga 18.00.',
+        'Reservasi lebih awal sangat disarankan.',
+        'Tergantung cuaca dan ketersediaan area kolam.',
+      ],
+    },
+  },
+  {
+    id: 'school-holiday-family-brunch',
+    badge: 'School Holiday',
+    image: '/assets/menu/starters.jpg',
+    title: {
+      EN: 'Family Brunch Escape',
+      ID: 'Family Brunch Escape',
+    },
+    summary: {
+      EN: 'A school holiday set with sharing starters, house-made desserts, and refreshing beverages for the family.',
+      ID: 'Paket school holiday dengan sharing starters, house-made desserts, dan minuman segar untuk keluarga.',
+    },
+    details: {
+      EN: 'Designed for school holiday stays, this bundle brings a more generous in-room brunch moment for families. It includes two savory starters, two mains, a dessert platter, and four beverages delivered together for a relaxed late-morning experience.',
+      ID: 'Dirancang untuk masa school holiday, paket ini menghadirkan pengalaman brunch di kamar yang lebih lengkap untuk keluarga. Terdiri dari dua savory starters, dua mains, dessert platter, dan empat minuman yang diantar bersamaan untuk pengalaman late-morning yang santai.',
+    },
+    cta: {
+      EN: 'Ask About Availability',
+      ID: 'Tanyakan Ketersediaan',
+    },
+    terms: {
+      EN: [
+        'Available throughout the school holiday period.',
+        'Ideal for 2 adults and 2 children.',
+        'Subject to menu substitution based on daily availability.',
+      ],
+      ID: [
+        'Tersedia selama periode school holiday.',
+        'Ideal untuk 2 dewasa dan 2 anak.',
+        'Menu dapat disesuaikan dengan ketersediaan harian.',
+      ],
+    },
+  },
+  {
+    id: 'wellness-swim-and-sip',
+    badge: 'Wellness Package',
+    image: '/assets/menu/beverages.jpg',
+    title: {
+      EN: 'Swim & Sip Wellness Set',
+      ID: 'Swim & Sip Wellness Set',
+    },
+    summary: {
+      EN: 'A lighter pool package featuring cold-pressed juices, wellness bowls, and a reserved poolside setup.',
+      ID: 'Paket tepi kolam yang lebih ringan dengan cold-pressed juices, wellness bowls, dan setup poolside reservasi.',
+    },
+    details: {
+      EN: 'For guests looking for a more wellness-driven stay experience, this package combines nutritious bites with a polished poolside service setup. Expect fresh juices, grain bowls, seasonal fruit, and a reserved lounge arrangement for a calmer afternoon.',
+      ID: 'Untuk tamu yang menginginkan pengalaman menginap bernuansa wellness, paket ini memadukan pilihan makanan bernutrisi dengan setup layanan poolside yang lebih polished. Tersedia fresh juices, grain bowls, seasonal fruit, dan reserved lounge arrangement untuk sore yang lebih tenang.',
+    },
+    cta: {
+      EN: 'Reserve This Package',
+      ID: 'Reservasi Paket Ini',
+    },
+    terms: {
+      EN: [
+        'Reservation is required at least 2 hours in advance.',
+        'Poolside seating is limited each day.',
+        'Available while the wellness menu is in season.',
+      ],
+      ID: [
+        'Reservasi diperlukan minimal 2 jam sebelumnya.',
+        'Kursi poolside terbatas setiap hari.',
+        'Tersedia selama wellness menu sedang berjalan.',
+      ],
+    },
+  },
+];
 
 export const MENU_ITEMS: MenuItem[] = [
   // -----------------------------------------------------------------------
