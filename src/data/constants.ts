@@ -282,6 +282,7 @@ export const MENU_ITEMS: MenuItem[] = [
     spiceLevel: 'Medium',
     serviceTag: 'Chef Recommendation',
     dietaryTags: ['Contains Nuts'],
+    timeSlots: ['afternoon', 'evening'],
   },
   {
     id: 2,
@@ -292,6 +293,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/signatures.jpg',
     tag: 'Signature',
     allergens: 'Fish, Dairy',
+    timeSlots: ['afternoon', 'evening'],
   },
   {
     id: 3,
@@ -302,6 +304,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/signatures.jpg',
     tag: "Chef's Choice",
     allergens: 'Seafood, Dairy',
+    timeSlots: ['evening'],
   },
   {
     id: 4,
@@ -316,6 +319,7 @@ export const MENU_ITEMS: MenuItem[] = [
     spiceLevel: 'None',
     serviceTag: 'Best Seller',
     dietaryTags: ['Gluten-Free Option'],
+    timeSlots: ['evening'],
   },
   {
     id: 5,
@@ -326,6 +330,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/signatures.jpg',
     tag: 'Local Heritage',
     allergens: '',
+    timeSlots: ['latenight'],
   },
 
   // -----------------------------------------------------------------------
@@ -340,6 +345,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/starters.jpg',
     tag: '',
     allergens: 'Dairy, Egg, Fish',
+    timeSlots: ['morning', 'afternoon'],
   },
   {
     id: 7,
@@ -350,6 +356,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/starters.jpg',
     tag: '',
     allergens: 'Dairy',
+    timeSlots: ['evening', 'latenight'],
   },
   {
     id: 8,
@@ -364,6 +371,7 @@ export const MENU_ITEMS: MenuItem[] = [
     spiceLevel: 'Mild',
     serviceTag: 'Local Favourite',
     dietaryTags: ['Vegetarian', 'Contains Nuts'],
+    timeSlots: ['morning', 'afternoon'],
   },
   {
     id: 9,
@@ -374,6 +382,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/starters.jpg',
     tag: '',
     allergens: 'Seafood, Wheat',
+    timeSlots: ['afternoon', 'evening'],
   },
   {
     id: 10,
@@ -384,6 +393,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/starters.jpg',
     tag: '',
     allergens: 'Wheat',
+    timeSlots: ['morning'],
   },
   {
     id: 11,
@@ -394,6 +404,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/starters.jpg',
     tag: 'Popular',
     allergens: 'Soy',
+    timeSlots: ['afternoon', 'evening', 'latenight'],
   },
 
   // -----------------------------------------------------------------------
@@ -408,6 +419,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: 'Local Favourite',
     allergens: 'Egg, Peanut, Shrimp',
+    timeSlots: ['morning', 'afternoon'],
   },
   {
     id: 13,
@@ -418,6 +430,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: '',
     allergens: 'Wheat, Egg',
+    timeSlots: ['morning', 'latenight'],
   },
   {
     id: 14,
@@ -428,6 +441,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: '',
     allergens: 'Fish, Dairy',
+    timeSlots: ['afternoon', 'evening'],
   },
   {
     id: 15,
@@ -438,6 +452,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: '',
     allergens: 'Dairy',
+    timeSlots: ['evening'],
   },
   {
     id: 16,
@@ -448,6 +463,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: '',
     allergens: 'Wheat, Dairy',
+    timeSlots: ['afternoon', 'evening'],
   },
   {
     id: 17,
@@ -458,6 +474,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: 'Local',
     allergens: 'Wheat, Egg, Soy',
+    timeSlots: ['afternoon', 'latenight'],
   },
   {
     id: 18,
@@ -468,6 +485,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: '',
     allergens: 'Wheat, Dairy',
+    timeSlots: ['afternoon', 'evening', 'latenight'],
   },
   {
     id: 19,
@@ -478,6 +496,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/mains.jpg',
     tag: '',
     allergens: 'Fish, Wheat',
+    timeSlots: ['afternoon', 'latenight'],
   },
 
   // -----------------------------------------------------------------------
@@ -492,6 +511,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/desserts.jpg',
     tag: '',
     allergens: 'Dairy, Wheat',
+    timeSlots: ['afternoon', 'evening'],
   },
   {
     id: 21,
@@ -502,6 +522,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/desserts.jpg',
     tag: 'Popular',
     allergens: 'Dairy, Egg, Wheat',
+    timeSlots: ['evening', 'latenight'],
   },
   {
     id: 22,
@@ -512,6 +533,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/desserts.jpg',
     tag: '',
     allergens: 'Dairy, Egg',
+    timeSlots: ['evening'],
   },
   {
     id: 23,
@@ -522,6 +544,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/desserts.jpg',
     tag: 'Light',
     allergens: '',
+    timeSlots: ['morning', 'afternoon'],
   },
   {
     id: 24,
@@ -532,6 +555,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/desserts.jpg',
     tag: 'Local',
     allergens: 'Coconut',
+    timeSlots: ['afternoon'],
   },
 
   // -----------------------------------------------------------------------
@@ -546,6 +570,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/beverages.jpg',
     tag: '',
     allergens: 'Dairy',
+    timeSlots: ['morning', 'afternoon'],
   },
   {
     id: 26,
@@ -556,6 +581,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/beverages.jpg',
     tag: '',
     allergens: '',
+    timeSlots: ['morning'],
   },
   {
     id: 27,
@@ -566,6 +592,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/beverages.jpg',
     tag: '',
     allergens: '',
+    timeSlots: ['afternoon', 'evening'],
   },
   {
     id: 28,
@@ -576,6 +603,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/beverages.jpg',
     tag: '',
     allergens: 'Dairy',
+    timeSlots: ['evening', 'latenight'],
   },
   {
     id: 29,
@@ -586,6 +614,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/beverages.jpg',
     tag: 'Local',
     allergens: '',
+    timeSlots: ['morning', 'evening', 'latenight'],
   },
   {
     id: 30,
@@ -596,5 +625,6 @@ export const MENU_ITEMS: MenuItem[] = [
     image: '/assets/menu/beverages.jpg',
     tag: '',
     allergens: '',
+    timeSlots: ['afternoon', 'evening'],
   },
 ];

@@ -149,10 +149,32 @@ service cloud.firestore {
     }
 
     function guestFeedbackUpdateOnly() {
-      return adminOrderWorkflowUpdateOnly() &&
-        (resource.data.status == 'delivered' || resource.data.status == 'completed') &&
+      return (resource.data.status == 'delivered' || resource.data.status == 'completed') &&
         request.resource.data.status == resource.data.status &&
-        request.resource.data.isRead == resource.data.isRead;
+        request.resource.data.isRead == resource.data.isRead &&
+        request.resource.data.accessTokenId == resource.data.accessTokenId &&
+        request.resource.data.hotelId == resource.data.hotelId &&
+        request.resource.data.stayId == resource.data.stayId &&
+        request.resource.data.roomNumber == resource.data.roomNumber &&
+        request.resource.data.lastName == resource.data.lastName &&
+        request.resource.data.lastNameNormalized == resource.data.lastNameNormalized &&
+        request.resource.data.phoneNumber == resource.data.phoneNumber &&
+        request.resource.data.phoneNumberNormalized == resource.data.phoneNumberNormalized &&
+        request.resource.data.items == resource.data.items &&
+        request.resource.data.subtotal == resource.data.subtotal &&
+        request.resource.data.tax == resource.data.tax &&
+        request.resource.data.total == resource.data.total &&
+        request.resource.data.paymentMethod == resource.data.paymentMethod &&
+        request.resource.data.source == resource.data.source &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'rating',
+          'feedback',
+          'review',
+          'reviewSummary',
+          'feedbackDetails',
+          'isFeedbackSubmitted',
+          'feedbackSubmittedAt'
+        ]);
     }
 
     match /admin_users/{userId} {

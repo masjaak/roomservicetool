@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SearchX, ShoppingBag, LogOut, Sun, Moon } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CartItem, Language, MenuItem } from '../types';
+import { CartItem, Language, MenuItem, TimeSlot } from '../types';
 import { CATEGORIES, MENU_ITEMS, PROMO_CAMPAIGNS, TRANSLATIONS } from '../data/constants';
 import { formatCurrency } from '../utils/format';
 import { CartDrawer } from '../components/CartDrawer';
@@ -26,26 +26,33 @@ interface MenuViewProps {
 
 const CATEGORY_LABELS = ['Breakfast', 'Mains', 'Beverages', 'Snacks'];
 
-function getTimeBasedMenuCopy(lang: Language): { title: string; subtitle: string } {
+function getCurrentTimeSlot(): TimeSlot {
   const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) {
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 17) return 'afternoon';
+  if (hour >= 17 && hour < 22) return 'evening';
+  return 'latenight';
+}
+
+function getTimeBasedMenuCopy(lang: Language, slot: TimeSlot): { title: string; subtitle: string; featuredLabel: string } {
+  if (slot === 'morning') {
     return lang === 'ID'
-      ? { title: 'Menu Pagi', subtitle: 'Pilihan hidangan pagi yang segar, siap diantarkan ke kamar Anda.' }
-      : { title: 'The Morning Menu', subtitle: 'A thoughtful selection of morning favourites and light bites, served fresh to your room.' };
+      ? { title: 'Menu Pagi', subtitle: 'Pilihan hidangan pagi yang segar, siap diantarkan ke kamar Anda.', featuredLabel: 'Pilihan Pagi Ini' }
+      : { title: 'The Morning Menu', subtitle: 'A thoughtful selection of morning favourites and light bites, served fresh to your room.', featuredLabel: "This Morning's Picks" };
   }
-  if (hour >= 12 && hour < 17) {
+  if (slot === 'afternoon') {
     return lang === 'ID'
-      ? { title: 'Menu Siang', subtitle: 'Sajian siang dan comfort food pilihan, siap dinikmati di kamar Anda.' }
-      : { title: 'The Afternoon Menu', subtitle: 'Midday comforts and afternoon favourites, ready to be delivered to your door.' };
+      ? { title: 'Menu Siang', subtitle: 'Sajian siang dan comfort food pilihan, siap dinikmati di kamar Anda.', featuredLabel: 'Favorit Siang Hari' }
+      : { title: 'The Afternoon Menu', subtitle: 'Midday comforts and afternoon favourites, ready to be delivered to your door.', featuredLabel: 'Afternoon Highlights' };
   }
-  if (hour >= 17 && hour < 22) {
+  if (slot === 'evening') {
     return lang === 'ID'
-      ? { title: 'Menu Malam', subtitle: 'Menu signature dan hidangan malam, dikurasi khusus untuk kamar Anda.' }
-      : { title: 'The Evening Menu', subtitle: 'Signature dishes and evening comforts, curated and prepared for your room.' };
+      ? { title: 'Menu Malam', subtitle: 'Menu signature dan hidangan malam, dikurasi khusus untuk kamar Anda.', featuredLabel: 'Pilihan Malam Ini' }
+      : { title: 'The Evening Menu', subtitle: 'Signature dishes and evening comforts, curated and prepared for your room.', featuredLabel: "Tonight's Highlights" };
   }
   return lang === 'ID'
-    ? { title: 'Menu Larut Malam', subtitle: 'Camilan dan minuman tengah malam, tersedia kapan pun Anda butuhkan.' }
-    : { title: 'The Late-Night Menu', subtitle: 'Late-night bites and beverages, available whenever you need them.' };
+    ? { title: 'Menu Larut Malam', subtitle: 'Camilan dan minuman tengah malam, tersedia kapan pun Anda butuhkan.', featuredLabel: 'Pilihan Larut Malam' }
+    : { title: 'The Late-Night Menu', subtitle: 'Late-night bites and beverages, available whenever you need them.', featuredLabel: 'Late-Night Picks' };
 }
 
 export const MenuView: React.FC<MenuViewProps> = ({
@@ -63,7 +70,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const grandTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const totalQty = cart.reduce((a, i) => a + i.qty, 0);
   const filteredItems = MENU_ITEMS.filter((i) => i.category === selectedCategory);
-  const menuCopy = getTimeBasedMenuCopy(lang);
+  const currentSlot = getCurrentTimeSlot();
+  const menuCopy = getTimeBasedMenuCopy(lang, currentSlot);
+  const featuredItems = MENU_ITEMS.filter((i) => i.timeSlots?.includes(currentSlot));
 
   return (
     <motion.div
@@ -158,6 +167,42 @@ export const MenuView: React.FC<MenuViewProps> = ({
             {menuCopy.subtitle}
           </p>
         </section>
+
+        {/* Featured Now — time-based picks */}
+        {featuredItems.length > 0 && (
+          <section style={{ paddingBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: '1.5rem', marginBottom: '0.75rem' }}>
+              <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.2em', color: theme.goldBright, fontWeight: 700, fontFamily: "'Manrope',sans-serif" }}>
+                {menuCopy.featuredLabel}
+              </span>
+              <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.14em', color: theme.textMuted, fontFamily: "'Manrope',sans-serif" }}>
+                {lang === 'ID' ? 'Lihat semua →' : 'Full menu below'}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', scrollbarWidth: 'none', paddingInline: '1.5rem', paddingBottom: '0.25rem', WebkitOverflowScrolling: 'touch' }}>
+              {featuredItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setSelectedItem(item)}
+                  style={{ flexShrink: 0, width: '8.5rem', background: theme.bgSurface, border: `1px solid ${theme.borderFaint}`, borderRadius: '1rem', overflow: 'hidden', textAlign: 'left', cursor: 'pointer', padding: 0, transition: 'background 0.2s' }}
+                >
+                  <div style={{ width: '100%', height: '5.5rem', overflow: 'hidden', background: theme.bgMuted }}>
+                    <ImageWithFallback src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div style={{ padding: '0.6rem 0.65rem 0.65rem' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 600, color: theme.textBase, lineHeight: 1.3, marginBottom: '0.3rem', fontFamily: "'Manrope',sans-serif", overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                      {item.name}
+                    </p>
+                    <p style={{ fontSize: '11px', fontWeight: 700, color: theme.goldBright, fontFamily: "'Manrope',sans-serif" }}>
+                      {formatCurrency(item.price)}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {PROMO_CAMPAIGNS.length > 0 && (
           <section style={{ padding: '0 1.5rem 1.25rem' }}>

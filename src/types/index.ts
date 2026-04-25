@@ -1,3 +1,5 @@
+export type TimeSlot = 'morning' | 'afternoon' | 'evening' | 'latenight';
+
 export interface MenuItem {
   id: number;
   name: string;
@@ -13,6 +15,7 @@ export interface MenuItem {
   serviceTag?: 'Chef Recommendation' | 'Best Seller' | 'Local Favourite' | 'Light Option' | string;
   isAvailable?: boolean;
   unavailableReason?: string;
+  timeSlots?: TimeSlot[];
 }
 
 export interface FeedbackPayload {
