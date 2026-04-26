@@ -80,20 +80,10 @@ firebase deploy --only functions
 Expected callable functions after deploy:
 
 - `redeemGuestAccess`
-- `createGuestAccessToken`
 - `createGuestOrder`
 - `revokeGuestSession`
 
-## 6. Create Admin Access
-
-Use at least one of these:
-
-- Firebase Auth custom claim `role=admin`
-- Firestore `admin_users/{uid}` with `active=true`
-
-The current backend accepts either path.
-
-## 7. Configure App Check
+## 6. Configure App Check
 
 Recommended flow:
 
@@ -106,7 +96,7 @@ Recommended flow:
 
 Do not enforce App Check before the client site key is wired, or guest access and ordering will fail.
 
-## 8. Build and Deploy the Guest App
+## 7. Build and Deploy the Guest App
 
 ```bash
 npm install
@@ -125,7 +115,7 @@ If using another host:
 - output directory: `build`
 - copy the same `VITE_*` variables into that host
 
-## 9. Sync iOS Shell
+## 8. Sync iOS Shell
 
 After the web build is correct:
 
@@ -136,7 +126,7 @@ npx cap sync ios
 
 Then run the iOS app again from Xcode or the simulator target you already configured.
 
-## 10. Post-Deploy Smoke Test
+## 9. Post-Deploy Smoke Test
 
 Check these in order:
 
@@ -146,4 +136,4 @@ Check these in order:
 4. Valid token plus matching active stay is accepted
 5. Order creation works only from the verified guest session
 6. Repeated rapid orders hit the backend limiter
-7. Admin can revoke a guest session and the guest loses ordering access
+7. Revoking a guest session from your separate operations tool removes guest ordering access

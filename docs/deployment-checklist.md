@@ -45,42 +45,17 @@ Create `.env.local` or deployment secrets using:
 - `VITE_FIREBASE_FUNCTIONS_REGION`
 - `VITE_FIREBASE_APP_CHECK_SITE_KEY`
 
-## 3. Prepare Admin Access
-
-At least one admin path must exist before hotel operations start.
-
-Choose one:
-
-- Firebase Auth custom claim:
-  - `role = admin`
-- Firestore document:
-  - `admin_users/{uid}`
-
-Recommended document shape:
-
-```json
-{
-  "hotelId": "atelier-meridian-demo",
-  "email": "ops@example.com",
-  "name": "Operations Manager",
-  "role": "admin",
-  "active": true,
-  "createdAt": "serverTimestamp()"
-}
-```
-
-## 4. Seed Core Firestore Data
+## 3. Seed Core Firestore Data
 
 Create at least:
 
 - one `guest_stays` document
-- one `admin_users` document
 
 Optional for demo:
 
 - seed one active room/stay for QR token generation
 
-## 5. Install and Build Functions
+## 4. Install and Build Functions
 
 ```bash
 cd functions
@@ -88,14 +63,14 @@ npm install
 npm run build
 ```
 
-## 6. Deploy Firestore Rules and Indexes
+## 5. Deploy Firestore Rules and Indexes
 
 ```bash
 firebase deploy --only firestore:rules
 firebase deploy --only firestore:indexes
 ```
 
-## 7. Deploy Functions
+## 6. Deploy Functions
 
 ```bash
 firebase deploy --only functions
@@ -104,11 +79,10 @@ firebase deploy --only functions
 Verify deployed callables:
 
 - `redeemGuestAccess`
-- `createGuestAccessToken`
 - `createGuestOrder`
 - `revokeGuestSession`
 
-## 8. Enable App Check
+## 7. Enable App Check
 
 Recommended for web:
 
@@ -122,7 +96,7 @@ Required tasks:
 
 Do not enforce App Check before the frontend is configured, or guest login/order requests will fail.
 
-## 9. Build and Deploy Web App
+## 8. Build and Deploy Web App
 
 ```bash
 npm install
@@ -141,17 +115,15 @@ If using Vercel or another host:
 - confirm the build command is `npm run build`
 - confirm output directory is `build`
 
-## 10. Generate Demo QR Access
+## 9. Generate Demo QR Access
 
-After admin login is ready:
+After your operations tooling is ready:
 
-- open `/#admin`
-- use the `Guest QR Access` panel
 - generate a token for an active stay
 - copy the generated URL into a QR generator
 - test redemption from a clean browser/device session
 
-## 11. Verify Security End-to-End
+## 10. Verify Security End-to-End
 
 Run this exact sequence:
 
@@ -165,10 +137,10 @@ Run this exact sequence:
    - expected: login allowed
 5. Place several rapid orders from one session
    - expected: backend rate limiting eventually blocks requests
-6. Revoke the guest session from admin
+6. Revoke the guest session from your operations tooling
    - expected: guest order access fails afterward
 
-## 12. iOS Shell Sync
+## 11. iOS Shell Sync
 
 If iOS Simulator / Xcode build is used:
 
@@ -190,4 +162,4 @@ Do not treat deployment as complete unless all of the following are true:
 - App Check configured
 - guest QR redemption tested
 - guest order creation tested
-- admin revoke tested
+- revoke flow tested

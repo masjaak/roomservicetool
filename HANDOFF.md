@@ -3,7 +3,7 @@
 ## Project
 
 - Repo: local Atelier Meridian Room Service workspace
-- App: mobile-first room service web app with an admin dashboard at `/#admin`
+- App: mobile-first room service web app for guests only
 - iOS shell: Capacitor project in `ios/App`
 
 ## Current State
@@ -13,6 +13,7 @@
 - Firebase / Firestore integration is active in `src/lib/firebase.ts`
 - EN / ID copy support remains in place
 - iOS assets and shell are already wired for local simulator work
+- Admin dashboard code has been removed from this repo and now lives separately
 
 ## Recent Cleanup
 
@@ -21,7 +22,6 @@
 - Dead loading-theme files were removed:
   - `src/components/ScreenLoadingState.tsx`
   - `src/styles/guestTheme.ts`
-- Large unused `src/components/ui` scaffold was pruned down to the files still used by `AdminDashboard`
 - Old backup/generator artifacts were removed:
   - `ios-replacement/`
   - `ios/App.bak-20260422/`
@@ -48,7 +48,6 @@
 - `src/views/MenuView.tsx`
 - `src/views/CheckoutView.tsx`
 - `src/views/TrackingView.tsx`
-- `src/views/AdminDashboard.tsx`
 - `src/contexts/ThemeContext.tsx`
 - `vite.config.ts`
 - `capacitor.config.ts`

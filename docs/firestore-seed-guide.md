@@ -9,20 +9,6 @@ Reference files:
 
 ## Collections To Seed First
 
-### `admin_users`
-
-Purpose:
-
-- identifies who can use admin functions and QR issuance
-
-Required minimum:
-
-- `hotelId`
-- `email`
-- `name`
-- `role = admin`
-- `active = true`
-
 ### `guest_stays`
 
 Purpose:
@@ -96,7 +82,6 @@ node scripts/seed-demo-data.mjs
 
 That seed file includes:
 
-- two admin users
 - one valid in-house guest
 - one checked-out guest
 - one wrong-details example

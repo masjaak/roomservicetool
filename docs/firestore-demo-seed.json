@@ -1,32 +1,4 @@
 {
-  "admin_users": {
-    "demo-admin-uid": {
-      "hotelId": "atelier-meridian-demo",
-      "email": "ops@ateliermeridian.demo",
-      "name": "Operations Manager",
-      "role": "admin",
-      "active": true,
-      "createdAt": {
-        "__type": "serverTimestamp"
-      },
-      "updatedAt": {
-        "__type": "serverTimestamp"
-      }
-    },
-    "demo-fdm-uid": {
-      "hotelId": "atelier-meridian-demo",
-      "email": "frontoffice@ateliermeridian.demo",
-      "name": "Front Office Manager",
-      "role": "admin",
-      "active": true,
-      "createdAt": {
-        "__type": "serverTimestamp"
-      },
-      "updatedAt": {
-        "__type": "serverTimestamp"
-      }
-    }
-  },
   "guest_stays": {
     "stay-1204-demo": {
       "hotelId": "atelier-meridian-demo",

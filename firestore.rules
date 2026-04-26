@@ -160,11 +160,6 @@ service cloud.firestore {
       ]);
     }
 
-    match /admin_users/{userId} {
-      allow read: if true;
-      allow write: if false;
-    }
-
     match /guest_stays/{stayId} {
       allow read: if true;
       allow write: if false;

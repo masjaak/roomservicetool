@@ -1,6 +1,6 @@
 # HCS Room Service
 
-Room service web app for hotel guests and operations staff. The guest flow is:
+Room service web app for hotel guests. The guest flow is:
 
 `Login -> Menu -> Checkout -> Tracking -> Feedback`
 
@@ -9,7 +9,6 @@ The current codebase already keeps that flow in a reducer-driven state machine, 
 ## Current Scope
 
 - Guest app for login, menu browsing, cart, checkout, live tracking, and feedback
-- Admin dashboard at `/#admin` for order monitoring and status updates
 - Firebase Firestore integration for order creation and real-time tracking
 - EN / ID copy support
 - Vitest coverage for reducer, helpers, and main UI flows
@@ -32,7 +31,7 @@ src/
   lib/              Firebase setup
   machine/          reducer, guards, effects, state types
   utils/            formatting and mapping helpers
-  views/            Login, Menu, Checkout, Tracking, AdminDashboard
+  views/            Login, Menu, Checkout, Tracking
 ```
 
 Generated output:
@@ -69,7 +68,7 @@ Create a `.env.local` file from `.env.example` and set:
 npm run dev
 ```
 
-Guest app runs on the root route. Admin dashboard is available via `/#admin`.
+Guest app runs on the root route.
 
 ## Scripts
 

@@ -320,10 +320,10 @@ export default function App() {
               )}
             >
               <MenuView
-                key="menu"
-                roomNumber={state.guest.roomNumber}
-                cart={state.cart}
-                addToCart={addToCart}
+              key="menu"
+              roomNumber={state.guest.roomNumber}
+              cart={state.cart}
+              addToCart={addToCart}
                 removeFromCart={removeFromCart}
                 onCheckout={() => dispatch({ type: AppEvent.StartCheckout })}
                 onOpenCart={() => dispatch({ type: AppEvent.OpenCart })}

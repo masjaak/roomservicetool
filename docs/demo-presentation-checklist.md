@@ -6,8 +6,8 @@ Use this as the live presentation sequence when showing the app to hotel prospec
 
 1. Confirm the web app and iOS shell both open correctly
 2. Confirm Firebase project points to the demo environment, not local experiments
-3. Seed the demo stay and admin user records
-4. Generate one fresh QR access token from the admin dashboard
+3. Seed the demo stay records
+4. Prepare one fresh QR access token or `?access=` URL for the valid stay
 5. Turn the generated URL into a QR code and print or save it in a presentation slide
 6. Keep one revoked or expired QR example ready for the security segment
 
@@ -43,13 +43,12 @@ Use this as the live presentation sequence when showing the app to hotel prospec
 - Checkout and place order
 - Show the live order status
 
-### 5. Admin Visibility
+### 5. Order Visibility
 
-- Open `/#admin`
-- Show incoming order detail
+- Open the Firebase Console or your separate operations tool
+- Show the incoming order detail in `orders`
 - Show that guest phone number is collected for service follow-up
-- Show QR generation flow for a room
-- Show admin session revocation as a front-desk safety control
+- Show that each order remains tied to room/stay information
 
 ## Demo Records Included In This Repo
 
@@ -67,7 +66,6 @@ Use these seeded examples:
 ## What To Emphasize To Hotel Prospects
 
 - This is not just a digital menu; it is a controlled guest-access ordering channel
-- Front desk can issue and revoke access without sharing open public links
 - Guest identity is checked against the hotel stay record before ordering is allowed
 - Orders are auditable and can feed operations analytics and guest service follow-up
 - The same access pattern can later expand to spa, concierge, housekeeping, and upsell modules

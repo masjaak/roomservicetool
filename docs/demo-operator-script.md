@@ -7,13 +7,12 @@ Use this when you want a repeatable live demo without improvising the flow.
 1. Start the guest app build or dev server
 2. Confirm the Firebase demo project is selected
 3. Confirm demo data has been seeded
-4. Open the admin dashboard at `/#admin`
-5. Generate one fresh guest QR token for the valid stay:
+4. Prepare one fresh guest QR token for the valid stay:
    - hotel ID: `atelier-meridian-demo`
    - stay ID: `stay-1204-demo`
    - room number: `1204`
-6. Copy the generated URL and convert it to a QR code
-7. Keep one browser tab with the guest app and one with the admin dashboard
+5. Copy the generated URL and convert it to a QR code
+6. Keep one browser tab with the guest app and one tab with Firebase Console or your separate operations tool
 
 ## Successful Guest Journey
 
@@ -29,7 +28,7 @@ Use this when you want a repeatable live demo without improvising the flow.
 7. Proceed to checkout
 8. Place the order
 9. Show the tracking screen
-10. Switch to the admin dashboard and show the same order appear there
+10. Switch to Firebase Console or your separate operations tool and show the same order appear there
 
 ## Security Rejection Scenarios
 
@@ -56,13 +55,13 @@ Use this when you want a repeatable live demo without improvising the flow.
    - phone number `6281111111111`
 3. Show that checked-out guests are rejected
 
-## Admin Safety Control
+## Session Safety Control
 
-1. In the admin dashboard, open an order with `guestUid`
-2. Click `Revoke Guest Session`
+1. Open the matching `guest_access_sessions/{uid}` record
+2. Mark the session/token revoked using your backend or separate operations tool
 3. Return to the guest side
 4. Attempt another order action
-5. Explain that front desk or operations can cut access immediately if needed
+5. Explain that access can still be cut immediately when needed
 
 ## What To Say During The Demo
 
@@ -70,4 +69,4 @@ Use this when you want a repeatable live demo without improvising the flow.
 - The QR token is redeemed once and then removed from the visible URL
 - The guest must still match the active stay record using room number, last name, and phone number
 - Order creation happens through backend callables with rate limiting and session checks
-- Admin can issue QR access and revoke guest sessions without engineering support
+- QR access lifecycle can be handled outside the guest app repo by hotel operations tooling

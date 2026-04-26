@@ -34,7 +34,7 @@ Important:
 
 Use a QR-first access flow:
 
-1. Hotel PMS or staff creates an active `guest_stays` record.
+1. Hotel PMS or a separate hotel operations tool creates an active `guest_stays` record.
 2. Backend creates a one-time `guest_access_tokens` document for that stay.
 3. The printed QR code contains only the token redemption URL, not a permanent open guest URL.
 4. Guest opens the QR link and completes verification with:
@@ -53,19 +53,6 @@ Use a QR-first access flow:
 Without this backend redemption step, a shared link can still be abused.
 
 ## Collections
-
-### `admin_users/{uid}`
-
-Used to identify hotel/admin operators.
-
-Suggested fields:
-
-- `hotelId`
-- `email`
-- `name`
-- `role` = `admin`
-- `active`
-- `createdAt`
 
 ### `guest_stays/{stayId}`
 
@@ -169,13 +156,11 @@ Suggested fields:
 
 ## Firestore Rules Strategy
 
-The rules in `firestore.rules` implement this model:
+The rules in `firestore.rules` implement the guest-side access model:
 
-- only admins can manage `guest_stays`, `guest_access_tokens`, and sessions
-- guests can create orders only if they have an active guest session
-- the order payload must match the active session
-- guests can read only their own orders
-- guests can only update feedback fields after delivery/completion
+- guests can create orders only if they present a valid token / active session shape
+- the order payload must match the active stay data
+- feedback updates are limited to feedback-related fields
 - deletes are disabled
 
 ## What Still Needs Backend Work
@@ -198,15 +183,15 @@ What still needs deployment/configuration:
 
 - Firebase Functions deployment
 - App Check site key provisioning
-- front desk/admin tooling for generating QR tokens
+- separate hotel operations tooling for generating QR tokens
 - Firebase Auth custom-token flow enabled in the target project
 
 Recommended backend additions:
 
-1. Admin UI for issuing guest QR tokens per room/stay
+1. Separate operations tool for issuing guest QR tokens per room/stay
 2. PMS integration or nightly import into `guest_stays`
 3. Session expiry cleanup job
-4. Front desk revoke controls
+4. Revoke controls in the separate operations tool
 
 ## Presentation-Safe Security Story
 
@@ -235,7 +220,7 @@ Add backend rate limits per guest session:
 
 ### 3. Session Revocation
 
-Front desk should be able to revoke a guest session when:
+Hotel operations should be able to revoke a guest session when:
 
 - guest checks out
 - room changes

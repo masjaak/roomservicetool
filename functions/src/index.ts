@@ -1,4 +1,4 @@
-import { randomBytes, createHash } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import {
@@ -19,7 +19,6 @@ const ENFORCE_APP_CHECK = process.env.FUNCTIONS_EMULATOR !== 'true';
 const GUEST_SESSION_HOURS = 18;
 const ORDER_RATE_LIMIT_MAX = 3;
 const ORDER_RATE_LIMIT_WINDOW_SECONDS = 300;
-const TOKEN_DEFAULT_TTL_MINUTES = 720;
 const ACTIVE_STATUSES = new Set(['active', 'checked_in', 'in_house']);
 
 interface GuestStayRecord {
@@ -52,14 +51,6 @@ interface CreateGuestOrderData {
   paymentMethod: 'room' | 'qris' | 'bank';
   selectedBank: string | null;
   hasPaymentProof: boolean;
-}
-
-interface CreateGuestAccessTokenData {
-  hotelId: string;
-  stayId: string;
-  roomNumber: string;
-  expiresInMinutes?: number;
-  baseUrl: string;
 }
 
 interface NormalizedOrderItem {
@@ -160,21 +151,6 @@ function matchesStayRecord(
 
 function getGuestUid(stayId: string): string {
   return `guest_${stayId.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
-}
-
-async function isAdminCaller(request: CallableRequest<unknown>): Promise<boolean> {
-  const uid = request.auth?.uid;
-
-  if (!uid) {
-    return false;
-  }
-
-  if (request.auth?.token?.admin === true || request.auth?.token?.role === 'admin') {
-    return true;
-  }
-
-  const adminDoc = await db.collection('admin_users').doc(uid).get();
-  return adminDoc.exists && adminDoc.data()?.active === true;
 }
 
 async function getGuestSessionOrThrow(uid: string) {
@@ -348,48 +324,6 @@ export const redeemGuestAccess = onCall(
   },
 );
 
-export const createGuestAccessToken = onCall(
-  { region: REGION, enforceAppCheck: ENFORCE_APP_CHECK },
-  async (request) => {
-    if (!(await isAdminCaller(request))) {
-      throw new HttpsError('permission-denied', 'Only admins can create guest access tokens.');
-    }
-
-    const hotelId = asTrimmedString(request.data?.hotelId, 'hotelId');
-    const stayId = asTrimmedString(request.data?.stayId, 'stayId');
-    const roomNumber = asTrimmedString(request.data?.roomNumber, 'roomNumber');
-    const baseUrl = asTrimmedString(request.data?.baseUrl, 'baseUrl');
-    const expiresInMinutes = request.data?.expiresInMinutes == null
-      ? TOKEN_DEFAULT_TTL_MINUTES
-      : asNumber(request.data?.expiresInMinutes, 'expiresInMinutes');
-
-    const rawToken = randomBytes(24).toString('hex');
-    const tokenHash = hashAccessToken(rawToken);
-    const expiresAt = Timestamp.fromMillis(Date.now() + expiresInMinutes * 60 * 1000);
-    const tokenRef = db.collection('guest_access_tokens').doc();
-
-    await tokenRef.set({
-      hotelId,
-      stayId,
-      roomNumber,
-      tokenHash,
-      status: 'active',
-      createdAt: FieldValue.serverTimestamp(),
-      createdBy: request.auth?.uid || null,
-      expiresAt,
-    });
-
-    const qrUrl = `${baseUrl.replace(/\/$/, '')}/?access=${rawToken}`;
-
-    return {
-      tokenId: tokenRef.id,
-      qrUrl,
-      rawToken,
-      expiresAt: expiresAt.toDate().toISOString(),
-    };
-  },
-);
-
 export const createGuestOrder = onCall(
   { region: REGION, enforceAppCheck: ENFORCE_APP_CHECK },
   async (request) => {
@@ -512,18 +446,14 @@ export const revokeGuestSession = onCall(
       throw new HttpsError('unauthenticated', 'Authentication is required.');
     }
 
-    const requestedGuestUid = typeof request.data?.guestUid === 'string' ? request.data.guestUid.trim() : '';
-    const isAdmin = await isAdminCaller(request);
-    const guestUid = isAdmin && requestedGuestUid ? requestedGuestUid : callerUid;
-
-    await db.collection('guest_access_sessions').doc(guestUid).set({
+    await db.collection('guest_access_sessions').doc(callerUid).set({
       status: 'revoked',
       revokedAt: FieldValue.serverTimestamp(),
       revokedBy: callerUid,
       expiresAt: Timestamp.now(),
     }, { merge: true });
 
-    await auth.revokeRefreshTokens(guestUid).catch(() => undefined);
+    await auth.revokeRefreshTokens(callerUid).catch(() => undefined);
 
     return { ok: true };
   },
