@@ -172,11 +172,16 @@ export const MenuView: React.FC<MenuViewProps> = ({
         {featuredItems.length > 0 && (
           <section style={{ paddingBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: '1.5rem', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.2em', color: theme.goldBright, fontWeight: 700, fontFamily: "'Manrope',sans-serif" }}>
-                {menuCopy.featuredLabel}
-              </span>
-              <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.14em', color: theme.textMuted, fontFamily: "'Manrope',sans-serif" }}>
-                {lang === 'ID' ? 'Lihat semua →' : 'Full menu below'}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.2em', color: theme.goldBright, fontWeight: 700, fontFamily: "'Manrope',sans-serif" }}>
+                  {menuCopy.featuredLabel}
+                </span>
+                <span style={{ fontSize: '12px', lineHeight: 1.5, color: theme.textMuted, fontFamily: "'Manrope',sans-serif" }}>
+                  {lang === 'ID' ? 'Ketuk item untuk lihat ingredient dan info alergi.' : 'Tap any item to view ingredients and allergy details.'}
+                </span>
+              </div>
+              <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.14em', color: theme.textMuted, fontFamily: "'Manrope',sans-serif", textAlign: 'right' }}>
+                {lang === 'ID' ? 'Lihat semua ↓' : 'Full menu below'}
               </span>
             </div>
             <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', scrollbarWidth: 'none', paddingInline: '1.5rem', paddingBottom: '0.25rem', WebkitOverflowScrolling: 'touch' }}>
@@ -193,6 +198,9 @@ export const MenuView: React.FC<MenuViewProps> = ({
                   <div style={{ padding: '0.6rem 0.65rem 0.65rem' }}>
                     <p style={{ fontSize: '12px', fontWeight: 600, color: theme.textBase, lineHeight: 1.3, marginBottom: '0.3rem', fontFamily: "'Manrope',sans-serif", overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                       {item.name}
+                    </p>
+                    <p style={{ fontSize: '10px', lineHeight: 1.45, color: theme.textMuted, marginBottom: '0.35rem', fontFamily: "'Manrope',sans-serif" }}>
+                      {item.allergens ? (lang === 'ID' ? `Alergen: ${item.allergens}` : `Allergens: ${item.allergens}`) : (lang === 'ID' ? 'Tidak ada alergen utama tercantum' : 'No major allergens listed')}
                     </p>
                     <p style={{ fontSize: '11px', fontWeight: 700, color: theme.goldBright, fontFamily: "'Manrope',sans-serif" }}>
                       {formatCurrency(item.price)}

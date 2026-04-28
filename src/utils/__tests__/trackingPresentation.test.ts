@@ -47,4 +47,16 @@ describe('buildTrackingPresentation', () => {
     expect(presentation.estimatedDeliveryLabel).toBe('Sudah Tiba');
     expect(presentation.currentStep.label).toBe('Delivered');
   });
+
+  it('shows an explicit cancelled state instead of leaving guests on confirmed', () => {
+    const presentation = buildTrackingPresentation({
+      statusStep: -1,
+      roomNumber: '303',
+      lang: 'EN',
+    });
+
+    expect(presentation.activeStepIndex).toBe(0);
+    expect(presentation.estimatedDeliveryLabel).toBe('Cancelled');
+    expect(presentation.currentStep.label).toBe('Order Cancelled');
+  });
 });

@@ -4,7 +4,7 @@ import { initializeFirestore } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
 
 const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: 'AIzaSyD1IbtZeRumahNgK4JyV5s8wWDFrlTXJqF',
+  apiKey: 'AIzaSyD1IbtZeRunah6gK4JyV5s8wWDEr1TXJqE',
   authDomain: 'hcsroomserviceapp.firebaseapp.com',
   projectId: 'hcsroomserviceapp',
   storageBucket: 'hcsroomserviceapp.firebasestorage.app',
@@ -20,7 +20,7 @@ function getEnv(name: keyof ImportMetaEnv, fallback: string): string {
 export const missingFirebaseEnvNames: string[] = [];
 export const firebaseConfigError: string | null = null;
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: getEnv('VITE_FIREBASE_API_KEY', DEFAULT_FIREBASE_CONFIG.apiKey),
   authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN', DEFAULT_FIREBASE_CONFIG.authDomain),
   projectId: getEnv('VITE_FIREBASE_PROJECT_ID', DEFAULT_FIREBASE_CONFIG.projectId),

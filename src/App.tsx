@@ -19,6 +19,18 @@ import { MenuView } from './views/MenuView';
 import { CheckoutView } from './views/CheckoutView';
 import { TrackingView } from './views/TrackingView';
 
+function getErrorDetails(err: unknown): { code: string; message: string } {
+  const maybeError = err as { code?: unknown; message?: unknown };
+  const code = typeof maybeError?.code === 'string' ? maybeError.code : '';
+  const message = err instanceof Error
+    ? err.message
+    : typeof maybeError?.message === 'string'
+      ? maybeError.message
+      : String(err);
+
+  return { code, message };
+}
+
 export default function App() {
   const [lang, setLang] = useState<Language>('EN');
   const [state, dispatch] = useReducer(reducer, createInitialState(loadCart()));
@@ -136,16 +148,32 @@ export default function App() {
         phoneNumber: normalizedPhoneNumber,
       });
     } catch (err) {
-      const code = err instanceof Error ? err.message : String(err);
-      if (code === 'missing-stay' || code === 'guest-mismatch') {
+      const { code, message } = getErrorDetails(err);
+      if (message === 'missing-stay' || message === 'guest-mismatch' || message === 'invalid-stay') {
         return lang === 'ID'
           ? 'Data tamu tidak ditemukan. Pastikan nomor kamar, nama belakang, dan nomor HP sudah benar.'
           : 'Guest not found. Please check your room number, last name, and phone number.';
       }
-      if (code === 'invalid-token' || code === 'inactive-token') {
+      if (message === 'invalid-token' || message === 'inactive-token') {
         return lang === 'ID'
           ? 'QR kode tidak valid atau sudah kadaluarsa. Silakan scan ulang atau hubungi resepsionis.'
           : 'Your QR code is invalid or has expired. Please scan again or contact the front desk.';
+      }
+      if (code === 'permission-denied' || message.includes('permission-denied')) {
+        return lang === 'ID'
+          ? 'Akses database ditolak. Pastikan Firestore rules sudah di-deploy untuk guest access.'
+          : 'Database access was denied. Please make sure Firestore rules are deployed for guest access.';
+      }
+      if (
+        code === 'unavailable' ||
+        code === 'deadline-exceeded' ||
+        message.toLowerCase().includes('network') ||
+        message.toLowerCase().includes('offline') ||
+        message.toLowerCase().includes('timeout')
+      ) {
+        return lang === 'ID'
+          ? 'Koneksi ke server hotel gagal. Pastikan simulator punya internet lalu coba lagi.'
+          : 'Could not reach the hotel server. Make sure the simulator has internet and try again.';
       }
       return lang === 'ID'
         ? 'Detail tamu tidak dapat diverifikasi. Silakan periksa kembali data Anda.'

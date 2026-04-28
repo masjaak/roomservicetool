@@ -5,6 +5,8 @@ import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { TRANSLATIONS } from '../data/constants';
 import { RatingModal } from '../components/RatingModal';
 import { db } from '../lib/firebase';
+import { submitOrderFeedback } from '../lib/orderFeedback';
+import { fetchOrderStatus } from '../lib/orderStatus';
 import { mapOrderStatusToStep } from '../utils/statusMapping';
 import { buildTrackingPresentation } from '../utils/trackingPresentation';
 import { buildLegacyFeedback } from '../utils/feedbackMapping';
@@ -28,29 +30,54 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
   useEffect(() => {
     if (!orderId) return;
     let ratingTimer: ReturnType<typeof setTimeout> | null = null;
+    let isDisposed = false;
+
+    const applyOrderStatus = (status: unknown) => {
+      if (typeof status !== 'string' || !status) return;
+      const statusLower = status.toLowerCase();
+      setOrderStatus(mapOrderStatusToStep(status));
+      if (statusLower === 'completed' || statusLower === 'delivered') {
+        if (ratingTimer) clearTimeout(ratingTimer);
+        ratingTimer = setTimeout(() => {
+          if (!isDisposed) setShowRating(true);
+        }, 2000);
+      }
+    };
+
+    const refreshFromRest = async () => {
+      try {
+        const status = await fetchOrderStatus(orderId);
+        if (!isDisposed) applyOrderStatus(status);
+      } catch (error) {
+        console.warn('Order status REST fallback failed', error);
+      }
+    };
 
     const unsubscribe = onSnapshot(doc(db, 'orders', orderId), (snapshot) => {
       if (!snapshot.exists()) return;
       const data = snapshot.data();
-      const status = data.status;
-      const statusLower = status?.toLowerCase() || '';
-      setOrderStatus(mapOrderStatusToStep(status));
-      if (statusLower === 'completed' || statusLower === 'delivered') {
-        if (ratingTimer) clearTimeout(ratingTimer);
-        ratingTimer = setTimeout(() => setShowRating(true), 2000);
-      }
+      applyOrderStatus(data.status);
+    }, (error) => {
+      console.warn('Order status realtime listener failed', error);
     });
+    void refreshFromRest();
+    const pollInterval = window.setInterval(refreshFromRest, 4000);
 
     return () => {
+      isDisposed = true;
       if (ratingTimer) clearTimeout(ratingTimer);
+      window.clearInterval(pollInterval);
       unsubscribe();
     };
   }, [orderId]);
 
   const handleSubmitFeedback = async (payload: FeedbackPayload) => {
     if (orderId) {
-      await updateDoc(doc(db, 'orders', orderId), {
-        ...buildLegacyFeedback(payload),
+      const feedbackPayload = buildLegacyFeedback(payload);
+      await submitOrderFeedback({
+        orderId,
+        payload: feedbackPayload,
+        updateWithSdk: () => updateDoc(doc(db, 'orders', orderId), feedbackPayload),
       });
     }
     onFinish();

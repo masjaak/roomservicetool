@@ -1,8 +1,9 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TrackingView } from '../TrackingView';
 import { ErrorBoundary, TrackingFallback } from '../../components/ErrorBoundary';
 import { onSnapshot } from 'firebase/firestore';
+import { fetchOrderStatus } from '../../lib/orderStatus';
 
 // Mock dependencies safely
 vi.mock('../../lib/firebase', () => ({
@@ -13,10 +14,14 @@ vi.mock('firebase/firestore', () => ({
   onSnapshot: vi.fn(() => vi.fn()),
   updateDoc: vi.fn()
 }));
+vi.mock('../../lib/orderStatus', () => ({
+  fetchOrderStatus: vi.fn(() => Promise.resolve(null))
+}));
 
 describe('TrackingView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(fetchOrderStatus).mockResolvedValue(null);
   });
 
   it('renders successfully without crashing when valid orderId is passed', () => {
@@ -77,6 +82,27 @@ describe('TrackingView', () => {
 
     expect(screen.getAllByText('On The Way').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Staff is en route to Room 101.').length).toBeGreaterThan(0);
+  });
+
+  it('falls back to REST polling when the realtime listener stays stale', async () => {
+    vi.mocked(onSnapshot).mockImplementation(() => vi.fn());
+    vi.mocked(fetchOrderStatus).mockResolvedValue('on_the_way');
+
+    render(
+      <ErrorBoundary fallback={(error, reset) => <TrackingFallback onReset={reset} lang="EN" />}>
+        <TrackingView
+          lang="EN"
+          orderId="test-order-123"
+          roomNumber="101"
+          onFinish={() => {}}
+        />
+      </ErrorBoundary>
+    );
+
+    await waitFor(() => {
+      expect(screen.getAllByText('On The Way').length).toBeGreaterThan(0);
+    });
+    expect(fetchOrderStatus).toHaveBeenCalledWith('test-order-123');
   });
 
   it('finishes the flow when feedback is skipped after delivery', async () => {

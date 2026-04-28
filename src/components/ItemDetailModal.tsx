@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Minus, Plus, ChevronDown, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MenuItem, Language } from '../types';
@@ -20,7 +20,12 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
   const t = TRANSLATIONS[lang];
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState('');
-  const [showAllergens, setShowAllergens] = useState(false);
+  const [showAllergens, setShowAllergens] = useState(true);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setShowAllergens(true);
+  }, [isOpen, item?.id]);
 
   const handleAdd = () => {
     if (item) { onAdd(item, qty, note); setQty(1); setNote(''); onClose(); }
@@ -31,6 +36,13 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
   const totalPrice = item.price * qty;
   const allergens = typeof item.allergens === 'string'
     ? item.allergens.split(',').map(v => v.trim()).filter(Boolean) : [];
+  const dietaryTags = Array.isArray(item.dietaryTags) ? item.dietaryTags.filter(Boolean) : [];
+  const dietarySummary = allergens.length > 0
+    ? t.containsAllergens
+    : lang === 'ID'
+      ? 'Tidak ada alergen utama yang tercantum untuk item ini.'
+      : 'No major allergens listed for this item.';
+  const dietaryHeading = lang === 'ID' ? 'Catatan Diet & Alergen' : 'Dietary Notes';
 
   return (
     <AnimatePresence>
@@ -76,26 +88,71 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
                     <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.placeholderNote} style={{ width: '100%', background: theme.bgInput, border: `1px solid ${theme.border}`, borderRadius: '0.875rem', padding: '0.875rem 1rem', fontSize: '14px', color: theme.textBase, resize: 'none', height: '5.5rem', outline: 'none', fontFamily: "'Manrope',sans-serif", boxSizing: 'border-box', transition: 'background 0.3s, border-color 0.3s' }} />
                   </div>
 
-                  {allergens.length > 0 && (
-                    <div style={{ border: `1px solid ${theme.border}`, borderRadius: '0.875rem', overflow: 'hidden' }}>
-                      <button onClick={() => setShowAllergens(!showAllergens)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.875rem 1rem', background: theme.bgInput, border: 'none', cursor: 'pointer', color: theme.textSecondary }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ border: `1px solid ${theme.border}`, borderRadius: '1rem', overflow: 'hidden', background: theme.bgInput }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.95rem 1rem 0.8rem', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <div style={{ width: '2rem', height: '2rem', borderRadius: '9999px', background: 'rgba(154,116,22,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <AlertTriangle size={14} color={theme.goldBright} />
-                          <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: "'Manrope',sans-serif" }}>{t.containsAllergens}</span>
                         </div>
-                        <ChevronDown size={15} style={{ transition: 'transform 0.2s', transform: showAllergens ? 'rotate(180deg)' : 'none', color: theme.textMuted }} />
-                      </button>
-                      <AnimatePresence>
-                        {showAllergens && (
-                          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} style={{ overflow: 'hidden' }}>
-                            <div style={{ padding: '0.875rem 1rem', borderTop: `1px solid ${theme.borderFaint}`, display: 'flex', flexWrap: 'wrap', gap: '0.5rem', background: theme.bgInput }}>
-                              {allergens.map(a => <span key={a} style={{ padding: '0.25rem 0.75rem', background: theme.bgMuted, color: theme.textMuted, fontSize: '11px', borderRadius: '9999px', fontWeight: 500 }}>{a}</span>)}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                        <div>
+                          <p style={{ margin: 0, fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: theme.textSecondary, fontFamily: "'Manrope',sans-serif" }}>
+                            {dietaryHeading}
+                          </p>
+                          <p style={{ margin: '0.2rem 0 0', fontSize: '12px', lineHeight: 1.5, color: theme.textMuted }}>
+                            {dietarySummary}
+                          </p>
+                        </div>
+                      </div>
+                      {(allergens.length > 0 || dietaryTags.length > 0) ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowAllergens(!showAllergens)}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2rem', height: '2rem', borderRadius: '9999px', border: 'none', background: theme.bgSurface, cursor: 'pointer', color: theme.textMuted }}
+                          aria-label={lang === 'ID' ? 'Tampilkan detail diet' : 'Toggle dietary details'}
+                        >
+                          <ChevronDown size={15} style={{ transition: 'transform 0.2s', transform: showAllergens ? 'rotate(180deg)' : 'none' }} />
+                        </button>
+                      ) : null}
                     </div>
-                  )}
+
+                    <div style={{ padding: '0 1rem 0.95rem' }}>
+                      <p style={{ margin: 0, fontSize: '12px', lineHeight: 1.6, color: theme.textMuted }}>
+                        {item.description}
+                      </p>
+                    </div>
+
+                    {(allergens.length > 0 || dietaryTags.length > 0) && showAllergens ? (
+                      <AnimatePresence initial={false}>
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: 'auto' }}
+                          exit={{ height: 0 }}
+                          style={{ overflow: 'hidden' }}
+                        >
+                          <div style={{ padding: '0 1rem 1rem', borderTop: `1px solid ${theme.borderFaint}`, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            {allergens.length > 0 ? (
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.9rem' }}>
+                                {allergens.map((allergen) => (
+                                  <span key={allergen} style={{ padding: '0.28rem 0.75rem', background: theme.bgMuted, color: theme.textMuted, fontSize: '11px', borderRadius: '9999px', fontWeight: 500 }}>
+                                    {allergen}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : null}
+                            {dietaryTags.length > 0 ? (
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                {dietaryTags.map((tag) => (
+                                  <span key={tag} style={{ padding: '0.28rem 0.75rem', background: 'rgba(154,116,22,0.12)', color: theme.goldBright, fontSize: '11px', borderRadius: '9999px', fontWeight: 600 }}>
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                        </motion.div>
+                      </AnimatePresence>
+                    ) : null}
+                  </div>
                 </div>
               </div>
 

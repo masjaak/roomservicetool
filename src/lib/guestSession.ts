@@ -1,7 +1,6 @@
-import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import { signInWithCustomToken, signOut } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
-import { assertFirebaseConfigured, auth, db, functions, isSparkDemoMode } from './firebase';
+import { assertFirebaseConfigured, auth, firebaseConfig, functions, isSparkDemoMode } from './firebase';
 import { isGuestStayRecordMatch, normalizeGuestLastName, normalizeGuestPhone } from './guestAccess';
 
 export interface GuestSession {
@@ -49,9 +48,32 @@ interface DemoGuestStayRecord {
   status?: string;
 }
 
+interface DemoAccessTokenRecord {
+  hotelId?: string;
+  stayId?: string;
+  status?: string;
+  expiresAt?: Date | null;
+}
+
+interface FirestoreRestDocument {
+  name: string;
+  fields?: Record<string, FirestoreRestValue>;
+}
+
+type FirestoreRestValue =
+  | { stringValue?: string }
+  | { integerValue?: string }
+  | { doubleValue?: number }
+  | { booleanValue?: boolean }
+  | { timestampValue?: string }
+  | { nullValue?: null }
+  | { arrayValue?: { values?: FirestoreRestValue[] } }
+  | { mapValue?: { fields?: Record<string, FirestoreRestValue> } };
+
 const DEMO_SESSION_STORAGE_KEY = 'hcs_guest_demo_session';
 const DEMO_RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
 const DEMO_RATE_LIMIT_MAX = 3;
+const DEMO_LOGIN_TIMEOUT_MS = 8000;
 
 const redeemGuestAccessCallable = functions ? httpsCallable(functions, 'redeemGuestAccess') : null;
 const createGuestOrderCallable = functions ? httpsCallable(functions, 'createGuestOrder') : null;
@@ -105,25 +127,207 @@ function normalizeDemoOrderItems(items: unknown[]): Array<Record<string, unknown
   }).filter((item) => item.name && item.qty > 0 && item.price >= 0);
 }
 
-async function createSparkDemoAccessToken(input: {
-  hotelId: string;
-  stayId: string;
-  roomNumber: string;
-  expiresAt: string;
-}): Promise<string> {
-  const firestore = assertFirebaseConfigured(db, 'Firestore');
-  const tokenRef = await addDoc(collection(firestore, 'guest_access_tokens'), {
-    hotelId: input.hotelId,
-    stayId: input.stayId,
-    roomNumber: input.roomNumber,
-    status: 'active',
-    mode: 'spark_demo',
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-    expiresAt: Timestamp.fromDate(new Date(input.expiresAt)),
+function getFirestoreRestBaseUrl(): string {
+  return `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
+}
+
+function getFirestoreDocumentId(documentName: string): string {
+  return documentName.split('/').pop() || '';
+}
+
+function readFirestoreRestValue(value: FirestoreRestValue | undefined): unknown {
+  if (!value) {
+    return undefined;
+  }
+
+  if ('stringValue' in value) return value.stringValue;
+  if ('integerValue' in value) return Number(value.integerValue);
+  if ('doubleValue' in value) return value.doubleValue;
+  if ('booleanValue' in value) return value.booleanValue;
+  if ('timestampValue' in value) return value.timestampValue ? new Date(value.timestampValue) : null;
+  if ('nullValue' in value) return null;
+  return undefined;
+}
+
+function mapFirestoreRestFields<T extends Record<string, unknown>>(document: FirestoreRestDocument): T {
+  const fields = document.fields || {};
+
+  return Object.fromEntries(
+    Object.entries(fields).map(([key, value]) => [key, readFirestoreRestValue(value)]),
+  ) as T;
+}
+
+function writeFirestoreRestValue(value: unknown): FirestoreRestValue {
+  if (value instanceof Date) {
+    return { timestampValue: value.toISOString() };
+  }
+
+  if (Array.isArray(value)) {
+    return { arrayValue: value.length ? { values: value.map(writeFirestoreRestValue) } : {} };
+  }
+
+  if (value === null || typeof value === 'undefined') {
+    return { nullValue: null };
+  }
+
+  if (typeof value === 'string') {
+    return { stringValue: value };
+  }
+
+  if (typeof value === 'boolean') {
+    return { booleanValue: value };
+  }
+
+  if (typeof value === 'number') {
+    return Number.isInteger(value) ? { integerValue: String(value) } : { doubleValue: value };
+  }
+
+  if (typeof value === 'object') {
+    return {
+      mapValue: {
+        fields: Object.fromEntries(
+          Object.entries(value as Record<string, unknown>).map(([key, nestedValue]) => [
+            key,
+            writeFirestoreRestValue(nestedValue),
+          ]),
+        ),
+      },
+    };
+  }
+
+  return { stringValue: String(value) };
+}
+
+async function fetchJsonWithTimeout<T>(url: string, init?: RequestInit): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), DEMO_LOGIN_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      ...init,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`rest-${response.status}`);
+    }
+
+    return await response.json() as T;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('timeout');
+    }
+
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+async function createFirestoreRestDocument(collectionName: string, payload: Record<string, unknown>): Promise<string> {
+  const document = await fetchJsonWithTimeout<FirestoreRestDocument>(
+    `${getFirestoreRestBaseUrl()}/${collectionName}?key=${firebaseConfig.apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: Object.fromEntries(
+          Object.entries(payload).map(([key, value]) => [key, writeFirestoreRestValue(value)]),
+        ),
+      }),
+    },
+  );
+
+  return getFirestoreDocumentId(document.name);
+}
+
+async function getDemoAccessTokenViaRest(accessToken: string): Promise<{ id: string; token: DemoAccessTokenRecord }> {
+  const document = await fetchJsonWithTimeout<FirestoreRestDocument>(
+    `${getFirestoreRestBaseUrl()}/guest_access_tokens/${encodeURIComponent(accessToken)}?key=${firebaseConfig.apiKey}`,
+  ).catch((error) => {
+    if (error instanceof Error && error.message === 'rest-404') {
+      throw new Error('invalid-token');
+    }
+
+    throw error;
   });
 
-  return tokenRef.id;
+  const token = mapFirestoreRestFields<Record<string, unknown>>(document);
+
+  return {
+    id: getFirestoreDocumentId(document.name),
+    token: {
+      hotelId: typeof token.hotelId === 'string' ? token.hotelId : '',
+      stayId: typeof token.stayId === 'string' ? token.stayId : '',
+      status: typeof token.status === 'string' ? token.status : '',
+      expiresAt: token.expiresAt instanceof Date ? token.expiresAt : null,
+    },
+  };
+}
+
+async function getDemoStayViaRest(stayId: string): Promise<{ id: string; stay: DemoGuestStayRecord } | null> {
+  const document = await fetchJsonWithTimeout<FirestoreRestDocument>(
+    `${getFirestoreRestBaseUrl()}/guest_stays/${encodeURIComponent(stayId)}?key=${firebaseConfig.apiKey}`,
+  ).catch((error) => {
+    if (error instanceof Error && error.message === 'rest-404') {
+      return null;
+    }
+
+    throw error;
+  });
+
+  if (!document) {
+    return null;
+  }
+
+  return {
+    id: getFirestoreDocumentId(document.name),
+    stay: mapFirestoreRestFields<DemoGuestStayRecord & Record<string, unknown>>(document),
+  };
+}
+
+async function findMatchingDemoStayViaRest(input: {
+  roomNumber: string;
+  lastName: string;
+  phoneNumber: string;
+}): Promise<{ id: string; stay: DemoGuestStayRecord } | null> {
+  const result = await fetchJsonWithTimeout<Array<{ document?: FirestoreRestDocument }>>(
+    `${getFirestoreRestBaseUrl()}:runQuery?key=${firebaseConfig.apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        structuredQuery: {
+          from: [{ collectionId: 'guest_stays' }],
+          where: {
+            fieldFilter: {
+              field: { fieldPath: 'roomNumber' },
+              op: 'EQUAL',
+              value: { stringValue: input.roomNumber.trim() },
+            },
+          },
+          limit: 10,
+        },
+      }),
+    },
+  );
+
+  for (const row of result) {
+    if (!row.document) {
+      continue;
+    }
+
+    const stay = mapFirestoreRestFields<DemoGuestStayRecord & Record<string, unknown>>(row.document);
+
+    if (isGuestStayRecordMatch(stay, input)) {
+      return {
+        id: getFirestoreDocumentId(row.document.name),
+        stay,
+      };
+    }
+  }
+
+  return null;
 }
 
 export function getAccessTokenFromUrl(): string | null {
@@ -170,22 +374,16 @@ async function redeemSparkDemoAccessSession(input: {
   lastName: string;
   phoneNumber: string;
 }): Promise<GuestSession> {
-  const firestore = assertFirebaseConfigured(db, 'Firestore');
-  let tokenRef: ReturnType<typeof doc> | null = null;
-  let tokenSnap: Awaited<ReturnType<typeof getDoc>> | null = null;
-  let token: Record<string, unknown> | null = null;
+  let accessTokenId: string | undefined;
+  let token: DemoAccessTokenRecord | null = null;
   let stayId = '';
+  let stayMatch: { id: string; stay: DemoGuestStayRecord } | null = null;
 
   if (input.accessToken.trim()) {
-    tokenRef = doc(firestore, 'guest_access_tokens', input.accessToken.trim());
-    tokenSnap = await getDoc(tokenRef);
-
-    if (!tokenSnap.exists()) {
-      throw new Error('invalid-token');
-    }
-
-    token = tokenSnap.data();
-    const expiresAt = token.expiresAt?.toDate?.() ?? null;
+    const tokenMatch = await getDemoAccessTokenViaRest(input.accessToken.trim());
+    token = tokenMatch.token;
+    accessTokenId = tokenMatch.id;
+    const expiresAt = token.expiresAt ?? null;
 
     if (token.status !== 'active' || !expiresAt || expiresAt.getTime() <= Date.now()) {
       throw new Error('inactive-token');
@@ -197,32 +395,23 @@ async function redeemSparkDemoAccessSession(input: {
     }
   }
 
-  let staySnap = stayId ? await getDoc(doc(firestore, 'guest_stays', stayId)) : null;
+  stayMatch = stayId ? await getDemoStayViaRest(stayId) : null;
 
-  if (!staySnap || !staySnap.exists()) {
-    const matchingStayQuery = query(
-      collection(firestore, 'guest_stays'),
-      where('roomNumber', '==', input.roomNumber.trim()),
-    );
-    const matchingStays = await getDocs(matchingStayQuery);
+  if (!stayMatch) {
+    stayMatch = await findMatchingDemoStayViaRest({
+      roomNumber: input.roomNumber,
+      lastName: input.lastName,
+      phoneNumber: input.phoneNumber,
+    });
 
-    const matchedStayDoc = matchingStays.docs.find((candidate) =>
-      isGuestStayRecordMatch(candidate.data() as DemoGuestStayRecord, {
-        roomNumber: input.roomNumber,
-        lastName: input.lastName,
-        phoneNumber: input.phoneNumber,
-      }),
-    );
-
-    if (!matchedStayDoc) {
+    if (!stayMatch) {
       throw new Error('missing-stay');
     }
 
-    staySnap = matchedStayDoc;
-    stayId = matchedStayDoc.id;
+    stayId = stayMatch.id;
   }
 
-  const stay = staySnap.data() as DemoGuestStayRecord;
+  const stay = stayMatch.stay;
 
   if (
     !isGuestStayRecordMatch(stay, {
@@ -234,18 +423,8 @@ async function redeemSparkDemoAccessSession(input: {
     throw new Error('guest-mismatch');
   }
 
-  const expiresAtIso = (token?.expiresAt?.toDate?.() ?? new Date(Date.now() + 18 * 60 * 60 * 1000)).toISOString();
+  const expiresAtIso = (token?.expiresAt ?? new Date(Date.now() + 18 * 60 * 60 * 1000)).toISOString();
   const hotelId = String(token?.hotelId || stay.hotelId || '');
-  let accessTokenId = tokenSnap?.id;
-
-  if (!accessTokenId) {
-    accessTokenId = await createSparkDemoAccessToken({
-      hotelId,
-      stayId,
-      roomNumber: input.roomNumber.trim(),
-      expiresAt: expiresAtIso,
-    }).catch(() => undefined);
-  }
 
   const session: GuestSession = {
     accessTokenId,
@@ -257,31 +436,11 @@ async function redeemSparkDemoAccessSession(input: {
     expiresAt: expiresAtIso,
   };
 
-  if (tokenRef) {
-    await updateDoc(tokenRef, {
-      lastRedeemedAt: serverTimestamp(),
-      lastRedeemedRoomNumber: session.roomNumber,
-    }).catch(() => undefined);
-  }
-
-  await addDoc(collection(firestore, 'guest_access_logins'), {
-    accessTokenId: tokenSnap?.id || null,
-    hotelId: session.hotelId,
-    stayId: session.stayId,
-    roomNumber: session.roomNumber,
-    lastName: session.lastName,
-    lastNameNormalized: normalizeGuestLastName(session.lastName),
-    phoneNumber: session.phoneNumber,
-    source: 'spark_demo_guest_app',
-    createdAt: serverTimestamp(),
-  }).catch(() => undefined);
-
   persistDemoSession(session);
   return session;
 }
 
 async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<CreateGuestOrderResponse> {
-  const firestore = assertFirebaseConfigured(db, 'Firestore');
   const session = loadStoredGuestSession();
 
   if (!session) {
@@ -296,18 +455,7 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
     throw new Error('session-mismatch');
   }
 
-  const accessTokenId = session.accessTokenId ||
-    await createSparkDemoAccessToken({
-      hotelId: session.hotelId,
-      stayId: session.stayId,
-      roomNumber: session.roomNumber,
-      expiresAt: session.expiresAt,
-    }).catch(() => null);
-
-  if (accessTokenId && accessTokenId !== session.accessTokenId) {
-    persistDemoSession({ ...session, accessTokenId });
-  }
-
+  const accessTokenId = session.accessTokenId || '';
   const rateLimitKey = accessTokenId || `stay-${session.stayId}`;
   enforceDemoOrderRateLimit(rateLimitKey);
   const normalizedItems = normalizeDemoOrderItems(input.items);
@@ -320,7 +468,8 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
   const tax = Math.round(subtotal * 0.21);
   const total = subtotal + tax;
 
-  const orderRef = await addDoc(collection(firestore, 'orders'), {
+  const createdAt = new Date();
+  const orderId = await createFirestoreRestDocument('orders', {
     accessTokenId: accessTokenId || '',
     hotelId: session.hotelId,
     stayId: session.stayId,
@@ -337,14 +486,14 @@ async function createSparkDemoGuestOrder(input: CreateGuestOrderInput): Promise<
     selectedBank: input.selectedBank,
     hasPaymentProof: input.hasPaymentProof,
     status: 'incoming',
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+    createdAt,
+    updatedAt: createdAt,
     isRead: false,
     source: 'spark_demo',
   });
 
   return {
-    orderId: orderRef.id,
+    orderId,
     blockedWaUrl: null,
   };
 }

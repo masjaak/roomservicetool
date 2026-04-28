@@ -30,6 +30,22 @@ export function buildTrackingPresentation({
     { label: 'Delivered', sub: 'Enjoy your experience.' },
   ];
 
+  if (statusStep < 0) {
+    const cancelledStep = {
+      label: 'Order Cancelled',
+      sub: lang === 'ID'
+        ? 'Pesanan ini dibatalkan oleh tim hotel.'
+        : 'This order was cancelled by hotel staff.',
+    };
+
+    return {
+      activeStepIndex: 0,
+      currentStep: cancelledStep,
+      estimatedDeliveryLabel: lang === 'ID' ? 'Dibatalkan' : 'Cancelled',
+      steps: [cancelledStep, ...steps.slice(1)],
+    };
+  }
+
   const activeStepIndex = statusStep <= 0 ? 0 : statusStep <= 3 ? 1 : statusStep <= 4 ? 2 : 3;
 
   return {

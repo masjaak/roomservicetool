@@ -2,6 +2,24 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function adminProfile() {
+      return get(/databases/$(database)/documents/admin_users/$(request.auth.uid));
+    }
+
+    function isActiveAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)) &&
+        adminProfile().data.get('active', true) == true;
+    }
+
+    function isActiveManager() {
+      return isActiveAdmin() && adminProfile().data.role == 'manager';
+    }
+
     function stayDoc(stayId) {
       return get(/databases/$(database)/documents/guest_stays/$(stayId));
     }
@@ -192,7 +210,7 @@ service cloud.firestore {
       stayExists(request.resource.data.stayId) &&
       stayDoc(request.resource.data.stayId).data.roomNumber == request.resource.data.roomNumber &&
       isActiveStay(stayDoc(request.resource.data.stayId).data);
-      allow update: if resource.data.mode == 'spark_demo' &&
+      allow update: if isActiveManager() || (resource.data.mode == 'spark_demo' &&
         request.resource.data.keys().hasOnly([
           'hotelId',
           'stayId',
@@ -203,18 +221,20 @@ service cloud.firestore {
           'updatedAt',
           'expiresAt',
           'revokedAt',
+          'revokedBy',
           'lastRedeemedAt',
           'lastRedeemedRoomNumber'
         ]) &&
         request.resource.data.hotelId == resource.data.hotelId &&
         request.resource.data.stayId == resource.data.stayId &&
         request.resource.data.roomNumber == resource.data.roomNumber &&
-        request.resource.data.mode == resource.data.mode;
+        request.resource.data.mode == resource.data.mode);
       allow delete: if false;
     }
 
     match /guest_access_sessions/{userId} {
-      allow read, write: if false;
+      allow read: if isActiveAdmin();
+      allow write: if isActiveManager();
     }
 
     match /guest_access_logins/{logId} {
@@ -236,8 +256,25 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow create: if validDemoOrderCreateShape();
       allow read: if true;
-      allow update: if adminOrderWorkflowUpdateOnly() || guestFeedbackUpdateOnly();
-      allow delete: if false;
+      allow update: if isActiveAdmin() || adminOrderWorkflowUpdateOnly() || guestFeedbackUpdateOnly();
+      allow delete: if isActiveManager();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update: if isActiveAdmin();
+      allow delete: if isActiveManager();
+    }
+
+    match /shiftNotes/{noteId} {
+      allow read, create: if isActiveAdmin();
+      allow update: if isActiveAdmin();
+      allow delete: if isActiveManager();
+    }
+
+    match /admin_users/{userId} {
+      allow read: if isActiveAdmin();
+      allow write: if isActiveManager();
     }
 
     match /rate_limits/{docId} {

@@ -4,13 +4,14 @@ import { vi } from 'vitest';
 import { LoginView } from '../LoginView';
 
 describe('LoginView', () => {
-  it('renders the room service login card and all three input fields', () => {
+  it('renders the room service login card and guest access input fields', () => {
     render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
     expect(screen.getByRole('heading', { name: 'Room Service' })).toBeTruthy();
     expect(screen.getByLabelText('Room Number')).toBeTruthy();
     expect(screen.getByLabelText('Guest Last Name')).toBeTruthy();
     expect(screen.getByLabelText('Phone Number')).toBeTruthy();
+    expect(screen.getByLabelText('Room Access Code')).toBeTruthy();
   });
 
   it('moves focus from Room Number to Guest Last Name on Enter', () => {
@@ -41,6 +42,22 @@ describe('LoginView', () => {
     });
   });
 
+  it('passes the optional access code when filled', async () => {
+    const onLogin = vi.fn();
+
+    render(<LoginView lang="EN" setLang={() => {}} onLogin={onLogin} />);
+
+    fireEvent.change(screen.getByLabelText('Room Number'), { target: { value: '1204' } });
+    fireEvent.change(screen.getByLabelText('Guest Last Name'), { target: { value: 'Tan' } });
+    fireEvent.change(screen.getByLabelText('Phone Number'), { target: { value: '081234567890' } });
+    fireEvent.change(screen.getByLabelText('Room Access Code'), { target: { value: 'qr-token-1204' } });
+    fireEvent.click(screen.getByRole('button', { name: /access in-room dining/i }));
+
+    await waitFor(() => {
+      expect(onLogin).toHaveBeenCalledWith('1204', '081234567890', 'Tan', 'qr-token-1204');
+    });
+  });
+
   it('does not submit when phone number is missing', () => {
     const onLogin = vi.fn();
 
@@ -67,9 +84,9 @@ describe('LoginView', () => {
     expect(await screen.findByText('We could not verify your guest details. Please review your information and try again.')).toBeTruthy();
   });
 
-  it('does not render a manual room access code field in the default guest login flow', () => {
+  it('renders a manual room access code field for QR fallback login', () => {
     render(<LoginView lang="EN" setLang={() => {}} onLogin={() => {}} />);
 
-    expect(screen.queryByLabelText('Room Access Code')).toBeNull();
+    expect(screen.getByLabelText('Room Access Code')).toBeTruthy();
   });
 });

@@ -10,10 +10,14 @@ export function initializeGuestAppCheck(): void {
     return;
   }
 
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(siteKey),
-    isTokenAutoRefreshEnabled: true,
-  });
+  try {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(siteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
 
-  initialized = true;
+    initialized = true;
+  } catch (error) {
+    console.warn('Firebase App Check initialization skipped.', error);
+  }
 }

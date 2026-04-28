@@ -30,6 +30,10 @@ describe('mapOrderStatusToStep', () => {
     expect(mapOrderStatusToStep('completed')).toBe(5);
   });
 
+  it('maps cancelled to a terminal cancelled state', () => {
+    expect(mapOrderStatusToStep('cancelled')).toBe(-1);
+  });
+
   it('defaults gracefully for unknown or missing status', () => {
     expect(mapOrderStatusToStep(null)).toBe(0);
     expect(mapOrderStatusToStep(undefined)).toBe(0);
@@ -37,4 +41,3 @@ describe('mapOrderStatusToStep', () => {
     expect(mapOrderStatusToStep('invalid')).toBe(0);
   });
 });
-

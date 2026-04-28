@@ -18,6 +18,8 @@ export function mapOrderStatusToStep(status: string | undefined | null): number 
     case 'delivered':
     case 'completed':
       return 5;
+    case 'cancelled':
+      return -1;
     default:
       return 0;
   }
