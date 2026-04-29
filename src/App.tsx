@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect, useCallback, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { reducer } from './machine/reducer';
 import { createInitialState, Screen, AppEvent } from './machine/types';
 import { persistCart, loadCart, buildWhatsAppUrl, clearCart } from './machine/effects';
@@ -14,6 +14,8 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { auth, db, firebaseConfigError, isSparkDemoMode } from './lib/firebase';
 import { createGuestOrder, getAccessTokenFromUrl, GuestSession, loadStoredGuestSession, redeemGuestAccessSession, revokeCurrentGuestSession, scrubAccessTokenFromUrl } from './lib/guestSession';
 import { normalizeGuestPhone } from './lib/guestAccess';
+import { MENU_ITEMS } from './data/constants';
+import { mergeGuestMenuCatalog, normalizeGuestMenuProduct } from './lib/menuCatalog';
 import { LoginView } from './views/LoginView';
 import { MenuView } from './views/MenuView';
 import { CheckoutView } from './views/CheckoutView';
@@ -36,6 +38,7 @@ export default function App() {
   const [state, dispatch] = useReducer(reducer, createInitialState(loadCart()));
   const [guestSession, setGuestSession] = useState<GuestSession | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(MENU_ITEMS);
   const accessToken = getAccessTokenFromUrl();
 
   const resetFlow = useCallback((shouldClearCart: boolean) => {
@@ -49,6 +52,23 @@ export default function App() {
   useEffect(() => {
     persistCart(state.cart);
   }, [state.cart]);
+
+  useEffect(() => {
+    if (!db) {
+      setMenuItems(MENU_ITEMS);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const syncedProducts = snapshot.docs.map((item) => normalizeGuestMenuProduct(item.id, item.data() as Record<string, unknown>));
+      setMenuItems(mergeGuestMenuCatalog(MENU_ITEMS, syncedProducts));
+    }, (error) => {
+      console.warn('Product sync failed, using bundled guest menu fallback.', error);
+      setMenuItems(MENU_ITEMS);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (firebaseConfigError) {
@@ -350,6 +370,7 @@ export default function App() {
               <MenuView
               key="menu"
               roomNumber={state.guest.roomNumber}
+              menuItems={menuItems}
               cart={state.cart}
               addToCart={addToCart}
                 removeFromCart={removeFromCart}

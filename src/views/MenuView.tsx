@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SearchX, ShoppingBag, LogOut, Sun, Moon } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CartItem, Language, MenuItem, TimeSlot } from '../types';
@@ -13,6 +13,7 @@ import { useTheme } from '../contexts/ThemeContext';
 
 interface MenuViewProps {
   roomNumber: string;
+  menuItems?: MenuItem[];
   cart: CartItem[];
   addToCart: (item: MenuItem, qty: number, note: string) => void;
   removeFromCart: (index: number) => void;
@@ -23,8 +24,6 @@ interface MenuViewProps {
   isCartOpen: boolean;
   lang: Language;
 }
-
-const CATEGORY_LABELS = ['Breakfast', 'Mains', 'Beverages', 'Snacks'];
 
 function getCurrentTimeSlot(): TimeSlot {
   const hour = new Date().getHours();
@@ -56,7 +55,7 @@ function getTimeBasedMenuCopy(lang: Language, slot: TimeSlot): { title: string; 
 }
 
 export const MenuView: React.FC<MenuViewProps> = ({
-  roomNumber, cart, addToCart, removeFromCart,
+  roomNumber, menuItems = MENU_ITEMS, cart, addToCart, removeFromCart,
   onCheckout, onOpenCart, onCloseCart, onLogout, isCartOpen, lang,
 }) => {
   const { theme, toggle: toggleTheme } = useTheme();
@@ -67,12 +66,35 @@ export const MenuView: React.FC<MenuViewProps> = ({
   const isLight = theme.mode === 'light';
   const selectedPromo = PROMO_CAMPAIGNS.find((promo) => promo.id === selectedPromoId) ?? null;
 
+  const categories = useMemo(() => {
+    const activeCategories = Array.from(new Set(
+      menuItems
+        .filter((item) => item.isAvailable !== false)
+        .map((item) => item.category)
+        .filter((category) => category.trim().length > 0),
+    ));
+    const known = CATEGORIES.filter((category) => activeCategories.includes(category));
+    const extras = activeCategories.filter((category) => !known.includes(category)).sort((left, right) => left.localeCompare(right));
+    return [...known, ...extras];
+  }, [menuItems]);
+
+  useEffect(() => {
+    if (!categories.length) return;
+    if (!categories.includes(selectedCategory)) {
+      setSelectedCategory(categories[0]);
+    }
+  }, [categories, selectedCategory]);
+
   const grandTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const totalQty = cart.reduce((a, i) => a + i.qty, 0);
-  const filteredItems = MENU_ITEMS.filter((i) => i.category === selectedCategory);
+  const filteredItems = menuItems.filter((item) => (
+    item.isAvailable !== false && item.category === selectedCategory
+  ));
   const currentSlot = getCurrentTimeSlot();
   const menuCopy = getTimeBasedMenuCopy(lang, currentSlot);
-  const featuredItems = MENU_ITEMS.filter((i) => i.timeSlots?.includes(currentSlot));
+  const featuredItems = menuItems.filter((item) => (
+    item.isAvailable !== false && item.timeSlots?.includes(currentSlot)
+  ));
 
   return (
     <motion.div
@@ -138,17 +160,16 @@ export const MenuView: React.FC<MenuViewProps> = ({
         {/* Category tabs */}
         <nav style={{ position: 'sticky', top: 'calc(env(safe-area-inset-top) + 3.75rem)', zIndex: 40, background: isLight ? 'rgba(250,249,247,0.94)' : 'rgba(13,12,11,0.94)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: `1px solid ${theme.borderFaint}`, padding: '0.75rem 1.5rem', transition: 'background 0.3s' }}>
           <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', scrollbarWidth: 'none' }}>
-            {CATEGORY_LABELS.map((label, i) => {
-              const cat = CATEGORIES[Math.min(i, CATEGORIES.length - 1)];
-              const active = selectedCategory === cat;
+            {categories.map((category) => {
+              const active = selectedCategory === category;
               return (
-                <button key={label} onClick={() => setSelectedCategory(cat)}
+                <button key={category} onClick={() => setSelectedCategory(category)}
                   style={{ whiteSpace: 'nowrap', borderRadius: '9999px', padding: '0.45rem 1.1rem', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.16em', fontFamily: "'Manrope',sans-serif", fontWeight: 700, flexShrink: 0, cursor: 'pointer', transition: 'all 0.2s',
                     border: active ? `1px solid rgba(154,116,22,0.45)` : `1px solid ${theme.border}`,
                     background: active ? 'rgba(154,116,22,0.14)' : theme.bgInput,
                     color: active ? theme.goldBright : theme.textMuted,
                   }}>
-                  {label}
+                  {category}
                 </button>
               );
             })}
@@ -307,6 +328,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
       <PromoDetailModal promo={selectedPromo} isOpen={!!selectedPromo} onClose={() => setSelectedPromoId(null)} lang={lang} />
       <CartDrawer
         cart={cart}
+        menuItems={menuItems}
         isOpen={isCartOpen}
         onClose={onCloseCart}
         onRemove={removeFromCart}

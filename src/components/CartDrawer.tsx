@@ -10,6 +10,7 @@ import { getCartPairingSuggestions } from '../utils/cartPairings';
 
 interface CartDrawerProps {
   cart: CartItem[];
+  menuItems?: MenuItem[];
   isOpen: boolean;
   onClose: () => void;
   onRemove: (index: number) => void;
@@ -18,13 +19,13 @@ interface CartDrawerProps {
   lang: Language;
 }
 
-export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, isOpen, onClose, onRemove, onAddSuggestion, onCheckout, lang }) => {
+export const CartDrawer: React.FC<CartDrawerProps> = ({ cart, menuItems = MENU_ITEMS, isOpen, onClose, onRemove, onAddSuggestion, onCheckout, lang }) => {
   const { theme } = useTheme();
   const t = TRANSLATIONS[lang];
   const subtotal = calculateSubtotal(cart);
   const tax = calculateTax(subtotal);
   const total = calculateTotal(subtotal);
-  const pairingSuggestions = getCartPairingSuggestions(cart, MENU_ITEMS);
+  const pairingSuggestions = getCartPairingSuggestions(cart, menuItems);
   const [showDetails, setShowDetails] = useState(false);
 
   return (

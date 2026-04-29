@@ -48,6 +48,8 @@ describe('MenuView', () => {
         'Late-night bites and beverages, available whenever you need them.',
       ].includes(content))
     ).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Breakfast' })).toBeTruthy();
+    expect(
+      screen.getByRole('button', { name: /Breakfast|Signatures/i })
+    ).toBeTruthy();
   });
 });

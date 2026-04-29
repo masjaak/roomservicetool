@@ -27,4 +27,30 @@ describe('order feedback submission', () => {
       expect.objectContaining({ method: 'PATCH' }),
     );
   });
+
+  it('falls back to REST when the SDK update hangs past the timeout window', async () => {
+    vi.useFakeTimers();
+
+    const updateWithSdk = vi.fn(() => new Promise<void>(() => {}));
+    const fetchImpl = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+    });
+
+    const request = submitOrderFeedback({
+      orderId: 'order-456',
+      payload: { rating: 4, feedback: 'Thank you.' },
+      updateWithSdk,
+      fetchImpl,
+      sdkTimeoutMs: 25,
+    });
+
+    await vi.advanceTimersByTimeAsync(30);
+    await expect(request).resolves.toBeUndefined();
+
+    expect(updateWithSdk).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
 });
