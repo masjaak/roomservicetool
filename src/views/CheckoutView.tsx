@@ -58,7 +58,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onBack, onPlac
         </div>
       </header>
 
-      <main className="hcs-checkout-inner" style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'calc(env(safe-area-inset-top) + 3.75rem + 1.5rem)', paddingInline: '1.5rem', paddingBottom: '8rem' }}>
+      <main className="hcs-checkout-inner" style={{ maxWidth: '28rem', marginInline: 'auto', paddingTop: 'calc(env(safe-area-inset-top) + 3.75rem + 1.5rem)', paddingInline: '1.5rem', paddingBottom: '12rem' }}>
         <h2 className="sr-only">Checkout</h2>
 
         {/* Status banner */}

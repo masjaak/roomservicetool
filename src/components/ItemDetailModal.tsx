@@ -50,16 +50,16 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, isOpen, 
         <>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleClose}
             style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }} />
-          <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pointerEvents: 'none' }}>
-            <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              style={{ pointerEvents: 'auto', width: '100%', maxWidth: '28rem', background: theme.bgSurface, borderTopLeftRadius: '1.75rem', borderTopRightRadius: '1.75rem', overflow: 'hidden', maxHeight: '92vh', display: 'flex', flexDirection: 'column', boxShadow: '0 -20px 60px rgba(0,0,0,0.5)', transition: 'background 0.3s' }}>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              style={{ pointerEvents: 'auto', width: 'calc(100% - 2rem)', maxWidth: '26rem', background: theme.bgSurface, borderRadius: '1.75rem', overflow: 'hidden', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', transition: 'background 0.3s' }}>
 
               {/* Image */}
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '3/2', maxHeight: '32vh', background: theme.bgMuted, flexShrink: 0 }}>
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/10', maxHeight: '35vh', background: theme.bgMuted, flexShrink: 0 }}>
                 <button onClick={handleClose} aria-label="Close" style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10, width: '2.25rem', height: '2.25rem', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderRadius: '9999px', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer' }}>
                   <X size={18} />
                 </button>
-                <ImageWithFallback src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                <ImageWithFallback src={item.image} alt={item.name} className="w-full h-full object-cover" style={{ objectPosition: 'center center' }} />
               </div>
 
               {/* Scroll body */}

@@ -152,8 +152,8 @@ export default function App() {
   }, [state.guest.roomNumber, state.screen]);
 
   // --- Event dispatchers ---
-  const handleLogin = useCallback(async (room: string, phone: string, lastName: string, manualAccessCode?: string) => {
-    const resolvedAccessToken = accessToken || manualAccessCode?.trim() || '';
+  const handleLogin = useCallback(async (room: string, phone: string, lastName: string) => {
+    const resolvedAccessToken = accessToken || '';
 
     const roomNumber = room.trim();
     const guestLastName = lastName.trim().replace(/\s+/g, ' ');

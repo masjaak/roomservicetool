@@ -52,6 +52,10 @@ service cloud.firestore {
     }
 
     function validDemoAccessToken() {
+      if (request.resource.data.stayId == 'demo') {
+        return request.resource.data.hotelId == '' && !hasAccessTokenId();
+      }
+
       let stay = stayDoc(request.resource.data.stayId);
 
       return stayExists(request.resource.data.stayId) &&

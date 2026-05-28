@@ -51,15 +51,15 @@ export const PromoDetailModal: React.FC<PromoDetailModalProps> = ({ promo, isOpe
             onClick={onClose}
             style={{ position: 'fixed', inset: 0, zIndex: 55, background: 'rgba(0,0,0,0.68)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
           />
-          <div style={{ position: 'fixed', inset: 0, zIndex: 56, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pointerEvents: 'none' }}>
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              style={{ pointerEvents: 'auto', width: '100%', maxWidth: '28rem', maxHeight: '92vh', overflow: 'hidden', background: theme.bgSurface, borderTopLeftRadius: '1.75rem', borderTopRightRadius: '1.75rem', boxShadow: '0 -24px 70px rgba(0,0,0,0.45)' }}
-            >
-              <div style={{ position: 'relative', aspectRatio: '16/10', background: theme.bgMuted }}>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 260 }}
+                style={{ pointerEvents: 'auto', width: 'calc(100% - 2rem)', maxWidth: '26rem', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: theme.bgSurface, borderRadius: '1.75rem', boxShadow: '0 20px 60px rgba(0,0,0,0.45)' }}
+              >
+                <div style={{ position: 'relative', aspectRatio: '16/10', background: theme.bgMuted, flexShrink: 0 }}>
                 <button
                   type="button"
                   onClick={onClose}
@@ -80,7 +80,7 @@ export const PromoDetailModal: React.FC<PromoDetailModalProps> = ({ promo, isOpe
                 </div>
               </div>
 
-              <div style={{ maxHeight: 'calc(92vh - 18rem)', overflowY: 'auto', padding: '1.5rem' }}>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
                 <p style={{ margin: '0 0 1rem', fontSize: '14px', lineHeight: 1.75, color: theme.textSecondary }}>
                   {promo.summary[lang]}
                 </p>

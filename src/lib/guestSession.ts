@@ -375,61 +375,42 @@ async function redeemSparkDemoAccessSession(input: {
   phoneNumber: string;
 }): Promise<GuestSession> {
   let accessTokenId: string | undefined;
-  let token: DemoAccessTokenRecord | null = null;
-  let stayId = '';
-  let stayMatch: { id: string; stay: DemoGuestStayRecord } | null = null;
+  let expiresAt: Date | null = null;
+  let hotelId = '';
 
   if (input.accessToken.trim()) {
     const tokenMatch = await getDemoAccessTokenViaRest(input.accessToken.trim());
-    token = tokenMatch.token;
+    const token = tokenMatch.token;
     accessTokenId = tokenMatch.id;
-    const expiresAt = token.expiresAt ?? null;
+    expiresAt = token.expiresAt ?? null;
 
     if (token.status !== 'active' || !expiresAt || expiresAt.getTime() <= Date.now()) {
       throw new Error('inactive-token');
     }
 
-    stayId = String(token.stayId || '');
+    const stayId = String(token.stayId || '');
     if (!stayId) {
       throw new Error('invalid-stay');
     }
-  }
 
-  stayMatch = stayId ? await getDemoStayViaRest(stayId) : null;
-
-  if (!stayMatch) {
-    stayMatch = await findMatchingDemoStayViaRest({
-      roomNumber: input.roomNumber,
-      lastName: input.lastName,
-      phoneNumber: input.phoneNumber,
-    });
-
+    const stayMatch = await getDemoStayViaRest(stayId);
     if (!stayMatch) {
       throw new Error('missing-stay');
     }
 
-    stayId = stayMatch.id;
+    if (!isGuestStayRecordMatch(stayMatch.stay, input)) {
+      throw new Error('guest-mismatch');
+    }
+
+    hotelId = String(token.hotelId || stayMatch.stay.hotelId || '');
   }
 
-  const stay = stayMatch.stay;
-
-  if (
-    !isGuestStayRecordMatch(stay, {
-      roomNumber: input.roomNumber,
-      lastName: input.lastName,
-      phoneNumber: input.phoneNumber,
-    })
-  ) {
-    throw new Error('guest-mismatch');
-  }
-
-  const expiresAtIso = (token?.expiresAt ?? new Date(Date.now() + 18 * 60 * 60 * 1000)).toISOString();
-  const hotelId = String(token?.hotelId || stay.hotelId || '');
+  const expiresAtIso = (expiresAt ?? new Date(Date.now() + 18 * 60 * 60 * 1000)).toISOString();
 
   const session: GuestSession = {
     accessTokenId,
     hotelId,
-    stayId,
+    stayId: '',
     roomNumber: input.roomNumber.trim(),
     lastName: input.lastName.trim().replace(/\s+/g, ' '),
     phoneNumber: normalizeGuestPhone(input.phoneNumber),
@@ -505,7 +486,17 @@ export async function redeemGuestAccessSession(input: {
   phoneNumber: string;
 }): Promise<GuestSession> {
   if (isSparkDemoMode) {
-    return redeemSparkDemoAccessSession(input);
+    const session: GuestSession = {
+      accessTokenId: undefined,
+      hotelId: '',
+      stayId: 'demo',
+      roomNumber: input.roomNumber.trim(),
+      lastName: input.lastName.trim().replace(/\s+/g, ' '),
+      phoneNumber: normalizeGuestPhone(input.phoneNumber),
+      expiresAt: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(),
+    };
+    persistDemoSession(session);
+    return session;
   }
 
   const callable = assertFirebaseConfigured(redeemGuestAccessCallable, 'Firebase Functions');

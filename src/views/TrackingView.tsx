@@ -97,7 +97,7 @@ export const TrackingView: React.FC<TrackingViewProps> = ({ roomNumber, onFinish
         {/* Header */}
         <header style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: theme.bgHeader, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: `1px solid ${theme.borderFaint}`, paddingInline: '1.5rem', paddingTop: 'calc(env(safe-area-inset-top) + 1rem)', paddingBottom: '1rem', transition: 'background 0.3s, border-color 0.3s' }}>
           <div style={{ width: '2.25rem' }} />
-          <h1 style={{ fontFamily: "'Noto Serif',serif", fontSize: '1.15rem', fontWeight: 400, fontStyle: 'italic', color: theme.textBase, lineHeight: 1, transition: 'color 0.3s' }}>
+          <h1 style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontFamily: "'Noto Serif',serif", fontSize: '1.15rem', fontWeight: 400, fontStyle: 'italic', color: theme.textBase, lineHeight: 1, transition: 'color 0.3s' }}>
             Atelier Dining
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem' }}>

@@ -7,7 +7,7 @@ import { validateGuestAccess } from './loginValidation';
 interface LoginViewProps {
   lang: Language;
   setLang: (lang: Language) => void;
-  onLogin: (room: string, phone: string, lastName: string, manualAccessCode?: string) => Promise<string | null | void> | string | null | void;
+  onLogin: (room: string, phone: string, lastName: string) => Promise<string | null | void> | string | null | void;
 }
 
 const loginHeroImage =
@@ -17,11 +17,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
   const roomInputRef = useRef<HTMLInputElement | null>(null);
   const lastNameInputRef = useRef<HTMLInputElement | null>(null);
   const phoneInputRef = useRef<HTMLInputElement | null>(null);
-  const accessCodeInputRef = useRef<HTMLInputElement | null>(null);
   const [roomNumber, setRoomNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [lastName, setLastName] = useState('');
-  const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,11 +47,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
 
     setIsSubmitting(true);
     try {
-      const trimmedAccessCode = accessCode.trim();
-      const loginArgs: [string, string, string] | [string, string, string, string] = trimmedAccessCode
-        ? [roomNumber, phoneNumber, lastName, trimmedAccessCode]
-        : [roomNumber, phoneNumber, lastName];
-      const submitError = await onLogin(...loginArgs);
+      const submitError = await onLogin(roomNumber, phoneNumber, lastName);
       setError(submitError || '');
     } catch {
       setError(
@@ -438,71 +432,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ lang, setLang, onLogin }) 
                     boxSizing: 'border-box',
                   }}
                 />
-              </div>
-
-              {/* Optional Access Code */}
-              <div
-                style={{
-                  position: 'relative',
-                  borderRadius: '1.1rem',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                  background: 'rgba(255,255,255,0.08)',
-                  padding: '0.75rem 1rem 0.75rem',
-                  transition: 'border-color 0.2s, background 0.2s',
-                }}
-              >
-                <label
-                  htmlFor="access_code"
-                  style={{
-                    display: 'block',
-                    fontFamily: "'Manrope', sans-serif",
-                    fontSize: '10px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.18em',
-                    color: 'rgba(255,255,255,0.68)',
-                    marginBottom: '0.25rem',
-                  }}
-                >
-                  {lang === 'ID' ? 'Kode Akses QR' : 'Room Access Code'}
-                </label>
-                <input
-                  id="access_code"
-                  ref={accessCodeInputRef}
-                  type="text"
-                  autoComplete="one-time-code"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  enterKeyHint="done"
-                  value={accessCode}
-                  onKeyDown={(e) => moveFocus(e)}
-                  onChange={(e) => setAccessCode(e.target.value.replace(/\s+/g, ''))}
-                  aria-describedby="access_code_hint"
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: '15px',
-                    fontWeight: 500,
-                    color: '#ffffff',
-                    padding: 0,
-                    lineHeight: 1.4,
-                    boxSizing: 'border-box',
-                  }}
-                />
-                <p
-                  id="access_code_hint"
-                  style={{
-                    margin: '0.35rem 0 0',
-                    fontSize: '11px',
-                    lineHeight: 1.4,
-                    color: 'rgba(255,255,255,0.54)',
-                  }}
-                >
-                  {lang === 'ID' ? 'Opsional, gunakan jika resepsionis memberi kode QR.' : 'Optional, use it when front desk gives a QR code.'}
-                </p>
               </div>
 
               {/* Error */}

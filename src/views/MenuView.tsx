@@ -184,7 +184,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
           <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: '2.1rem', fontWeight: 400, color: theme.textBase, lineHeight: 1.1, marginBottom: '0.625rem', transition: 'color 0.3s' }}>
             {menuCopy.title}
           </h2>
-          <p style={{ maxWidth: '22rem', fontSize: '13px', lineHeight: 1.7, color: theme.textMuted, transition: 'color 0.3s' }}>
+          <p style={{ fontSize: '13px', lineHeight: 1.7, color: theme.textMuted, transition: 'color 0.3s' }}>
             {menuCopy.subtitle}
           </p>
         </section>
