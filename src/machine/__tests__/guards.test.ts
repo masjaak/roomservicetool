@@ -32,7 +32,7 @@ describe('guards', () => {
   // isGuestInfoValid
   // -----------------------------------------------------------------------
   describe('isGuestInfoValid', () => {
-    const valid: GuestInfo = { roomNumber: '1024', lastName: 'Smith', phoneNumber: '08123456789' };
+    const valid: GuestInfo = { roomNumber: '1024', lastName: 'Smith', phoneNumber: '081234567890' };
 
     it('returns true for complete valid info', () => {
       expect(isGuestInfoValid(valid)).toBe(true);
@@ -54,20 +54,16 @@ describe('guards', () => {
       expect(isGuestInfoValid({ ...valid, phoneNumber: '' })).toBe(false);
     });
 
-    it('returns false for phone shorter than 10 digits', () => {
-      expect(isGuestInfoValid({ ...valid, phoneNumber: '0812345' })).toBe(false);
+    it('returns false for phone with fewer than 12 digits', () => {
+      expect(isGuestInfoValid({ ...valid, phoneNumber: '08123456789' })).toBe(false);
     });
 
-    it('returns false for phone not starting with 08 or 628', () => {
-      expect(isGuestInfoValid({ ...valid, phoneNumber: '1234567890' })).toBe(false);
+    it('accepts phone with exactly 12 digits', () => {
+      expect(isGuestInfoValid({ ...valid, phoneNumber: '123456789012' })).toBe(true);
     });
 
-    it('accepts phone starting with 628', () => {
-      expect(isGuestInfoValid({ ...valid, phoneNumber: '6281234567890' })).toBe(true);
-    });
-
-    it('rejects phone longer than 14 digits', () => {
-      expect(isGuestInfoValid({ ...valid, phoneNumber: '081234567890123' })).toBe(false);
+    it('accepts phone with any prefix as long as it has 12+ digits', () => {
+      expect(isGuestInfoValid({ ...valid, phoneNumber: '6212345678901' })).toBe(true);
     });
   });
 

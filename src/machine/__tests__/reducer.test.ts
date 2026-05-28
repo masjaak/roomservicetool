@@ -6,7 +6,7 @@ import type { AppState, CartEntry, GuestInfo } from '../types';
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-const validGuest: GuestInfo = { roomNumber: '1024', lastName: 'Smith', phoneNumber: '08123456789' };
+const validGuest: GuestInfo = { roomNumber: '1024', lastName: 'Smith', phoneNumber: '081234567890' };
 
 const sampleItem: Omit<CartEntry, 'qty' | 'note'> = {
   id: 1, name: 'Flat White', price: 55000,
